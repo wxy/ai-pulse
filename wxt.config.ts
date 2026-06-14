@@ -1,0 +1,40 @@
+import { defineConfig } from 'wxt';
+
+export default defineConfig({
+  modules: ['@wxt-dev/module-react'],
+
+  publicDir: 'public',
+
+  manifest: {
+    name: 'AI Pulse',
+    description: 'Monitor AI service providers usage and balance',
+    version: '0.1.0',
+    permissions: [
+      'storage',
+      'alarms',
+    ],
+    host_permissions: [
+      'https://api.deepseek.com/*',
+      'https://api.moonshot.cn/*',
+      'https://bigmodel.cn/*',
+      'https://platform.baichuan-ai.com/*',
+      'https://dashscope.aliyuncs.com/*',
+      'https://qianfan.baidubce.com/*',
+      'https://status.deepseek.com/*',
+    ],
+    action: {
+      default_title: 'AI Pulse',
+      default_popup: 'popup/index.html',
+    },
+    options_ui: {
+      page: 'options/index.html',
+      open_in_tab: true,
+    },
+    icons: {
+      16: 'icons/icon-16.png',
+      32: 'icons/icon-32.png',
+      48: 'icons/icon-48.png',
+      128: 'icons/icon-128.png',
+    },
+  },
+});
