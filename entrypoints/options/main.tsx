@@ -6,8 +6,12 @@ import { loadLanguage } from '@/utils/i18n';
 import { initCustomProviders } from '@/core/provider-registry';
 
 async function main() {
-  await loadLanguage();
-  await initCustomProviders();
+  try {
+    await loadLanguage();
+    await initCustomProviders();
+  } catch (err) {
+    console.error('Options init failed:', err);
+  }
   ReactDOM.createRoot(document.getElementById('app')!).render(
     <React.StrictMode><App /></React.StrictMode>
   );
