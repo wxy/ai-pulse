@@ -70,6 +70,10 @@ const ZH: Record<string, string> = {
   'settings.theme_dark': '深色',
   'settings.theme_light': '浅色',
   'settings.saving': '保存中...',
+  'settings.language': '语言',
+  'settings.language_zh': '中文',
+  'settings.language_en': 'English',
+  'settings.history_retention_title': '历史保留',
 
   // Intervals
   'interval.15min': '每 15 分钟',
@@ -104,77 +108,6 @@ const ZH: Record<string, string> = {
   'error.load_providers': '加载服务商失败',
   'error.refresh_failed': '刷新失败',
 
-  // Options nav
-  'nav.providers': '📡 服务商',
-  'nav.settings': '⚙️ 设置',
-  'nav.about': 'ℹ️ 关于',
-
-  // Provider list
-  'providers.configured': '🔑 已配置',
-  'providers.not_configured': '🔓 未配置',
-  'providers.configure': '配置 →',
-  'providers.delete': '删除',
-  'providers.add_custom': '+ 添加自定义服务商',
-
-  // Provider config
-  'config.back': '← 返回服务商列表',
-  'config.display_name': '显示名称',
-  'config.api_key': 'API Key 配置',
-  'config.api_key_desc': '输入 API Key 以启用余额和用量监控。Key 仅存储在本地。',
-  'config.alert_title': '余额预警',
-  'config.alert_desc': '当余额低于预估日均消费时，扩展图标徽章变红并显示 ⚠ 标记。基于历史余额数据自动计算，无需手动设置阈值。',
-  'config.alert_on': '已开启',
-  'config.alert_off': '已关闭',
-  'config.status_only_title': '仅状态监控',
-  'config.status_only_desc': '未开放公开的余额 API，仅监控服务状态。',
-  'config.status_only_badge': '仅状态',
-  'config.links': '链接',
-  'config.console': '控制台 →',
-  'config.status_page': '状态页 →',
-
-  // API Key
-  'apikey.placeholder': '请输入 API Key（sk- 开头）',
-  'apikey.format_hint': 'Key 格式',
-  'apikey.check_docs': '请参考服务商文档',
-  'apikey.invalid': 'API Key 格式不正确',
-  'apikey.save_failed': '保存失败',
-  'apikey.save': '保存',
-  'apikey.saving': '保存中...',
-  'apikey.remove': '移除 Key',
-
-  // Settings
-  'settings.title': '设置',
-  'settings.desc': '配置监控行为',
-  'settings.refresh_interval': '刷新间隔',
-  'settings.refresh_desc': '自动拉取余额和状态的时间间隔',
-  'settings.history_retention_title': '历史保留',
-  'settings.history_desc': '余额历史快照保留多长时间？',
-  'settings.language': '语言',
-  'settings.language_zh': '中文',
-  'settings.language_en': 'English',
-  'settings.theme': '主题',
-  'settings.theme_dark': '深色',
-  'settings.theme_light': '浅色',
-  'settings.saving': '保存中...',
-
-  // Intervals
-  'interval.15min': '每 15 分钟',
-  'interval.30min': '每 30 分钟',
-  'interval.1hour': '每小时',
-  'interval.2hours': '每 2 小时',
-  'interval.6hours': '每 6 小时',
-  'interval.12hours': '每 12 小时',
-  'interval.24hours': '每 24 小时',
-
-  // Retention
-  'retention.7days': '7 天',
-  'retention.30days': '30 天',
-  'retention.60days': '60 天',
-  'retention.90days': '90 天',
-  'retention.180days': '180 天',
-  'retention.1year': '1 年',
-
-  // Custom provider form
   'custom.title': '添加自定义服务商',
   'custom.desc': '输入服务商信息，可自定义余额和状态检查 API',
   'custom.name': '服务名称 *',
@@ -191,7 +124,6 @@ const ZH: Record<string, string> = {
   'custom.error_save': '保存失败',
   'custom.custom_label': '自定义',
 
-  // Provider card
   'card.click_config': '点击配置',
   'card.daily_avg': '日均',
 };
@@ -257,6 +189,10 @@ const EN: Record<string, string> = {
   'settings.theme_dark': 'Dark',
   'settings.theme_light': 'Light',
   'settings.saving': 'Saving...',
+  'settings.language': 'Language',
+  'settings.language_zh': '中文',
+  'settings.language_en': 'English',
+  'settings.history_retention_title': 'History Retention',
 
   'interval.15min': 'Every 15 min',
   'interval.30min': 'Every 30 min',
@@ -285,70 +221,6 @@ const EN: Record<string, string> = {
   'error.page': 'Something went wrong',
   'error.load_providers': 'Failed to load providers',
   'error.refresh_failed': 'Refresh failed',
-
-  'nav.providers': '📡 Providers',
-  'nav.settings': '⚙️ Settings',
-  'nav.about': 'ℹ️ About',
-
-  'providers.configured': '🔑 Configured',
-  'providers.not_configured': '🔓 No Key',
-  'providers.configure': 'Configure →',
-  'providers.delete': 'Delete',
-  'providers.add_custom': '+ Add Custom Provider',
-
-  'config.back': '← Back to Providers',
-  'config.display_name': 'Display Name',
-  'config.api_key': 'API Key Configuration',
-  'config.api_key_desc': 'Enter your API key to enable balance and usage monitoring. Key is stored locally.',
-  'config.alert_title': 'Balance Alert',
-  'config.alert_desc': 'Badge turns red when balance drops below estimated daily consumption. Auto-calculated from history.',
-  'config.alert_on': 'Enabled',
-  'config.alert_off': 'Disabled',
-  'config.status_only_title': 'Status-Only Monitoring',
-  'config.status_only_desc': 'No public balance API. Only service status will be monitored.',
-  'config.status_only_badge': 'Status Only',
-  'config.links': 'Links',
-  'config.console': 'Console →',
-  'config.status_page': 'Status Page →',
-
-  'apikey.placeholder': 'Enter API key (sk-...)',
-  'apikey.format_hint': 'Key format',
-  'apikey.check_docs': 'Check provider docs',
-  'apikey.invalid': 'Invalid API key format',
-  'apikey.save_failed': 'Failed to save',
-  'apikey.save': 'Save',
-  'apikey.saving': 'Saving...',
-  'apikey.remove': 'Remove Key',
-
-  'settings.title': 'Settings',
-  'settings.desc': 'Configure monitoring behavior',
-  'settings.refresh_interval': 'Refresh Interval',
-  'settings.refresh_desc': 'How often to automatically fetch balances and status',
-  'settings.history_retention_title': 'History Retention',
-  'settings.history_desc': 'How long to keep balance history snapshots?',
-  'settings.language': 'Language',
-  'settings.language_zh': '中文',
-  'settings.language_en': 'English',
-  'settings.theme': 'Theme',
-  'settings.theme_dark': 'Dark',
-  'settings.theme_light': 'Light',
-  'settings.saving': 'Saving...',
-
-  'interval.15min': 'Every 15 min',
-  'interval.30min': 'Every 30 min',
-  'interval.1hour': 'Every hour',
-  'interval.2hours': 'Every 2 hours',
-  'interval.6hours': 'Every 6 hours',
-  'interval.12hours': 'Every 12 hours',
-  'interval.24hours': 'Every 24 hours',
-
-  'retention.7days': '7 days',
-  'retention.30days': '30 days',
-  'retention.60days': '60 days',
-  'retention.90days': '90 days',
-  'retention.180days': '180 days',
-  'retention.1year': '1 year',
-
   'custom.title': 'Add Custom Provider',
   'custom.desc': 'Configure a custom AI provider with balance and status API endpoints',
   'custom.name': 'Service Name *',

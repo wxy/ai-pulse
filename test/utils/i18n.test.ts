@@ -28,9 +28,9 @@ describe('i18n', () => {
         'popup.no_key', 'popup.empty',
         'status.running', 'status.error', 'status.unreachable',
         'nav.providers', 'nav.settings', 'nav.about',
-        'providers.title', 'providers.configure', 'providers.delete',
+        'providers.title', 'providers.back',
         'settings.title', 'settings.theme', 'settings.language',
-        'config.display_name', 'config.api_key', 'config.alert_title',
+        'config.display_name', 'config.api_key',
         'chart.title', 'chart.empty',
         'error.page', 'error.refresh_failed',
       ];
