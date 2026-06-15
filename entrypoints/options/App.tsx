@@ -8,10 +8,11 @@ const App: React.FC = () => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Load language BEFORE first render to avoid flash of wrong language
-    loadLanguage().then(() => {
-      initCustomProviders().then(() => setReady(true));
-    });
+    async function init() {
+      await Promise.all([loadLanguage(), initCustomProviders()]);
+      setReady(true);
+    }
+    init().catch(() => setReady(true)); // Always render, even on error
 
     // Apply theme
     chrome.storage.local.get('settings').then(result => {
@@ -25,9 +26,6 @@ const App: React.FC = () => {
       }
       if (changes.custom_providers) {
         initCustomProviders();
-      }
-      if (changes.language) {
-        loadLanguage().then(() => setReady(true));
       }
     };
     chrome.storage.onChanged.addListener(listener);

@@ -10,9 +10,11 @@ const App: React.FC = () => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    loadLanguage().then(() => {
-      initCustomProviders().then(() => setReady(true));
-    });
+    async function init() {
+      await Promise.all([loadLanguage(), initCustomProviders()]);
+      setReady(true);
+    }
+    init().catch(() => setReady(true));
 
     chrome.storage.local.get('settings').then(result => {
       const theme = result.settings?.theme ?? 'dark';
