@@ -1,81 +1,64 @@
-import { useI18n } from '@/utils/i18n';
 import React from 'react';
 import { useSettings } from '@/hooks/useSettings';
+import { getLanguage, setLanguage } from '@/utils/i18n';
+import { t } from '@/utils/i18n';
 
 const SettingsPanel: React.FC = () => {
   const { settings, loading, saving, updateSetting } = useSettings();
 
   if (loading) {
-    return (
-      <div className="settings-page">
-        <h2>设置</h2>
-        <div className="skeleton-list">
-          <div className="skeleton-row" />
-        </div>
-      </div>
-    );
+    return <div className="settings-page"><h2>{t('settings.title')}</h2><div className="skeleton-list"><div className="skeleton-row" /></div></div>;
   }
 
   return (
     <div className="settings-page">
-      <h2>设置</h2>
-      <p className="section-desc">配置监控行为</p>
+      <h2>{t('settings.title')}</h2>
+      <p className="section-desc">{t('settings.desc')}</p>
 
       <section className="config-section">
-        <h3>刷新间隔</h3>
-        <p className="section-desc">
-          自动拉取余额和状态的时间间隔（需扩展保持运行）
-        </p>
-        <select
-          className="select-input"
-          value={settings.refreshIntervalMinutes}
-          onChange={e => updateSetting('refreshIntervalMinutes', parseInt(e.target.value))}
-          disabled={saving}
-        >
-          <option value={15}>每 15 分钟</option>
-          <option value={30}>每 30 分钟</option>
-          <option value={60}>每小时</option>
-          <option value={120}>每 2 小时</option>
-          <option value={360}>每 6 小时</option>
-          <option value={720}>每 12 小时</option>
-          <option value={1440}>每 24 小时</option>
+        <h3>{t('settings.refresh_interval')}</h3>
+        <p className="section-desc">{t('settings.refresh_desc')}</p>
+        <select className="select-input" value={settings.refreshIntervalMinutes} onChange={e => updateSetting('refreshIntervalMinutes', parseInt(e.target.value))} disabled={saving}>
+          <option value={15}>{t('interval.15min')}</option>
+          <option value={30}>{t('interval.30min')}</option>
+          <option value={60}>{t('interval.1hour')}</option>
+          <option value={120}>{t('interval.2hours')}</option>
+          <option value={360}>{t('interval.6hours')}</option>
+          <option value={720}>{t('interval.12hours')}</option>
+          <option value={1440}>{t('interval.24hours')}</option>
         </select>
       </section>
 
       <section className="config-section">
-        <h3>历史保留</h3>
-        <p className="section-desc">
-          余额历史快照保留多长时间？
-        </p>
-        <select
-          className="select-input"
-          value={settings.historyRetentionDays}
-          onChange={e => updateSetting('historyRetentionDays', parseInt(e.target.value))}
-          disabled={saving}
-        >
-          <option value={7}>7 天</option>
-          <option value={30}>30 天</option>
-          <option value={60}>60 天</option>
-          <option value={90}>90 天</option>
-          <option value={180}>180 天</option>
-          <option value={365}>1 年</option>
+        <h3>{t('settings.history_retention_title')}</h3>
+        <p className="section-desc">{t('settings.history_desc')}</p>
+        <select className="select-input" value={settings.historyRetentionDays} onChange={e => updateSetting('historyRetentionDays', parseInt(e.target.value))} disabled={saving}>
+          <option value={7}>{t('retention.7days')}</option>
+          <option value={30}>{t('retention.30days')}</option>
+          <option value={60}>{t('retention.60days')}</option>
+          <option value={90}>{t('retention.90days')}</option>
+          <option value={180}>{t('retention.180days')}</option>
+          <option value={365}>{t('retention.1year')}</option>
         </select>
       </section>
 
       <section className="config-section">
-        <h3>主题</h3>
-        <select
-          className="select-input"
-          value={settings.theme}
-          onChange={e => updateSetting('theme', e.target.value as 'light' | 'dark')}
-          disabled={saving}
-        >
-          <option value="dark">深色</option>
-          <option value="light">浅色</option>
+        <h3>{t('settings.language')}</h3>
+        <select className="select-input" value={getLanguage()} onChange={e => { setLanguage(e.target.value as 'zh' | 'en'); window.location.reload(); }}>
+          <option value="zh">{t('settings.language_zh')}</option>
+          <option value="en">{t('settings.language_en')}</option>
         </select>
       </section>
 
-      {saving && <p className="saving-indicator">保存中...</p>}
+      <section className="config-section">
+        <h3>{t('settings.theme')}</h3>
+        <select className="select-input" value={settings.theme} onChange={e => updateSetting('theme', e.target.value as 'light' | 'dark')} disabled={saving}>
+          <option value="dark">{t('settings.theme_dark')}</option>
+          <option value="light">{t('settings.theme_light')}</option>
+        </select>
+      </section>
+
+      {saving && <p className="saving-indicator">{t('settings.saving')}</p>}
     </div>
   );
 };

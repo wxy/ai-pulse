@@ -31,8 +31,22 @@ export async function startPeriodicFetch(): Promise<void> {
     }
   }
 
-  // Run an initial fetch if no recent data
-  runFetchCycle();
+  // Only run immediate fetch if no recent data (avoid fetching on every SW wake)
+  const statusCache = await import('./storage').then(m => m.getStatusCache());
+  const cacheEntries = Object.values(statusCache);
+  if (cacheEntries.length === 0) {
+    // First ever run — fetch immediately
+    runFetchCycle();
+  } else {
+    const oldestFetch = Math.min(...cacheEntries.map(e => e.lastFetchTimestamp || 0));
+    const halfInterval = interval * 60 * 1000 / 2;
+    if (Date.now() - oldestFetch > halfInterval) {
+      // Data is stale — fetch
+      runFetchCycle();
+    } else {
+      console.log('Recent data exists, skipping immediate fetch');
+    }
+  }
 }
 
 export async function runFetchCycle(): Promise<void> {

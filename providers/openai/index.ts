@@ -1,9 +1,11 @@
-import { t } from '@/utils/i18n';
 import type { Provider, StatusResult } from '@/types';
+import { t } from '@/utils/i18n';
 
 async function fetchStatus(): Promise<StatusResult> {
   try {
-    const res = await fetch('https://qianfan.baidubce.com/v2/models');
+    const res = await fetch('https://api.openai.com/v1/models', {
+      headers: { Authorization: 'Bearer noop' },
+    });
     const isAvailable = res.status < 500;
     return {
       success: true,
@@ -21,14 +23,15 @@ async function fetchStatus(): Promise<StatusResult> {
   }
 }
 
-export const ernieProvider: Provider = {
-  id: 'ernie',
-  name: '文心一言',
-  company: '百度 Baidu',
-  description: '百度文心大模型',
-  icon: '🐻',
-  faviconUrl: 'https://eb-static.cdn.bcebos.com/logo/favicon.ico',
-  baseUrl: 'https://console.bce.baidu.com/qianfan',
+export const openaiProvider: Provider = {
+  id: 'openai',
+  name: 'OpenAI',
+  company: 'OpenAI',
+  description: 'GPT / ChatGPT / Sora',
+  icon: '🤖',
+  faviconUrl: 'https://openai.com/favicon.ico',
+  baseUrl: 'https://platform.openai.com',
+  statusPageUrl: 'https://status.openai.com',
   capabilities: {
     canFetchBalance: false,
     canFetchStatus: true,

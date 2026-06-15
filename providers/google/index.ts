@@ -1,9 +1,9 @@
-import { t } from '@/utils/i18n';
 import type { Provider, StatusResult } from '@/types';
+import { t } from '@/utils/i18n';
 
 async function fetchStatus(): Promise<StatusResult> {
   try {
-    const res = await fetch('https://qianfan.baidubce.com/v2/models');
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=noop');
     const isAvailable = res.status < 500;
     return {
       success: true,
@@ -21,14 +21,15 @@ async function fetchStatus(): Promise<StatusResult> {
   }
 }
 
-export const ernieProvider: Provider = {
-  id: 'ernie',
-  name: '文心一言',
-  company: '百度 Baidu',
-  description: '百度文心大模型',
-  icon: '🐻',
-  faviconUrl: 'https://eb-static.cdn.bcebos.com/logo/favicon.ico',
-  baseUrl: 'https://console.bce.baidu.com/qianfan',
+export const googleProvider: Provider = {
+  id: 'google',
+  name: 'Google AI',
+  company: 'Google DeepMind',
+  description: 'Gemini / Imagen / Veo',
+  icon: '💎',
+  faviconUrl: 'https://ai.google.dev/favicon.ico',
+  baseUrl: 'https://aistudio.google.com',
+  statusPageUrl: 'https://status.cloud.google.com',
   capabilities: {
     canFetchBalance: false,
     canFetchStatus: true,

@@ -1,9 +1,11 @@
-import { t } from '@/utils/i18n';
 import type { Provider, StatusResult } from '@/types';
+import { t } from '@/utils/i18n';
 
 async function fetchStatus(): Promise<StatusResult> {
   try {
-    const res = await fetch('https://qianfan.baidubce.com/v2/models');
+    const res = await fetch('https://api.anthropic.com/v1/models', {
+      headers: { 'x-api-key': 'noop', 'anthropic-version': '2023-06-01' },
+    });
     const isAvailable = res.status < 500;
     return {
       success: true,
@@ -21,14 +23,15 @@ async function fetchStatus(): Promise<StatusResult> {
   }
 }
 
-export const ernieProvider: Provider = {
-  id: 'ernie',
-  name: '文心一言',
-  company: '百度 Baidu',
-  description: '百度文心大模型',
-  icon: '🐻',
-  faviconUrl: 'https://eb-static.cdn.bcebos.com/logo/favicon.ico',
-  baseUrl: 'https://console.bce.baidu.com/qianfan',
+export const anthropicProvider: Provider = {
+  id: 'anthropic',
+  name: 'Anthropic',
+  company: 'Anthropic',
+  description: 'Claude / Sonnet / Opus / Haiku',
+  icon: '🧪',
+  faviconUrl: 'https://anthropic.com/favicon.ico',
+  baseUrl: 'https://console.anthropic.com',
+  statusPageUrl: 'https://status.anthropic.com',
   capabilities: {
     canFetchBalance: false,
     canFetchStatus: true,

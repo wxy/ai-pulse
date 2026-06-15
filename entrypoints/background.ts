@@ -1,5 +1,6 @@
 import { defineBackground } from 'wxt/utils/define-background';
-import { getAllProviders } from '@/core/provider-registry';
+import { loadLanguage } from '@/utils/i18n';
+import { getAllProviders, initCustomProviders } from '@/core/provider-registry';
 import {
   getSettings,
   setSettings,
@@ -36,7 +37,7 @@ async function initializeDefaults(): Promise<void> {
     await chrome.storage.local.set({
       settings: {
         refreshIntervalMinutes: 60,
-        theme: 'light',
+        theme: 'dark',
         historyRetentionDays: 90,
       },
     });
@@ -81,7 +82,11 @@ async function buildProviderSummaries(): Promise<ProviderSummary[]> {
 // Message Handler
 // ============================================================
 
+let _initResolve: (() => void) | null = null;
+const _initPromise = new Promise<void>(r => { _initResolve = r; });
+
 async function handleMessage(action: string, payload: unknown): Promise<unknown> {
+  await _initPromise; // Wait for background to finish initializing
   switch (action) {
     case 'GET_PROVIDER_STATE':
       return buildProviderSummaries();
@@ -162,8 +167,12 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
 // Background Entry Point
 // ============================================================
 
-export default defineBackground(() => {
+export default defineBackground(async () => {
   console.log('AI Pulse background service worker started');
+
+  // Load language preference and custom providers
+  await loadLanguage();
+  await initCustomProviders();
 
   // Initialize default settings
   chrome.runtime.onInstalled.addListener(async () => {
@@ -180,5 +189,8 @@ export default defineBackground(() => {
   startMessageListener();
 
   // Start periodic fetch on startup (in case SW was terminated)
-  startPeriodicFetch();
+  await startPeriodicFetch();
+
+  // Mark as initialized so message handler can process requests
+  _initResolve!();
 });

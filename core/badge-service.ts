@@ -1,5 +1,6 @@
 import { getAllProviders } from './provider-registry';
 import { getProviderConfigs, getBalanceCache, getStatusCache } from './storage';
+import type { BalanceHistory } from '@/types';
 
 let cycleTimer: ReturnType<typeof setInterval> | null = null;
 let cycleIndex = 0;
@@ -12,6 +13,7 @@ export async function updateBadge(): Promise<void> {
 
   const activeBalances: { name: string; currency: string; amount: number }[] = [];
   const infoParts: string[] = [];
+  let hasAlert = false;
 
   for (const provider of providers) {
     const config = configs.find(c => c.providerId === provider.id);
@@ -19,20 +21,29 @@ export async function updateBadge(): Promise<void> {
     const bCache = balanceCache[provider.id];
     const sCache = statusCache[provider.id];
 
-    // Build single-line status + balance per provider
     const status = sCache?.result?.isAvailable ? '✓' : sCache?.result ? '✗' : '?';
     let line = `${name} ${status}`;
 
     if (bCache?.result?.success && bCache.result.balances.length > 0) {
       const bal = bCache.result.balances[0];
-      line += ` ${formatShortBalance(bal.currency, bal.totalBalance)}`;
-      activeBalances.push({ name, currency: bal.currency, amount: bal.totalBalance });
+      const amount = bal.totalBalance;
+      line += ` ${formatShortBalance(bal.currency, amount)}`;
+      activeBalances.push({ name, currency: bal.currency, amount });
+
+      // Per-provider alert: warn if balance < estimated daily consumption
+      if (config?.alertEnabled && amount > 0) {
+        const dailyAvg = await getDailyAvg(provider.id, bal.currency);
+        if (dailyAvg > 0 && amount < dailyAvg) {
+          hasAlert = true;
+          line += ' ⚠';
+        }
+      }
     }
 
     infoParts.push(line);
   }
 
-  // Badge text: only show balance (cycle if multiple)
+  // Badge text
   if (activeBalances.length > 0) {
     if (activeBalances.length > 1) {
       startCycling(activeBalances);
@@ -46,11 +57,38 @@ export async function updateBadge(): Promise<void> {
     chrome.action.setBadgeText({ text: '' });
   }
 
-  // Tooltip: each provider on its own line
+  // Badge background: red if any alert
+  if (hasAlert) {
+    chrome.action.setBadgeBackgroundColor({ color: '#ef4444' });
+  }
+
+  // Tooltip
   const title = infoParts.length > 0
     ? infoParts.join('\n')
     : 'AI Pulse';
   chrome.action.setTitle({ title });
+}
+
+/** Compute daily avg consumption for a provider from balance history */
+async function getDailyAvg(providerId: string, currency: string): Promise<number> {
+  const key = `balance_history_${providerId}`;
+  const result = await chrome.storage.local.get(key);
+  const history: BalanceHistory = result[key];
+  if (!history?.snapshots || history.snapshots.length < 2) return 0;
+
+  const snapshots = history.snapshots;
+  const first = snapshots[0];
+  const last = snapshots[snapshots.length - 1];
+
+  const firstBal = first.balances.find(b => b.currency === currency);
+  const lastBal = last.balances.find(b => b.currency === currency);
+  if (!firstBal || !lastBal) return 0;
+
+  const consumed = firstBal.totalBalance - lastBal.totalBalance;
+  if (consumed <= 0) return 0;
+
+  const daysDiff = Math.max(1, (last.timestamp - first.timestamp) / (1000 * 60 * 60 * 24));
+  return consumed / daysDiff;
 }
 
 function formatShortBalance(currency: string, amount: number): string {
@@ -74,20 +112,15 @@ function badgeText(currency: string, amount: number): string {
 function startCycling(balances: { name: string; currency: string; amount: number }[]): void {
   stopCycling();
   cycleIndex = 0;
-
   const show = () => {
     const b = balances[cycleIndex % balances.length];
     chrome.action.setBadgeText({ text: badgeText(b.currency, b.amount) });
     cycleIndex++;
   };
-
   show();
   cycleTimer = setInterval(show, 4000);
 }
 
 function stopCycling(): void {
-  if (cycleTimer) {
-    clearInterval(cycleTimer);
-    cycleTimer = null;
-  }
+  if (cycleTimer) { clearInterval(cycleTimer); cycleTimer = null; }
 }

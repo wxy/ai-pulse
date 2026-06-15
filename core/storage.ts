@@ -125,6 +125,17 @@ export async function appendBalanceSnapshot(
   retentionDays: number,
 ): Promise<void> {
   const history = await getBalanceHistory(providerId);
+
+  // Dedup: skip if the latest snapshot has the same balance values
+  const last = history.snapshots[history.snapshots.length - 1];
+  if (last && last.balances.length === snapshot.balances.length) {
+    const same = last.balances.every((b, i) =>
+      b.currency === snapshot.balances[i].currency &&
+      b.totalBalance === snapshot.balances[i].totalBalance
+    );
+    if (same) return; // Balance unchanged, skip
+  }
+
   history.snapshots.push(snapshot);
 
   // Prune old snapshots beyond retention

@@ -36,7 +36,7 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
     <div className="chart-container">
       <h4>{t('chart.title')}</h4>
       <ResponsiveContainer width="100%" height={180}>
-        <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+        <LineChart data={chartData} margin={{ top: 5, right: 8, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
           <XAxis
             dataKey="date"
@@ -47,6 +47,7 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
           <YAxis
             stroke="#64748b"
             tick={{ fontSize: 11 }}
+            width={55}
             domain={['auto', 'auto']}
             tickFormatter={(val: number) =>
               val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val.toFixed(2)
@@ -73,7 +74,7 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
               dataKey={currency}
               stroke={CURRENCY_COLORS[currency] ?? '#94a3b8'}
               strokeWidth={2}
-              dot={chartData.length <= 20 ? { r: 3 } : false}
+              dot={chartData.length <= 14 ? { r: 3 } : false}
               activeDot={{ r: 5 }}
               connectNulls
             />
