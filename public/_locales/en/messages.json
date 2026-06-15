@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "AI Pulse"
+  },
+  "extDescription": {
+    "message": "Monitor usage, balance, and status of AI service providers — DeepSeek, OpenAI, Claude, Kimi, Gemini, and more."
+  },
+  "extActionTitle": {
+    "message": "AI Pulse"
+  }
+}

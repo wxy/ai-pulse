@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "AI Pulse"
+  },
+  "extDescription": {
+    "message": "监控 AI 服务商的用量、余额和服务状态 — DeepSeek、OpenAI、Claude、Kimi、Gemini 等 16+ 服务商。"
+  },
+  "extActionTitle": {
+    "message": "AI Pulse"
+  }
+}

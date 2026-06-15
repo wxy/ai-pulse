@@ -6,9 +6,10 @@ export default defineConfig({
   publicDir: 'public',
 
   manifest: {
-    name: 'AI Pulse',
-    description: 'Monitor AI service providers usage and balance',
+    name: '__MSG_extName__',
+    description: '__MSG_extDescription__',
     version: '0.1.0',
+    default_locale: 'en',
     permissions: [
       'storage',
       'alarms',
@@ -30,7 +31,7 @@ export default defineConfig({
       'https://api.cohere.ai/*',
     ],
     action: {
-      default_title: 'AI Pulse',
+      default_title: '__MSG_extActionTitle__',
       default_popup: 'popup/index.html',
     },
     options_ui: {
