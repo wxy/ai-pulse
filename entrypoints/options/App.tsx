@@ -1,19 +1,26 @@
 import React, { useEffect } from 'react';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import AppLayout from '@/components/options/AppLayout';
+import { initCustomProviders } from '@/core/provider-registry';
 
 const App: React.FC = () => {
-  // Apply theme from settings
   useEffect(() => {
+    // Load custom providers into this context's registry
+    initCustomProviders();
+
+    // Apply theme from settings
     chrome.storage.local.get('settings').then(result => {
       const theme = result.settings?.theme ?? 'dark';
       document.documentElement.setAttribute('data-theme', theme);
     });
 
-    // Listen for storage changes to update theme live
     const listener = (changes: Record<string, chrome.storage.StorageChange>) => {
       if (changes.settings?.newValue?.theme) {
         document.documentElement.setAttribute('data-theme', changes.settings.newValue.theme);
+      }
+      // Reload custom providers when they change (from another tab/context)
+      if (changes.custom_providers) {
+        initCustomProviders();
       }
     };
     chrome.storage.onChanged.addListener(listener);
