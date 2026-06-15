@@ -61,10 +61,10 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
               color: '#e2e8f0',
               fontSize: '12px',
             }}
-            formatter={(value: number, name: string) => [
-              name === 'CNY' ? `¥${value.toFixed(2)}` : value.toLocaleString(),
-              name,
-            ]}
+            // @ts-ignore Recharts v3 strict formatter type
+            formatter={(value: any, name: string) => (
+              name === 'CNY' ? `¥${(value as number).toFixed(2)}` : String(value)
+            )}
           />
           <Legend />
           {currencies.map(currency => (

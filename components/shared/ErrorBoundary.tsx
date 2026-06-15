@@ -1,4 +1,3 @@
-import { useI18n } from '@/utils/i18n';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
