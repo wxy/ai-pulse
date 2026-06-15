@@ -1,5 +1,5 @@
 import { defineBackground } from 'wxt/utils/define-background';
-import { getAllProviders } from '@/core/provider-registry';
+import { getAllProviders, initCustomProviders } from '@/core/provider-registry';
 import {
   getSettings,
   setSettings,
@@ -36,8 +36,9 @@ async function initializeDefaults(): Promise<void> {
     await chrome.storage.local.set({
       settings: {
         refreshIntervalMinutes: 60,
-        theme: 'light',
+        theme: 'dark',
         historyRetentionDays: 90,
+        balanceThreshold: 0,
       },
     });
     console.log('Default settings initialized');
@@ -162,8 +163,11 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
 // Background Entry Point
 // ============================================================
 
-export default defineBackground(() => {
+export default defineBackground(async () => {
   console.log('AI Pulse background service worker started');
+
+  // Load custom providers from storage
+  await initCustomProviders();
 
   // Initialize default settings
   chrome.runtime.onInstalled.addListener(async () => {

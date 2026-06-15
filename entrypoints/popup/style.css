@@ -267,6 +267,16 @@ body {
   background: rgba(59, 130, 246, 0.08);
 }
 
+/* Daily Consumption */
+.daily-consumption {
+  display: block;
+  font-size: 10px;
+  color: var(--text-subtle);
+  text-align: right;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
 /* Card Footer */
 .provider-card-footer {
   display: flex;

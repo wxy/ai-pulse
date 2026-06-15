@@ -471,3 +471,50 @@ body {
 
 .error-boundary { padding: 40px; text-align: center; color: #fca5a5; }
 .error-detail { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
+/* Custom Provider Form */
+.custom-provider-form {
+  margin-top: 16px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.custom-provider-form h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group .text-input {
+  max-width: 100%;
+}
+
+.form-group .field-label {
+  margin-bottom: 4px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.btn-danger {
+  padding: 5px 12px;
+  font-size: 12px;
+  background: none;
+  color: var(--key-missing-text);
+  border: 1px solid var(--btn-danger-border);
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-danger:hover:not(:disabled) { background: var(--btn-danger-hover); }

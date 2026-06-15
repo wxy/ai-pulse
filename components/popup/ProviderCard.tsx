@@ -6,6 +6,7 @@ import StatusTimeline from './StatusTimeline';
 import BalanceDisplay from './BalanceDisplay';
 import TrendBadge from './TrendBadge';
 import LastUpdatedLabel from './LastUpdatedLabel';
+import DailyConsumption from './DailyConsumption';
 
 interface ProviderCardProps {
   summary: ProviderSummary;
@@ -56,6 +57,8 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ summary }) => {
           providerId={provider.id}
         />
       </div>
+
+      {hasApiKey && <DailyConsumption providerId={provider.id} />}
 
       <div className="provider-card-footer">
         <StatusTimeline providerId={provider.id} />

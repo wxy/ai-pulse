@@ -1,15 +1,20 @@
-import { useI18n } from '@/utils/i18n';
-import React from 'react';
+import React, { useState } from 'react';
+import { t } from '@/utils/i18n';
 import type { Provider } from '@/types';
 import { useProviderConfigs } from '@/hooks/useProviderStatus';
+import { getCustomProviders, removeCustomProvider } from '@/core/provider-registry';
 import ProviderIcon from '@/components/shared/ProviderIcon';
+import CustomProviderForm from './CustomProviderForm';
 
 interface ProviderListProps {
   onSelect: (provider: Provider) => void;
 }
 
 const ProviderList: React.FC<ProviderListProps> = ({ onSelect }) => {
-  const { configs, loading, providers, saveConfig } = useProviderConfigs();
+  const { configs, loading, providers, saveConfig, reload } = useProviderConfigs();
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customProviders, setCustomProviders] = useState<Provider[]>(getCustomProviders());
+  const [refreshKey, setRefreshKey] = useState(0);
 
   if (loading) {
     return (
@@ -80,7 +85,55 @@ const ProviderList: React.FC<ProviderListProps> = ({ onSelect }) => {
             </div>
           );
         })}
+
+        {/* Custom providers */}
+        {customProviders.map(provider => (
+          <div key={provider.id} className="provider-config-row">
+            <div className="provider-row-main">
+              <div className="provider-row-info">
+                <ProviderIcon provider={provider} size={32} />
+                <div>
+                  <h3>{provider.name}</h3>
+                  <p className="row-desc">{provider.company} · 自定义</p>
+                </div>
+              </div>
+              <div className="provider-row-actions">
+                <button className="btn btn-small" onClick={() => onSelect(provider)}>配置 →</button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => {
+                    removeCustomProvider(provider.id);
+                    setCustomProviders(getCustomProviders());
+                    setRefreshKey(k => k + 1);
+                    reload();
+                  }}
+                >
+                  删除
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {showCustomForm ? (
+        <CustomProviderForm
+          onDone={() => {
+            setShowCustomForm(false);
+            setCustomProviders(getCustomProviders());
+            setRefreshKey(k => k + 1);
+            reload();
+          }}
+        />
+      ) : (
+        <button
+          className="btn btn-small"
+          style={{ marginTop: 12 }}
+          onClick={() => setShowCustomForm(true)}
+        >
+          + 添加自定义服务商
+        </button>
+      )}
     </div>
   );
 };

@@ -105,9 +105,21 @@ export interface BalanceHistory {
 // ============================================================
 
 export interface GlobalSettings {
-  refreshIntervalMinutes: number; // How often background fetches (default 60)
-  theme: 'light' | 'dark';       // UI theme
-  historyRetentionDays: number;  // How long to keep balance snapshots (default 90)
+  refreshIntervalMinutes: number;  // How often background fetches (default 60)
+  theme: 'light' | 'dark';        // UI theme
+  historyRetentionDays: number;   // How long to keep balance snapshots (default 90)
+  balanceThreshold: number;       // Alert when balance drops below this (0 = disabled)
+}
+
+/** Custom provider definition stored by user */
+export interface CustomProviderDef {
+  id: string;
+  name: string;
+  company: string;
+  icon: string;
+  balanceUrl: string;   // Full URL for balance API
+  statusUrl: string;    // Full URL for status check
+  balanceKey: string;   // API key for balance endpoint
 }
 
 // ============================================================

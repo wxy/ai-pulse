@@ -1,10 +1,11 @@
 import { getAllProviders } from './provider-registry';
-import { getProviderConfigs, getBalanceCache, getStatusCache } from './storage';
+import { getProviderConfigs, getBalanceCache, getStatusCache, getSettings } from './storage';
 
 let cycleTimer: ReturnType<typeof setInterval> | null = null;
 let cycleIndex = 0;
 
 export async function updateBadge(): Promise<void> {
+  const settings = await getSettings();
   const providers = getAllProviders();
   const configs = await getProviderConfigs();
   const balanceCache = await getBalanceCache();
@@ -51,6 +52,18 @@ export async function updateBadge(): Promise<void> {
     ? infoParts.join('\n')
     : 'AI Pulse';
   chrome.action.setTitle({ title });
+
+  // Balance threshold alert: turn badge red if any balance below threshold
+  if (settings.balanceThreshold > 0 && activeBalances.length > 0) {
+    const belowThreshold = activeBalances.some(b => {
+      // Normalize to CNY equivalent (rough approximation)
+      const amount = b.currency === 'CNY' ? b.amount : b.currency === 'USD' ? b.amount * 7.2 : b.amount;
+      return amount < settings.balanceThreshold;
+    });
+    if (belowThreshold) {
+      chrome.action.setBadgeBackgroundColor({ color: '#ef4444' });
+    }
+  }
 }
 
 function formatShortBalance(currency: string, amount: number): string {
