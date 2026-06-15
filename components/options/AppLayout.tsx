@@ -26,7 +26,6 @@ const AppLayout: React.FC = () => {
   return (
     <div className="options-app-layout">
       <nav className="options-topnav">
-        <span className="topnav-brand">🤖 AI Pulse</span>
         <div className="topnav-tabs">
           <button className={`topnav-tab ${route === 'providers' ? 'tab-active' : ''}`} onClick={() => { setRoute('providers'); setSelectedProvider(null); }}>
             {t('nav.providers')}
