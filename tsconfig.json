@@ -1,12 +1,27 @@
 {
-  "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "strict": true,
     "jsx": "react-jsx",
-    "moduleResolution": "bundler",
     "skipLibCheck": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "paths": {
       "@/*": ["./*"]
     }
-  }
+  },
+  "include": [
+    "components",
+    "core",
+    "hooks",
+    "providers",
+    "types",
+    "utils",
+    "entrypoints",
+    "test"
+  ]
 }
