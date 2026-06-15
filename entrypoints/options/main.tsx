@@ -5,15 +5,10 @@ import './style.css';
 import { loadLanguage } from '@/utils/i18n';
 import { initCustomProviders } from '@/core/provider-registry';
 
-async function main() {
-  try {
-    await loadLanguage();
-    await initCustomProviders();
-  } catch (err) {
-    console.error('Options init failed:', err);
-  }
-  ReactDOM.createRoot(document.getElementById('app')!).render(
-    <React.StrictMode><App /></React.StrictMode>
-  );
-}
-main();
+// Fire and forget — always render, even if init fails
+loadLanguage().catch(console.error);
+initCustomProviders().catch(console.error);
+
+ReactDOM.createRoot(document.getElementById('app')!).render(
+  <React.StrictMode><App /></React.StrictMode>
+);
