@@ -37,18 +37,20 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
       <h4>{t('chart.title')}</h4>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={chartData} margin={{ top: 5, right: 8, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+          <CartesianGrid stroke="#1e293b" strokeDasharray="none" />
           <XAxis
             dataKey="date"
             stroke="#64748b"
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 10 }}
             interval="preserveStartEnd"
+            minTickGap={60}
           />
           <YAxis
             stroke="#64748b"
-            tick={{ fontSize: 11 }}
-            width={55}
+            tick={{ fontSize: 10 }}
+            width={50}
             domain={['auto', 'auto']}
+            tickCount={4}
             tickFormatter={(val: number) =>
               val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val.toFixed(2)
             }
