@@ -69,6 +69,7 @@ const ProviderList: React.FC<ProviderListProps> = ({ onSelect }) => {
                           enabled: !isEnabled,
                           apiKey: config?.apiKey ?? '',
                           displayName: config?.displayName ?? '',
+                          alertEnabled: config?.alertEnabled !== false,
                         });
                       }}
                     />

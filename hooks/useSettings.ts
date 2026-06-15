@@ -6,7 +6,6 @@ const DEFAULT_SETTINGS: GlobalSettings = {
   refreshIntervalMinutes: 60,
   theme: 'dark',
   historyRetentionDays: 90,
-  balanceThreshold: 0,
 };
 
 export function useSettings() {

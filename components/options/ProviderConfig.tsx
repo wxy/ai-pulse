@@ -73,6 +73,35 @@ const ProviderConfig: React.FC<ProviderConfigProps> = ({ provider, onBack }) => 
         </section>
       )}
 
+      {provider.capabilities.canFetchBalance && config?.apiKey && (
+        <section className="config-section">
+          <h3>余额预警</h3>
+          <p className="section-desc">
+            当余额低于预估日均消费时，扩展图标徽章变红并显示 ⚠ 标记。
+            基于历史余额数据自动计算，无需手动设置阈值。
+          </p>
+          <label className="toggle" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={config?.alertEnabled !== false}
+              onChange={() => {
+                saveConfig({
+                  providerId: provider.id,
+                  enabled: config?.enabled !== false,
+                  apiKey: config?.apiKey ?? '',
+                  displayName: config?.displayName ?? '',
+                  alertEnabled: !(config?.alertEnabled !== false),
+                });
+              }}
+            />
+            <span className="toggle-slider" />
+            <span className="field-label" style={{ margin: 0, cursor: 'pointer' }}>
+              {config?.alertEnabled !== false ? '已开启' : '已关闭'}
+            </span>
+          </label>
+        </section>
+      )}
+
       {!provider.capabilities.canFetchBalance && (
         <section className="config-section">
           <h3>仅状态监控</h3>

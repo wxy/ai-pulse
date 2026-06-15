@@ -38,7 +38,6 @@ async function initializeDefaults(): Promise<void> {
         refreshIntervalMinutes: 60,
         theme: 'dark',
         historyRetentionDays: 90,
-        balanceThreshold: 0,
       },
     });
     console.log('Default settings initialized');

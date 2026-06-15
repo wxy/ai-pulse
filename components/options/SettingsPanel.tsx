@@ -63,25 +63,6 @@ const SettingsPanel: React.FC = () => {
       </section>
 
       <section className="config-section">
-        <h3>余额预警阈值</h3>
-        <p className="section-desc">
-          当余额低于此数值时，扩展图标徽章背景变为红色。设为 0 则关闭预警。
-        </p>
-        <input
-          type="number"
-          className="text-input"
-          value={settings.balanceThreshold ?? 0}
-          onChange={e => updateSetting('balanceThreshold', parseFloat(e.target.value) || 0)}
-          disabled={saving}
-          min={0}
-          step={1}
-          placeholder="0 = 关闭预警"
-          style={{ width: 160 }}
-        />
-        <p className="field-hint">单位：人民币 ¥。USD 按汇率 7.2 折算。</p>
-      </section>
-
-      <section className="config-section">
         <h3>主题</h3>
         <select
           className="select-input"
