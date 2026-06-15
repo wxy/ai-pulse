@@ -518,3 +518,15 @@ body {
 }
 
 .btn-danger:hover:not(:disabled) { background: var(--btn-danger-hover); }
+
+/* Alert Toggle Row */
+.alert-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.alert-toggle-label {
+  font-size: 14px;
+  color: var(--text-body);
+}

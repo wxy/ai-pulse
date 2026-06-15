@@ -1,6 +1,7 @@
 import { useI18n } from '@/utils/i18n';
 import React from 'react';
 import { useSettings } from '@/hooks/useSettings';
+import { getLanguage, setLanguage } from '@/utils/i18n';
 
 const SettingsPanel: React.FC = () => {
   const { settings, loading, saving, updateSetting } = useSettings();
@@ -59,6 +60,22 @@ const SettingsPanel: React.FC = () => {
           <option value={90}>90 天</option>
           <option value={180}>180 天</option>
           <option value={365}>1 年</option>
+        </select>
+      </section>
+
+      <section className="config-section">
+        <h3>语言</h3>
+        <select
+          className="select-input"
+          value={getLanguage()}
+          onChange={e => {
+            const lang = e.target.value as 'zh' | 'en';
+            setLanguage(lang);
+            window.location.reload();
+          }}
+        >
+          <option value="zh">中文</option>
+          <option value="en">English</option>
         </select>
       </section>
 

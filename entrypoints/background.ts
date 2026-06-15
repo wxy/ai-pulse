@@ -1,4 +1,5 @@
 import { defineBackground } from 'wxt/utils/define-background';
+import { loadLanguage } from '@/utils/i18n';
 import { getAllProviders, initCustomProviders } from '@/core/provider-registry';
 import {
   getSettings,
@@ -169,7 +170,8 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
 export default defineBackground(async () => {
   console.log('AI Pulse background service worker started');
 
-  // Load custom providers from storage
+  // Load language preference and custom providers
+  await loadLanguage();
   await initCustomProviders();
 
   // Initialize default settings

@@ -1,5 +1,6 @@
 /**
  * Simple i18n — detects browser language, defaults to zh-CN.
+ * Works in both React components and service worker contexts.
  */
 
 const ZH: Record<string, string> = {
@@ -209,8 +210,24 @@ export function detectLanguage(): 'zh' | 'en' {
   return lang.startsWith('zh') ? 'zh' : 'en';
 }
 
+export async function loadLanguage(): Promise<void> {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    const result = await chrome.storage.local.get('language');
+    if (result.language) {
+      currentLang = result.language;
+    } else {
+      currentLang = detectLanguage();
+    }
+  } else {
+    currentLang = detectLanguage();
+  }
+}
+
 export function setLanguage(lang: 'zh' | 'en'): void {
   currentLang = lang;
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    chrome.storage.local.set({ language: lang });
+  }
 }
 
 export function getLanguage(): 'zh' | 'en' {
@@ -221,12 +238,3 @@ export function t(key: string): string {
   return translations[currentLang]?.[key] ?? translations.en?.[key] ?? key;
 }
 
-/** React hook for i18n */
-export function useI18n() {
-  // Detect on first call
-  if (typeof window !== 'undefined' && !(window as any).__i18n_initialized) {
-    currentLang = detectLanguage();
-    (window as any).__i18n_initialized = true;
-  }
-  return { t, lang: currentLang };
-}

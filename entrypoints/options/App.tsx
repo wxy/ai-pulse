@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import AppLayout from '@/components/options/AppLayout';
 import { initCustomProviders } from '@/core/provider-registry';
+import { loadLanguage } from '@/utils/i18n';
 
 const App: React.FC = () => {
   useEffect(() => {
-    // Load custom providers into this context's registry
+    loadLanguage();
     initCustomProviders();
 
     // Apply theme from settings
