@@ -82,7 +82,11 @@ async function buildProviderSummaries(): Promise<ProviderSummary[]> {
 // Message Handler
 // ============================================================
 
+let _initResolve: (() => void) | null = null;
+const _initPromise = new Promise<void>(r => { _initResolve = r; });
+
 async function handleMessage(action: string, payload: unknown): Promise<unknown> {
+  await _initPromise; // Wait for background to finish initializing
   switch (action) {
     case 'GET_PROVIDER_STATE':
       return buildProviderSummaries();
@@ -184,5 +188,8 @@ export default defineBackground(async () => {
   startMessageListener();
 
   // Start periodic fetch on startup (in case SW was terminated)
-  startPeriodicFetch();
+  await startPeriodicFetch();
+
+  // Mark as initialized so message handler can process requests
+  _initResolve!();
 });
