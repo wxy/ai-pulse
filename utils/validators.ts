@@ -10,7 +10,7 @@ export function validateDeepSeekKey(key: string): boolean {
  * Validate a generic Bearer token format.
  */
 export function validateBearerToken(key: string): boolean {
-  return key.length >= 20 && /^[a-zA-Z0-9._\-]+$/.test(key);
+  return key.length >= 20 && /^[a-zA-Z0-9_.-]+$/.test(key);
 }
 
 /**
