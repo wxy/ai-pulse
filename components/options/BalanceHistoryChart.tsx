@@ -13,12 +13,6 @@ const CURRENCY_COLORS: Record<string, string> = {
   tokens: '#a855f7',
 };
 
-/** Format a timestamp as date only (M/D) */
-function formatDateOnly(ts: number): string {
-  const d = new Date(ts);
-  return `${d.getMonth() + 1}/${d.getDate()}`;
-}
-
 const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId }) => {
   const { chartData, currencies, loading } = useBalanceHistory(providerId);
 
@@ -38,24 +32,14 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
     );
   }
 
-  // Show last 7 days of data
-  const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const filtered = chartData.filter(d => d.timestamp > cutoff);
-
-  // Add date-only field for X axis
-  const displayData = filtered.map(d => ({
-    ...d,
-    dateOnly: formatDateOnly(d.timestamp),
-  }));
-
   return (
     <div className="chart-container">
       <h4>{t('chart.title')}</h4>
       <ResponsiveContainer width="100%" height={180}>
-        <LineChart data={displayData} margin={{ top: 5, right: 8, left: 0, bottom: 5 }}>
+        <LineChart data={chartData} margin={{ top: 5, right: 8, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
           <XAxis
-            dataKey="dateOnly"
+            dataKey="date"
             stroke="#64748b"
             tick={{ fontSize: 11 }}
             interval="preserveStartEnd"
@@ -77,11 +61,6 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
               color: '#e2e8f0',
               fontSize: '12px',
             }}
-            labelFormatter={(label: string, payload: any[]) => {
-              // Show full date in tooltip
-              const item = payload?.[0]?.payload;
-              return item?.date ?? label;
-            }}
             formatter={(value: number, name: string) => [
               name === 'CNY' ? `¥${value.toFixed(2)}` : value.toLocaleString(),
               name,
@@ -95,7 +74,7 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
               dataKey={currency}
               stroke={CURRENCY_COLORS[currency] ?? '#94a3b8'}
               strokeWidth={2}
-              dot={displayData.length <= 14 ? { r: 3 } : false}
+              dot={chartData.length <= 14 ? { r: 3 } : false}
               activeDot={{ r: 5 }}
               connectNulls
             />
