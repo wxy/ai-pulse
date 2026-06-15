@@ -17,6 +17,7 @@ export default defineConfig({
     host_permissions: [
       'https://api.deepseek.com/*',
       'https://api.moonshot.cn/*',
+      'https://bigmodel.cn/*',
       'https://open.bigmodel.cn/*',
       'https://api.baichuan-ai.com/*',
       'https://dashscope.aliyuncs.com/*',
