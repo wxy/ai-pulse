@@ -3,7 +3,7 @@ import type { Provider, StatusResult } from '@/types';
 
 async function fetchStatus(): Promise<StatusResult> {
   try {
-    const res = await fetch('https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat');
+    const res = await fetch('https://qianfan.baidubce.com/v2/models');
     const isAvailable = res.status < 500;
     return {
       success: true,
