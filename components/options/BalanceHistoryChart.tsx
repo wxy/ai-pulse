@@ -22,6 +22,17 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
     return <div className="chart-container"><p className="chart-empty">{t('chart.empty')}</p></div>;
   }
 
+  // Pick one timestamp per distinct day for X-axis ticks
+  const dayTicks: number[] = [];
+  let lastDay = '';
+  for (const d of chartData) {
+    const dayKey = new Date(d.timestamp).toDateString();
+    if (dayKey !== lastDay) {
+      dayTicks.push(d.timestamp);
+      lastDay = dayKey;
+    }
+  }
+
   return (
     <div className="chart-container">
       <h4>{t('chart.title')}</h4>
@@ -33,6 +44,7 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
             type="number"
             scale="time"
             domain={['dataMin', 'dataMax']}
+            ticks={dayTicks}
             stroke="#64748b"
             tick={{ fontSize: 10 }}
             tickFormatter={(ts: number) => {
