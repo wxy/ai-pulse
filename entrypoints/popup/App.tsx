@@ -1,16 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import AppLayout from '@/components/popup/AppLayout';
 import { useProviders } from '@/hooks/useProviders';
-import { initCustomProviders } from '@/core/provider-registry';
-import { loadLanguage } from '@/utils/i18n';
+import { loadLanguage, getLanguage } from '@/utils/i18n';
 
 const App: React.FC = () => {
   const { providers, loading, error, refreshAll } = useProviders();
+  const [lang, setLang] = useState(getLanguage());
 
   useEffect(() => {
-    loadLanguage();
-    initCustomProviders();
+    loadLanguage().then(() => setLang(getLanguage()));
     chrome.storage.local.get('settings').then(result => {
       const theme = result.settings?.theme ?? 'dark';
       document.documentElement.setAttribute('data-theme', theme);
@@ -18,13 +17,8 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <AppLayout
-        providers={providers}
-        loading={loading}
-        error={error}
-        onRefresh={refreshAll}
-      />
+    <ErrorBoundary key={lang}>
+      <AppLayout providers={providers} loading={loading} error={error} onRefresh={refreshAll} />
     </ErrorBoundary>
   );
 };

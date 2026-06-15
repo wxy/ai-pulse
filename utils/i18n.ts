@@ -39,6 +39,8 @@ const ZH: Record<string, string> = {
   'providers.not_configured': '未配置',
   'providers.configure': '配置',
   'providers.back': '返回服务商列表',
+  'providers.delete': '删除',
+  'providers.add_custom': '+ 添加自定义服务商',
 
   // Options provider config
   'config.display_name': '显示名称',
@@ -58,6 +60,19 @@ const ZH: Record<string, string> = {
   'config.links': '链接',
   'config.console': '控制台',
   'config.status_page': '状态页',
+  'config.back': '← 返回服务商列表',
+  'config.alert_title': '余额预警',
+  'config.alert_desc': '当余额低于预估日均消费时，扩展图标徽章变红。基于历史数据自动计算。',
+  'config.alert_on': '已开启',
+  'config.alert_off': '已关闭',
+  'apikey.placeholder': '请输入 API Key（sk- 开头）',
+  'apikey.format_hint': 'Key 格式',
+  'apikey.check_docs': '请参考服务商文档',
+  'apikey.invalid': 'API Key 格式不正确',
+  'apikey.save_failed': '保存失败',
+  'apikey.save': '保存',
+  'apikey.saving': '保存中...',
+  'apikey.remove': '移除 Key',
 
   // Settings
   'settings.title': '设置',
@@ -125,7 +140,7 @@ const ZH: Record<string, string> = {
   'custom.custom_label': '自定义',
 
   'card.click_config': '点击配置',
-  'card.daily_avg': '日均',
+  'card.daily_avg': '日',
 };
 
 const EN: Record<string, string> = {
@@ -160,7 +175,10 @@ const EN: Record<string, string> = {
   'providers.not_configured': 'No Key',
   'providers.configure': 'Configure',
   'providers.back': 'Back to Providers',
+  'providers.delete': 'Delete',
+  'providers.add_custom': '+ Add Custom Provider',
 
+  'config.back': '← Back to Providers',
   'config.display_name': 'Display Name',
   'config.api_key': 'API Key Configuration',
   'config.api_key_desc': 'Enter your API key to enable balance and usage monitoring. Key is stored locally.',
@@ -175,9 +193,22 @@ const EN: Record<string, string> = {
   'config.status_only_title': 'Status-Only Monitoring',
   'config.status_only_desc': 'No public balance API. Only service status will be monitored.',
   'config.status_only_badge': 'Status Only',
+  'config.alert_title': 'Balance Alert',
+  'config.alert_desc': 'Badge turns red when balance drops below estimated daily consumption. Auto-calculated from history.',
+  'config.alert_on': 'Enabled',
+  'config.alert_off': 'Disabled',
   'config.links': 'Links',
   'config.console': 'Console',
   'config.status_page': 'Status Page',
+
+  'apikey.placeholder': 'Enter API key (sk-...)',
+  'apikey.format_hint': 'Key format',
+  'apikey.check_docs': 'Check provider docs',
+  'apikey.invalid': 'Invalid API key format',
+  'apikey.save_failed': 'Failed to save',
+  'apikey.save': 'Save',
+  'apikey.saving': 'Saving...',
+  'apikey.remove': 'Remove Key',
 
   'settings.title': 'Settings',
   'settings.desc': 'Configure monitoring behavior',
@@ -238,7 +269,7 @@ const EN: Record<string, string> = {
   'custom.custom_label': 'Custom',
 
   'card.click_config': 'Click to configure',
-  'card.daily_avg': 'avg',
+  'card.daily_avg': 'day',
 };
 
 const translations: Record<string, Record<string, string>> = { zh: ZH, en: EN };

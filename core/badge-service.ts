@@ -17,6 +17,8 @@ export async function updateBadge(): Promise<void> {
 
   for (const provider of providers) {
     const config = configs.find(c => c.providerId === provider.id);
+    // Skip disabled providers
+    if (config && !config.enabled) continue;
     const name = config?.displayName || provider.name;
     const bCache = balanceCache[provider.id];
     const sCache = statusCache[provider.id];

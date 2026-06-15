@@ -71,7 +71,12 @@ body {
   color: var(--text);
 }
 
-.refresh-button {
+.header-right {
+  display: flex;
+  gap: 4px;
+}
+
+.icon-button {
   background: none;
   border: 1px solid var(--border-hover);
   border-radius: 6px;
@@ -81,11 +86,11 @@ body {
   transition: background 0.2s;
 }
 
-.refresh-button:hover {
+.icon-button:hover {
   background: var(--bg-hover);
 }
 
-.refresh-button:disabled {
+.icon-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -332,25 +337,14 @@ body {
 
 /* Footer */
 .app-footer {
-  padding: 10px 16px;
+  padding: 8px 16px;
   border-top: 1px solid var(--border);
   text-align: center;
 }
 
-.settings-link {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-size: 12px;
-  cursor: pointer;
-  padding: 4px 12px;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.settings-link:hover {
-  color: var(--text-body);
-  background: var(--bg-hover);
+.footer-summary {
+  font-size: 11px;
+  color: var(--text-subtle);
 }
 
 .error-boundary {

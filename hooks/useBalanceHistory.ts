@@ -5,21 +5,7 @@ import { getLanguage } from '@/utils/i18n';
 
 interface ChartDataPoint {
   timestamp: number;
-  date: string;
   [currency: string]: number | string;
-}
-
-/** Format timestamp as date-only string based on current language */
-function formatDateLabel(ts: number, lang: string): string {
-  const d = new Date(ts);
-  const month = d.getMonth() + 1;
-  const day = d.getDate();
-  if (lang === 'zh') {
-    return `${month}月${day}日`;
-  }
-  // English: "Jun 15"
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return `${months[d.getMonth()]} ${day}`;
 }
 
 export function useBalanceHistory(providerId: string | null) {
@@ -27,10 +13,7 @@ export function useBalanceHistory(providerId: string | null) {
   const [loading, setLoading] = useState(false);
 
   const loadHistory = useCallback(async () => {
-    if (!providerId) {
-      setHistory(null);
-      return;
-    }
+    if (!providerId) { setHistory(null); return; }
     setLoading(true);
     try {
       const data = await sendMessage<BalanceHistory>('GET_BALANCE_HISTORY', providerId);
@@ -38,26 +21,23 @@ export function useBalanceHistory(providerId: string | null) {
     } catch (err) {
       console.error('Failed to load balance history:', err);
       setHistory(null);
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }, [providerId]);
 
+  useEffect(() => { loadHistory(); }, [loadHistory]);
+
   useEffect(() => {
-    loadHistory();
+    const onVisible = () => loadHistory();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, [loadHistory]);
 
-  const lang = getLanguage();
-
-  // Show last 7 days, convert to chart format
   const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const recentSnapshots = (history?.snapshots ?? []).filter(s => s.timestamp > cutoff);
 
+  // Use numeric timestamps — Recharts handles time spacing naturally
   const chartData: ChartDataPoint[] = recentSnapshots.map(snapshot => {
-    const point: ChartDataPoint = {
-      timestamp: snapshot.timestamp,
-      date: formatDateLabel(snapshot.timestamp, lang),
-    };
+    const point: ChartDataPoint = { timestamp: snapshot.timestamp };
     for (const balance of snapshot.balances) {
       point[balance.currency] = balance.totalBalance;
     }
@@ -72,4 +52,16 @@ export function useBalanceHistory(providerId: string | null) {
   }
 
   return { history, loading, chartData, currencies: Array.from(currencies), reload: loadHistory };
+}
+
+/** Format timestamp for chart axis / tooltip */
+export function formatChartTime(ts: number, lang: string): string {
+  const d = new Date(ts);
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const hour = d.getHours().toString().padStart(2, '0');
+  const min = d.getMinutes().toString().padStart(2, '0');
+  if (lang === 'zh') return `${month}月${day}日 ${hour}:${min}`;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[d.getMonth()]} ${day} ${hour}:${min}`;
 }
