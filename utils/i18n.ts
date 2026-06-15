@@ -238,7 +238,7 @@ const EN: Record<string, string> = {
   'custom.custom_label': 'Custom',
 
   'card.click_config': 'Click to configure',
-  'card.daily_avg': 'avg',
+  'card.daily_avg': 'd',
 };
 
 const translations: Record<string, Record<string, string>> = { zh: ZH, en: EN };

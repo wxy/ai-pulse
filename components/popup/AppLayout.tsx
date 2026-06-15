@@ -6,7 +6,7 @@ import { t } from '@/utils/i18n';
 interface AppLayoutProps { providers: ProviderSummary[]; loading: boolean; error: string | null; onRefresh: () => void; }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefresh }) => {
-  // Summary: count enabled providers with keys and alerts
+  const enabledProviders = providers.filter(p => p.config?.enabled !== false);
   const withKey = providers.filter(p => p.config?.apiKey).length;
   const withAlert = providers.filter(p => {
     const bal = p.balanceCache?.result?.balances?.[0];
@@ -37,7 +37,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
       <footer className="app-footer">
         <span className="footer-summary">
-          {providers.length} {t('nav.providers').replace(/[^\w]/g, '')} · {withKey} 🔑{withAlert > 0 ? ` · ⚠${withAlert}` : ''}
+          {enabledProviders.length} {t('nav.providers')} · {withKey} 🔑{withAlert > 0 ? ` · ⚠${withAlert}` : ''}
         </span>
       </footer>
     </div>
