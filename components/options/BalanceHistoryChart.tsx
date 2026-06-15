@@ -43,14 +43,13 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
             stroke="#64748b"
             tick={{ fontSize: 10 }}
             interval="preserveStartEnd"
-            minTickGap={60}
+            minTickGap={40}
           />
           <YAxis
             stroke="#64748b"
             tick={{ fontSize: 10 }}
             width={50}
             domain={['auto', 'auto']}
-            tickCount={4}
             tickFormatter={(val: number) =>
               val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val.toFixed(2)
             }
