@@ -57,7 +57,11 @@ export async function runFetchCycle(): Promise<void> {
   const tasks: Promise<void>[] = [];
 
   for (const provider of providers) {
-    // Always fetch status regardless of config
+    const config = configs.find(c => c.providerId === provider.id);
+    // Skip disabled providers entirely
+    if (config && !config.enabled) continue;
+
+    // Fetch status
     if (provider.capabilities.canFetchStatus) {
       tasks.push(
         fetchAndCacheStatus(provider).then(() =>
@@ -69,8 +73,7 @@ export async function runFetchCycle(): Promise<void> {
     }
 
     // Fetch balance if API key is configured
-    const config = configs.find(c => c.providerId === provider.id);
-    if (provider.capabilities.canFetchBalance && config?.enabled && config.apiKey) {
+    if (provider.capabilities.canFetchBalance && config?.apiKey) {
       tasks.push(
         fetchAndCacheBalance(provider, config.apiKey).then(() =>
           console.log(`Balance fetched for ${provider.id}`)

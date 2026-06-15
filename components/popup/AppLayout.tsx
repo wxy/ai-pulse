@@ -6,12 +6,20 @@ import { t } from '@/utils/i18n';
 interface AppLayoutProps { providers: ProviderSummary[]; loading: boolean; error: string | null; onRefresh: () => void; }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefresh }) => {
+  // Summary: count enabled providers with keys and alerts
+  const withKey = providers.filter(p => p.config?.apiKey).length;
+  const withAlert = providers.filter(p => {
+    const bal = p.balanceCache?.result?.balances?.[0];
+    return p.config?.alertEnabled !== false && bal && bal.totalBalance > 0;
+  }).length;
+
   return (
     <div className="app-layout">
       <header className="app-header">
         <div className="header-left"><h1>🤖 AI Pulse</h1></div>
         <div className="header-right">
-          <button className="refresh-button" onClick={onRefresh} disabled={loading} title={t('popup.refresh')}>🔄</button>
+          <button className="icon-button" onClick={() => chrome.runtime.openOptionsPage()} title={t('popup.settings')}>⚙️</button>
+          <button className="icon-button" onClick={onRefresh} disabled={loading} title={t('popup.refresh')}>🔄</button>
         </div>
       </header>
 
@@ -28,7 +36,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
       </main>
 
       <footer className="app-footer">
-        <button className="settings-link" onClick={() => chrome.runtime.openOptionsPage()}>⚙️ {t('popup.settings')}</button>
+        <span className="footer-summary">
+          {providers.length} {t('nav.providers').replace(/[^\w]/g, '')} · {withKey} 🔑{withAlert > 0 ? ` · ⚠${withAlert}` : ''}
+        </span>
       </footer>
     </div>
   );

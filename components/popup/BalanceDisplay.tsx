@@ -20,7 +20,7 @@ function useDailyAvg(providerId: string): string | null {
   if (typeof firstCNY !== 'number' || typeof lastCNY !== 'number') return null;
   const consumed = firstCNY - lastCNY;
   if (consumed <= 0) return null;
-  return `${t('card.daily_avg')} ¥${(consumed / daysDiff).toFixed(2)}`;
+  return `¥${(consumed / daysDiff).toFixed(2)}/${t('card.daily_avg')}`;
 }
 
 const BalanceDisplay: React.FC<BalanceDisplayProps> = ({ balances, hasApiKey, providerId }) => {

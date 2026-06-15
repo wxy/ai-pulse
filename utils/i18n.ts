@@ -125,7 +125,7 @@ const ZH: Record<string, string> = {
   'custom.custom_label': '自定义',
 
   'card.click_config': '点击配置',
-  'card.daily_avg': '日均',
+  'card.daily_avg': '日',
 };
 
 const EN: Record<string, string> = {
