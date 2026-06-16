@@ -6,6 +6,7 @@ let cycleTimer: ReturnType<typeof setInterval> | null = null;
 let cycleIndex = 0;
 
 export async function updateBadge(): Promise<void> {
+  try {
   const providers = getAllProviders();
   const configs = await getProviderConfigs();
   const balanceCache = await getBalanceCache();
@@ -71,6 +72,11 @@ export async function updateBadge(): Promise<void> {
     ? infoParts.join('\n')
     : 'AI Pulse';
   chrome.action.setTitle({ title });
+
+  console.log('Badge updated:', { text: activeBalances.length > 0 ? badgeText(activeBalances[0].currency, activeBalances[0].amount) : 'empty', title, providers: infoParts.length });
+  } catch (err) {
+    console.error('updateBadge failed:', err);
+  }
 }
 
 /** Compute daily avg consumption for a provider from balance history */

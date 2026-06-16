@@ -101,7 +101,7 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
         const entry = await fetchAndCacheBalance(provider, config.apiKey);
         results[provider.id] = entry;
       }
-      updateBadge();
+      await updateBadge();
       return results;
     }
 
@@ -114,7 +114,7 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
         const entry = await fetchAndCacheStatus(provider);
         results[provider.id] = entry;
       }
-      updateBadge();
+      await updateBadge();
       return results;
     }
 
@@ -131,7 +131,7 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
       }
 
       // Always update badge after config change (enable/disable/key change)
-      updateBadge();
+      await updateBadge();
       return { success: true };
     }
 

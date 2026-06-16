@@ -88,7 +88,7 @@ export async function runFetchCycle(): Promise<void> {
   console.log('Fetch cycle complete');
 
   // Update extension badge
-  updateBadge();
+  await updateBadge();
 }
 
 export function setupAlarmListener(): void {
