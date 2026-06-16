@@ -19,7 +19,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
   const hideProvider = (id: string) => {
     setHiddenIds(prev => new Set(prev).add(id));
-    onSync(); // Update popup data + trigger background badge update
   };
 
   // Provider detail view
@@ -28,7 +27,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
     if (summary) {
       return (
         <div className="app-layout">
-          <ProviderDetail summary={summary} onBack={() => { setView('monitor'); onSync(); }} hideProvider={hideProvider} />
+          <ProviderDetail summary={summary} onBack={() => setView('monitor')} hideProvider={hideProvider} onSynced={onSync} />
         </div>
       );
     }

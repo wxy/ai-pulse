@@ -6,10 +6,10 @@ import BalanceHistoryChart from '@/components/options/BalanceHistoryChart';
 import { useProviderConfigs } from '@/hooks/useProviderStatus';
 import { t } from '@/utils/i18n';
 
-interface ProviderDetailProps { summary: ProviderSummary; onBack: () => void; hideProvider: (id: string) => void; }
+interface ProviderDetailProps { summary: ProviderSummary; onBack: () => void; hideProvider: (id: string) => void; onSynced: () => void; }
 
-const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack, hideProvider }) => {
-  const { provider, config, balanceCache } = summary;
+const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack, hideProvider, onSynced }) => {
+  const { provider, config } = summary;
   const { configs, saveConfig } = useProviderConfigs();
   const currentConfig = configs.find(c => c.providerId === provider.id) || config;
 
@@ -19,6 +19,8 @@ const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack, hidePr
       apiKey: key, displayName: currentConfig?.displayName ?? '',
       alertEnabled: currentConfig?.alertEnabled !== false,
     });
+    // After save completes, background has fetched balance + updated badge
+    onSynced();
   };
 
   return (
@@ -53,8 +55,8 @@ const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack, hidePr
                   providerId: provider.id, enabled: newEnabled,
                   apiKey: currentConfig?.apiKey ?? '', displayName: currentConfig?.displayName ?? '',
                   alertEnabled: currentConfig?.alertEnabled !== false,
-                }).then(() => onBack());
-                onBack();
+                });
+                onBack(); // go back — optimistic hide ready, saveConfig + updateBadge in background
               }}>
               {currentConfig?.enabled !== false ? t('settings.disable') : t('settings.enable')}
             </button>
