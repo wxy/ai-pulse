@@ -34,11 +34,13 @@ export async function updateBadge(): Promise<void> {
 
       // Per-provider alert: warn if balance < estimated daily consumption
       if (config?.alertEnabled && amount > 0) {
-        const dailyAvg = await getDailyAvg(provider.id, bal.currency);
-        if (dailyAvg > 0 && amount < dailyAvg) {
-          hasAlert = true;
-          line += ' ⚠';
-        }
+        try {
+          const dailyAvg = await getDailyAvg(provider.id, bal.currency);
+          if (dailyAvg > 0 && amount < dailyAvg) {
+            hasAlert = true;
+            line += ' ⚠';
+          }
+        } catch { /* ignore — alert check is best-effort */ }
       }
     }
 
