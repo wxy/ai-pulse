@@ -36,28 +36,26 @@ const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack }) => {
         </div>
 
         <section className="detail-section">
-          <div className="alert-toggle-row">
-            <span style={{ fontSize: 13, color: 'var(--text-body)' }}>启用</span>
-            <label className="toggle">
-              <input type="checkbox" checked={currentConfig?.enabled !== false}
-                onChange={() => saveConfig({
+          <h3>{t('config.display_name')}</h3>
+          <div className="detail-row">
+            <input className="detail-input flex-1" value={currentConfig?.displayName ?? ''} placeholder={provider.name}
+              onChange={e => saveConfig({
+                providerId: provider.id, enabled: currentConfig?.enabled !== false,
+                apiKey: currentConfig?.apiKey ?? '', displayName: e.target.value,
+                alertEnabled: currentConfig?.alertEnabled !== false,
+              })} />
+            <button className="btn-disable"
+              onClick={async () => {
+                await saveConfig({
                   providerId: provider.id, enabled: !(currentConfig?.enabled !== false),
                   apiKey: currentConfig?.apiKey ?? '', displayName: currentConfig?.displayName ?? '',
                   alertEnabled: currentConfig?.alertEnabled !== false,
-                })} />
-              <span className="toggle-slider" />
-            </label>
+                });
+                onBack();
+              }}>
+              {currentConfig?.enabled !== false ? '禁用' : '启用'}
+            </button>
           </div>
-        </section>
-
-        <section className="detail-section">
-          <h3>{t('config.display_name')}</h3>
-          <input className="detail-input" value={currentConfig?.displayName ?? ''} placeholder={provider.name}
-            onChange={e => saveConfig({
-              providerId: provider.id, enabled: currentConfig?.enabled !== false,
-              apiKey: currentConfig?.apiKey ?? '', displayName: e.target.value,
-              alertEnabled: currentConfig?.alertEnabled !== false,
-            })} />
         </section>
 
         {provider.capabilities.canFetchBalance && (

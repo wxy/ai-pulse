@@ -469,13 +469,31 @@ body {
 }
 
 .detail-input {
-  width: 100%;
   padding: 6px 8px;
   background: var(--bg);
   border: 1px solid var(--border-hover);
   border-radius: 4px;
   color: var(--text-body);
   font-size: 13px;
+}
+
+.detail-row { display: flex; gap: 8px; align-items: center; }
+.flex-1 { flex: 1; }
+
+.btn-disable {
+  padding: 6px 14px;
+  border: 1px solid var(--btn-danger-border);
+  border-radius: 4px;
+  background: none;
+  color: var(--key-missing-text);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.btn-disable:hover {
+  background: var(--btn-danger-hover);
 }
 
 .detail-links {
