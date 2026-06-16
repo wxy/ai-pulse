@@ -11,8 +11,15 @@ interface AppLayoutProps { providers: ProviderSummary[]; loading: boolean; error
 
 const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefresh }) => {
   const [view, setView] = useState<View>('monitor');
-  const enabledProviders = providers.filter(p => p.config?.enabled !== false);
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+  const enabledProviders = providers.filter(p =>
+    p.config?.enabled !== false && !hiddenIds.has(p.provider.id)
+  );
   const withKey = providers.filter(p => p.config?.apiKey).length;
+
+  const hideProvider = (id: string) => {
+    setHiddenIds(prev => new Set(prev).add(id));
+  };
 
   // Provider detail view
   if (typeof view === 'object') {
@@ -20,7 +27,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
     if (summary) {
       return (
         <div className="app-layout">
-          <ProviderDetail summary={summary} onBack={() => setView('monitor')} onConfigChanged={onRefresh} />
+          <ProviderDetail summary={summary} onBack={() => setView('monitor')} hideProvider={hideProvider} />
         </div>
       );
     }
