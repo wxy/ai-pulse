@@ -101,14 +101,18 @@ function formatShortBalance(currency: string, amount: number): string {
   return String(Math.round(amount));
 }
 
+/** Format number to ≤4 chars for Chrome badge. integer→K→M→B */
+function badgeShort(n: number): string {
+  if (n < 1000) return String(Math.round(n));        // 0–999    (1–3)
+  const k = Math.round(n / 1000);
+  if (k < 1000) return k + 'K';                       // 1K–999K  (2–4)
+  const m = Math.round(n / 1e6);
+  if (m < 1000) return m + 'M';                       // 1M–999M  (2–4)
+  return Math.round(n / 1e9) + 'B';                   // 1B+      (2–4)
+}
+
 function badgeText(currency: string, amount: number): string {
-  if (currency === 'CNY') {
-    if (amount >= 1000) return `${(amount / 1000).toFixed(0)}K`;
-    return amount.toFixed(0);
-  }
-  if (amount >= 1000) return `${(amount / 1000).toFixed(0)}K`;
-  if (amount >= 100) return amount.toFixed(0);
-  return amount.toFixed(0);
+  return badgeShort(amount);
 }
 
 function startCycling(balances: { name: string; currency: string; amount: number }[]): void {
