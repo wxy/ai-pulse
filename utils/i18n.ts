@@ -116,7 +116,7 @@ const ZH: Record<string, string> = {
   'about.title': '关于 AI Pulse',
   'about.desc': '监控您的 AI 服务商用量、余额和服务状态。',
   'about.version': '版本',
-  'about.supported': '已支持：DeepSeek · Kimi · ChatGLM · 百川智能 · 通义千问 · 文心一言',
+  'about.supported': '已支持 16+ 国内外主流 AI 服务商，并支持自定义添加。',
 
   // Errors
   'error.page': '页面出现错误',
@@ -247,7 +247,7 @@ const EN: Record<string, string> = {
   'about.title': 'About AI Pulse',
   'about.desc': 'Monitor your AI service providers\' usage, balance, and service status.',
   'about.version': 'Version',
-  'about.supported': 'Supported: DeepSeek · Kimi · ChatGLM · Baichuan · Tongyi (Qwen) · Wenxin (ERNIE)',
+  'about.supported': 'Supports 16+ major AI providers, with custom provider support.',
 
   'error.page': 'Something went wrong',
   'error.load_providers': 'Failed to load providers',
