@@ -20,7 +20,7 @@ const StatusTimeline: React.FC<StatusTimelineProps> = ({ providerId }) => {
   if (entries.length === 0) return null;
 
   return (
-    <div className="status-timeline" title="最近状态变化">
+    <div className="status-timeline">
       {entries.map((entry, i) => (
         <span
           key={i}
