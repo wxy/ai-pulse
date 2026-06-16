@@ -24,7 +24,7 @@ const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack }) => {
   return (
     <div className="provider-detail">
       <header className="detail-header">
-        <button className="back-button" onClick={onBack}>← {t('config.back')}</button>
+        <button className="back-button" onClick={onBack}>{t('config.back')}</button>
       </header>
       <main className="detail-body">
         <div className="provider-config-header">

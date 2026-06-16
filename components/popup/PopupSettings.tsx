@@ -11,15 +11,19 @@ interface PopupSettingsProps { providers: ProviderSummary[]; onRefresh: () => vo
 const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh }) => {
   const { settings, saving, updateSetting } = useSettings();
   const [showDisabled, setShowDisabled] = useState(false);
-  const disabledProviders = providers.filter(p => p.config?.enabled === false);
+  const [enablingIds, setEnablingIds] = useState<Set<string>>(new Set());
+  const disabledProviders = providers.filter(p =>
+    p.config?.enabled === false && !enablingIds.has(p.provider.id)
+  );
 
   const handleToggleProvider = async (providerId: string) => {
+    setEnablingIds(prev => new Set(prev).add(providerId)); // Optimistic remove
     const configs = await getProviderConfigs();
     const config = configs.find(c => c.providerId === providerId);
     if (config) {
       await sendMessage('UPDATE_PROVIDER_CONFIG', { ...config, enabled: true });
-      onRefresh();
     }
+    onRefresh();
   };
 
   return (
@@ -58,18 +62,18 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh }) =
 
       <section className="settings-group">
         <button className="settings-toggle" onClick={() => setShowDisabled(!showDisabled)}>
-          {showDisabled ? '▾' : '▸'} 已禁用服务商 ({disabledProviders.length})
+          {showDisabled ? '▾' : '▸'} {t('settings.disabled_providers')} ({disabledProviders.length})
         </button>
         {showDisabled && (
           <div className="disabled-list">
             {disabledProviders.length === 0 ? (
-              <p className="field-hint">无</p>
+              <p className="field-hint">{t('settings.none')}</p>
             ) : (
               disabledProviders.map(p => (
                 <div key={p.provider.id} className="disabled-row">
                   <span>{p.provider.icon} {p.config?.displayName || p.provider.name}</span>
                   <button className="btn-small-enable" onClick={() => handleToggleProvider(p.provider.id)}>
-                    启用
+                    {t('settings.enable')}
                   </button>
                 </div>
               ))
