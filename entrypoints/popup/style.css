@@ -507,6 +507,50 @@ body {
 
 .back-button:hover { color: var(--text-body); }
 
+/* Detail view — shared with options page styles */
+.api-key-manager { margin-top: 0; }
+.api-key-input-group { display: flex; gap: 0; }
+.api-key-input {
+  flex: 1; padding: 6px 8px; background: var(--bg);
+  border: 1px solid var(--border-hover); border-right: none;
+  border-radius: 4px 0 0 4px; color: var(--text-body); font-size: 12px;
+  font-family: monospace; outline: none;
+}
+.api-key-input:focus { border-color: var(--accent); }
+.toggle-visibility {
+  padding: 6px 8px; background: var(--bg);
+  border: 1px solid var(--border-hover); border-radius: 0 4px 4px 0;
+  cursor: pointer; font-size: 12px;
+}
+.api-key-actions { display: flex; gap: 6px; margin-top: 6px; }
+.btn {
+  padding: 6px 12px; border: none; border-radius: 4px; font-size: 12px;
+  font-weight: 500; cursor: pointer; transition: all 0.15s;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover:not(:disabled) { opacity: 0.9; }
+.btn-danger {
+  background: none; color: var(--key-missing-text);
+  border: 1px solid var(--btn-danger-border);
+}
+.btn-danger:hover:not(:disabled) { background: var(--btn-danger-hover); }
+.field-label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+.field-hint { font-size: 10px; color: var(--text-subtle); margin-top: 4px; }
+.field-error { font-size: 10px; color: #fca5a5; margin-top: 4px; }
+.badge { display: inline-block; padding: 3px 8px; border-radius: 10px; font-size: 11px; }
+.badge-info { background: var(--badge-info-bg); color: var(--badge-info-text); }
+.alert-toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.chart-container h4 { font-size: 12px; color: var(--text-body); margin-bottom: 8px; }
+.chart-loading, .chart-empty {
+  font-size: 11px; color: var(--text-dim); text-align: center; padding: 24px 0;
+}
+.provider-config-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.provider-config-header h2 { font-size: 15px; color: var(--text); margin-bottom: 2px; }
+.provider-config-header p { font-size: 11px; color: var(--text-dim); }
+
 /* About section in settings */
 .about-note {
   margin-top: 20px;
