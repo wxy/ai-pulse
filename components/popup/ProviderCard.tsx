@@ -6,7 +6,7 @@ import StatusTimeline from './StatusTimeline';
 import BalanceDisplay from './BalanceDisplay';
 import TrendBadge from './TrendBadge';
 import LastUpdatedLabel from './LastUpdatedLabel';
-import { t } from '@/utils/i18n';
+import { t, tp } from '@/utils/i18n';
 
 interface ProviderCardProps { summary: ProviderSummary; onSelect: () => void; }
 
@@ -20,8 +20,8 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ summary, onSelect }) => {
       <div className="provider-card-header">
         <ProviderIcon provider={provider} size={28} />
         <div className="provider-info">
-          <h3 className="provider-name">{config?.displayName || provider.name}</h3>
-          <p className="provider-desc">{provider.company}</p>
+          <h3 className="provider-name">{config?.displayName || tp(provider.id, 'name', provider.name)}</h3>
+          <p className="provider-desc">{tp(provider.id, 'company', provider.company)}</p>
         </div>
         <div className="provider-meta">
           <StatusIndicator status={statusCache?.result ?? null} providerName={provider.name} />

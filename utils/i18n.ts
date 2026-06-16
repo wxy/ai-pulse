@@ -31,6 +31,8 @@ const ZH: Record<string, string> = {
   'nav.providers': '服务商',
   'nav.settings': '设置',
   'nav.about': '关于',
+  'nav.short_providers': '服务商',
+  'nav.short_key': '密钥',
 
   // Options providers
   'providers.title': '服务商',
@@ -145,6 +147,41 @@ const ZH: Record<string, string> = {
 
   'card.click_config': '点击配置',
   'card.daily_avg': '日',
+
+  // Provider names & descriptions
+  'provider.deepseek.name': 'DeepSeek',
+  'provider.deepseek.company': '深度求索',
+  'provider.deepseek.desc': 'DeepSeek AI 大模型平台',
+  'provider.moonshot.name': 'Kimi',
+  'provider.moonshot.company': '月之暗面',
+  'provider.moonshot.desc': 'Kimi 智能助手',
+  'provider.zhipu.name': 'ChatGLM',
+  'provider.zhipu.company': '智谱 AI',
+  'provider.zhipu.desc': '智谱 AI 开放平台',
+  'provider.baichuan.name': '百川智能',
+  'provider.baichuan.company': '百川智能',
+  'provider.baichuan.desc': '百川大模型平台',
+  'provider.qwen.name': '通义千问',
+  'provider.qwen.company': '阿里云',
+  'provider.qwen.desc': '通义大模型',
+  'provider.ernie.name': '文心一言',
+  'provider.ernie.company': '百度',
+  'provider.ernie.desc': '文心大模型',
+  'provider.openai.name': 'OpenAI',
+  'provider.openai.company': 'OpenAI',
+  'provider.openai.desc': 'GPT / ChatGPT / Sora · 近3日消费',
+  'provider.anthropic.name': 'Anthropic',
+  'provider.anthropic.company': 'Anthropic',
+  'provider.anthropic.desc': 'Claude / Sonnet / Opus / Haiku',
+  'provider.google.name': 'Google AI',
+  'provider.google.company': 'Google DeepMind',
+  'provider.google.desc': 'Gemini / Imagen / Veo',
+  'provider.mistral.name': 'Mistral AI',
+  'provider.mistral.company': 'Mistral AI',
+  'provider.mistral.desc': 'Mistral / Mixtral / Codestral',
+  'provider.cohere.name': 'Cohere',
+  'provider.cohere.company': 'Cohere',
+  'provider.cohere.desc': 'Command / Embed / Rerank',
 };
 
 const EN: Record<string, string> = {
@@ -172,6 +209,8 @@ const EN: Record<string, string> = {
   'nav.providers': 'Providers',
   'nav.settings': 'Settings',
   'nav.about': 'About',
+  'nav.short_providers': 'providers',
+  'nav.short_key': 'keys',
 
   'providers.title': 'Providers',
   'providers.desc': 'Manage your AI service provider connections',
@@ -278,6 +317,40 @@ const EN: Record<string, string> = {
 
   'card.click_config': 'Click to configure',
   'card.daily_avg': 'day',
+
+  'provider.deepseek.name': 'DeepSeek',
+  'provider.deepseek.company': 'DeepSeek',
+  'provider.deepseek.desc': 'DeepSeek AI Platform',
+  'provider.moonshot.name': 'Kimi',
+  'provider.moonshot.company': 'Moonshot AI',
+  'provider.moonshot.desc': 'Kimi Assistant',
+  'provider.zhipu.name': 'ChatGLM',
+  'provider.zhipu.company': 'Zhipu AI',
+  'provider.zhipu.desc': 'Zhipu AI Platform',
+  'provider.baichuan.name': 'Baichuan',
+  'provider.baichuan.company': 'Baichuan AI',
+  'provider.baichuan.desc': 'Baichuan LLM Platform',
+  'provider.qwen.name': 'Qwen',
+  'provider.qwen.company': 'Alibaba Cloud',
+  'provider.qwen.desc': 'Tongyi Qwen Models',
+  'provider.ernie.name': 'ERNIE',
+  'provider.ernie.company': 'Baidu',
+  'provider.ernie.desc': 'Wenxin LLM Platform',
+  'provider.openai.name': 'OpenAI',
+  'provider.openai.company': 'OpenAI',
+  'provider.openai.desc': 'GPT / ChatGPT / Sora · 3-day spend',
+  'provider.anthropic.name': 'Anthropic',
+  'provider.anthropic.company': 'Anthropic',
+  'provider.anthropic.desc': 'Claude / Sonnet / Opus / Haiku',
+  'provider.google.name': 'Google AI',
+  'provider.google.company': 'Google DeepMind',
+  'provider.google.desc': 'Gemini / Imagen / Veo',
+  'provider.mistral.name': 'Mistral AI',
+  'provider.mistral.company': 'Mistral AI',
+  'provider.mistral.desc': 'Mistral / Mixtral / Codestral',
+  'provider.cohere.name': 'Cohere',
+  'provider.cohere.company': 'Cohere',
+  'provider.cohere.desc': 'Command / Embed / Rerank',
 };
 
 const translations: Record<string, Record<string, string>> = { zh: ZH, en: EN };
@@ -320,5 +393,11 @@ export function getLanguage(): 'zh' | 'en' {
 
 export function t(key: string): string {
   return translations[currentLang]?.[key] ?? translations.en?.[key] ?? key;
+}
+
+/** Get translated provider metadata, falling back to static field */
+export function tp(providerId: string, field: 'name' | 'company' | 'desc', fallback: string): string {
+  const key = `provider.${providerId}.${field}`;
+  return t(key) !== key ? t(key) : fallback;
 }
 

@@ -77,7 +77,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
       <footer className="app-footer">
         <span className="footer-summary">
-          {enabledProviders.length} providers · {withKey} 🔑
+          {enabledProviders.length} {t('nav.short_providers')} · {withKey} 🔑
         </span>
       </footer>
     </div>

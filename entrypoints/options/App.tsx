@@ -9,7 +9,7 @@ const App: React.FC = () => {
   useEffect(() => {
     loadLanguage().then(() => setLang(getLanguage()));
     chrome.storage.local.get('settings').then(result => {
-      const theme = result.settings?.theme ?? 'dark';
+      const theme = result.settings?.theme ?? 'light';
       document.documentElement.setAttribute('data-theme', theme);
     });
     const listener = (changes: Record<string, chrome.storage.StorageChange>) => {

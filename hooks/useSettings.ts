@@ -4,7 +4,7 @@ import { sendMessage } from '@/core/message-bus';
 
 const DEFAULT_SETTINGS: GlobalSettings = {
   refreshIntervalMinutes: 60,
-  theme: 'dark',
+  theme: 'light',
   historyRetentionDays: 90,
 };
 

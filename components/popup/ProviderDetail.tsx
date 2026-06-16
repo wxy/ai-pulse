@@ -4,7 +4,7 @@ import ProviderIcon from '@/components/shared/ProviderIcon';
 import ApiKeyManager from '@/components/options/ApiKeyManager';
 import BalanceHistoryChart from '@/components/options/BalanceHistoryChart';
 import { useProviderConfigs } from '@/hooks/useProviderStatus';
-import { t } from '@/utils/i18n';
+import { t, tp } from '@/utils/i18n';
 
 interface ProviderDetailProps { summary: ProviderSummary; onBack: () => void; hideProvider: (id: string) => void; onSynced: () => void; }
 
@@ -32,8 +32,8 @@ const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack, hidePr
         <div className="provider-config-header">
           <ProviderIcon provider={provider} size={36} />
           <div>
-            <h2>{currentConfig?.displayName || provider.name}</h2>
-            <p className="detail-company">{provider.company} · {provider.description}</p>
+            <h2>{currentConfig?.displayName || tp(provider.id, 'name', provider.name)}</h2>
+            <p className="detail-company">{tp(provider.id, 'company', provider.company)} · {tp(provider.id, 'desc', provider.description)}</p>
           </div>
         </div>
 
