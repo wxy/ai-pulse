@@ -18,7 +18,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
       <header className="app-header">
         <div className="header-left"><h1>🤖 AI Pulse</h1></div>
         <div className="header-right">
-          <button className="icon-button" onClick={() => chrome.runtime.openOptionsPage()} title={t('popup.settings')}>⚙️</button>
+          <button className="icon-button" onClick={() => { chrome.runtime.openOptionsPage(); }} title={t('popup.settings')}>⚙️</button>
           <button className="icon-button" onClick={onRefresh} disabled={loading} title={t('popup.refresh')}>🔄</button>
         </div>
       </header>

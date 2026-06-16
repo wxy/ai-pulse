@@ -62,10 +62,9 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
             tickFormatter={(val: number) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val.toFixed(2)}
           />
           <Tooltip
-            labelFormatter={(ts: number) => formatChartTime(ts, lang)}
+            labelFormatter={(label: any) => typeof label === 'number' ? formatChartTime(label, lang) : String(label)}
             contentStyle={{ background: '#1a2332', border: '1px solid #334155', borderRadius: '8px', color: '#e2e8f0', fontSize: '12px' }}
-            // @ts-ignore
-            formatter={(value: any, name: string) => (name === 'CNY' ? `¥${(value as number).toFixed(2)}` : String(value))}
+            formatter={((value: any, name: any) => (name === 'CNY' ? `¥${(value as number).toFixed(2)}` : String(value))) as any}
           />
           <Legend />
           {currencies.map(currency => (
