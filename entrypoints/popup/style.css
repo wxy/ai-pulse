@@ -426,6 +426,11 @@ body {
   min-height: 300px;
 }
 
+.detail-header {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
 .detail-body {
   flex: 1;
   overflow-y: auto;
@@ -437,8 +442,14 @@ body {
   color: var(--text);
 }
 
+.detail-company {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
 .detail-section {
-  margin-top: 16px;
+  margin-bottom: 12px;
   padding: 12px;
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -448,7 +459,41 @@ body {
 .detail-section h3 {
   font-size: 13px;
   color: var(--text-body);
+  margin-bottom: 6px;
+}
+
+.detail-desc {
+  font-size: 11px;
+  color: var(--text-dim);
   margin-bottom: 8px;
+}
+
+.detail-input {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border-hover);
+  border-radius: 4px;
+  color: var(--text-body);
+  font-size: 13px;
+}
+
+.detail-links {
+  display: flex;
+  gap: 8px;
+}
+
+.detail-link {
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 4px 10px;
+  border: 1px solid var(--border-hover);
+  border-radius: 4px;
+}
+
+.detail-link:hover {
+  background: var(--bg-hover);
 }
 
 .back-button {
@@ -457,17 +502,28 @@ body {
   color: var(--text-dim);
   font-size: 13px;
   cursor: pointer;
-  padding: 8px 0;
+  padding: 4px 0;
 }
 
 .back-button:hover { color: var(--text-body); }
 
 /* About section in settings */
 .about-note {
-  margin-top: 16px;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
   font-size: 10px;
   color: var(--text-subtle);
   text-align: center;
+}
+
+.about-note p {
+  margin-bottom: 2px;
+}
+
+.about-note p:first-child {
+  font-weight: 600;
+  color: var(--text-dim);
 }
 
 /* Skeleton Loading */

@@ -50,12 +50,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
       {view === 'monitor' && (
         <main className="provider-list">
-          {loading && providers.length === 0 ? (
+          {loading && enabledProviders.length === 0 ? (
             <div className="loading-state"><div className="skeleton-card" /><div className="skeleton-card" /></div>
-          ) : providers.length === 0 ? (
+          ) : enabledProviders.length === 0 ? (
             <div className="empty-state">{t('popup.empty')}</div>
           ) : (
-            providers.map(summary => (
+            enabledProviders.map(summary => (
               <ProviderCard key={summary.provider.id} summary={summary} onSelect={() => setView({ providerId: summary.provider.id })} />
             ))
           )}
@@ -64,7 +64,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
       {view === 'settings' && (
         <main className="settings-panel">
-          <PopupSettings providers={providers} />
+          <PopupSettings providers={providers} onRefresh={onRefresh} />
         </main>
       )}
 

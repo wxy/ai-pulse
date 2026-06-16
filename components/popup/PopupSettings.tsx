@@ -6,9 +6,9 @@ import { getLanguage, setLanguage } from '@/utils/i18n';
 import { t } from '@/utils/i18n';
 import { sendMessage } from '@/core/message-bus';
 
-interface PopupSettingsProps { providers: ProviderSummary[]; }
+interface PopupSettingsProps { providers: ProviderSummary[]; onRefresh: () => void; }
 
-const PopupSettings: React.FC<PopupSettingsProps> = ({ providers }) => {
+const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh }) => {
   const { settings, saving, updateSetting } = useSettings();
   const [showDisabled, setShowDisabled] = useState(false);
   const disabledProviders = providers.filter(p => p.config?.enabled === false);
@@ -18,6 +18,7 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers }) => {
     const config = configs.find(c => c.providerId === providerId);
     if (config) {
       await sendMessage('UPDATE_PROVIDER_CONFIG', { ...config, enabled: true });
+      onRefresh();
     }
   };
 
@@ -27,13 +28,13 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers }) => {
         <label className="settings-label">{t('settings.refresh_interval')}</label>
         <select className="settings-select" value={settings.refreshIntervalMinutes}
           onChange={e => updateSetting('refreshIntervalMinutes', parseInt(e.target.value))} disabled={saving}>
-          <option value={15}>15 min</option>
-          <option value={30}>30 min</option>
-          <option value={60}>1 h</option>
-          <option value={120}>2 h</option>
-          <option value={360}>6 h</option>
-          <option value={720}>12 h</option>
-          <option value={1440}>24 h</option>
+          <option value={15}>{t('interval.15min')}</option>
+          <option value={30}>{t('interval.30min')}</option>
+          <option value={60}>{t('interval.1hour')}</option>
+          <option value={120}>{t('interval.2hours')}</option>
+          <option value={360}>{t('interval.6hours')}</option>
+          <option value={720}>{t('interval.12hours')}</option>
+          <option value={1440}>{t('interval.24hours')}</option>
         </select>
       </section>
 
@@ -77,7 +78,11 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers }) => {
         )}
       </section>
 
-      <div className="about-note">{t('about.title')} v0.2.0</div>
+      <div className="about-note">
+        <p>{t('about.title')} v0.2.0</p>
+        <p>{t('about.desc')}</p>
+        <p>{t('about.supported')}</p>
+      </div>
     </div>
   );
 };
