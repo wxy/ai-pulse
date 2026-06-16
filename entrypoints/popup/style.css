@@ -482,18 +482,30 @@ body {
 
 .btn-disable {
   padding: 6px 14px;
-  border: 1px solid var(--btn-danger-border);
+  border: none;
   border-radius: 4px;
-  background: none;
-  color: var(--key-missing-text);
   font-size: 12px;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s;
 }
 
-.btn-disable:hover {
-  background: var(--btn-danger-hover);
+.btn-disable.is-disabled {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-disable.is-disabled:hover {
+  background: #dc2626;
+}
+
+.btn-disable.is-enabled {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-disable.is-enabled:hover {
+  background: #16a34a;
 }
 
 .detail-links {

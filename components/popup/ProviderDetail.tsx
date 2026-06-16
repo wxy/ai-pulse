@@ -6,9 +6,9 @@ import BalanceHistoryChart from '@/components/options/BalanceHistoryChart';
 import { useProviderConfigs } from '@/hooks/useProviderStatus';
 import { t } from '@/utils/i18n';
 
-interface ProviderDetailProps { summary: ProviderSummary; onBack: () => void; }
+interface ProviderDetailProps { summary: ProviderSummary; onBack: () => void; onConfigChanged: () => void; }
 
-const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack }) => {
+const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack, onConfigChanged }) => {
   const { provider, config, balanceCache } = summary;
   const { configs, saveConfig } = useProviderConfigs();
   const currentConfig = configs.find(c => c.providerId === provider.id) || config;
@@ -44,16 +44,18 @@ const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack }) => {
                 apiKey: currentConfig?.apiKey ?? '', displayName: e.target.value,
                 alertEnabled: currentConfig?.alertEnabled !== false,
               })} />
-            <button className="btn-disable"
+            <button
+              className={`btn-disable ${currentConfig?.enabled !== false ? 'is-disabled' : 'is-enabled'}`}
               onClick={async () => {
                 await saveConfig({
                   providerId: provider.id, enabled: !(currentConfig?.enabled !== false),
                   apiKey: currentConfig?.apiKey ?? '', displayName: currentConfig?.displayName ?? '',
                   alertEnabled: currentConfig?.alertEnabled !== false,
                 });
+                onConfigChanged();
                 onBack();
               }}>
-              {currentConfig?.enabled !== false ? '禁用' : '启用'}
+              {currentConfig?.enabled !== false ? t('settings.disable') : t('settings.enable')}
             </button>
           </div>
         </section>

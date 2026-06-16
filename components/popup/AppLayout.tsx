@@ -20,7 +20,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
     if (summary) {
       return (
         <div className="app-layout">
-          <ProviderDetail summary={summary} onBack={() => setView('monitor')} />
+          <ProviderDetail summary={summary} onBack={() => setView('monitor')} onConfigChanged={onRefresh} />
         </div>
       );
     }
