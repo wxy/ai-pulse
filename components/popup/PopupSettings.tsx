@@ -55,25 +55,29 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers }) => {
         </select>
       </section>
 
-      {disabledProviders.length > 0 && (
-        <section className="settings-group">
-          <button className="settings-toggle" onClick={() => setShowDisabled(!showDisabled)}>
-            {showDisabled ? '▾' : '▸'} {t('nav.providers')} ({disabledProviders.length})
-          </button>
-          {showDisabled && (
-            <div className="disabled-list">
-              {disabledProviders.map(p => (
+      <section className="settings-group">
+        <button className="settings-toggle" onClick={() => setShowDisabled(!showDisabled)}>
+          {showDisabled ? '▾' : '▸'} 已禁用服务商 ({disabledProviders.length})
+        </button>
+        {showDisabled && (
+          <div className="disabled-list">
+            {disabledProviders.length === 0 ? (
+              <p className="field-hint">无</p>
+            ) : (
+              disabledProviders.map(p => (
                 <div key={p.provider.id} className="disabled-row">
                   <span>{p.provider.icon} {p.config?.displayName || p.provider.name}</span>
                   <button className="btn-small-enable" onClick={() => handleToggleProvider(p.provider.id)}>
-                    {t('providers.configured')}
+                    启用
                   </button>
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
+              ))
+            )}
+          </div>
+        )}
+      </section>
+
+      <div className="about-note">{t('about.title')} v0.2.0</div>
     </div>
   );
 };

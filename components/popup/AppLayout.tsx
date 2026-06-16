@@ -1,15 +1,32 @@
 import React, { useState } from 'react';
 import type { ProviderSummary } from '@/types';
 import ProviderCard from './ProviderCard';
+import ProviderDetail from './ProviderDetail';
 import PopupSettings from './PopupSettings';
 import { t } from '@/utils/i18n';
+
+type View = 'monitor' | 'settings' | { providerId: string };
 
 interface AppLayoutProps { providers: ProviderSummary[]; loading: boolean; error: string | null; onRefresh: () => void; }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefresh }) => {
-  const [tab, setTab] = useState<'monitor' | 'settings'>('monitor');
+  const [view, setView] = useState<View>('monitor');
   const enabledProviders = providers.filter(p => p.config?.enabled !== false);
   const withKey = providers.filter(p => p.config?.apiKey).length;
+
+  // Provider detail view
+  if (typeof view === 'object') {
+    const summary = providers.find(p => p.provider.id === view.providerId);
+    if (summary) {
+      return (
+        <div className="app-layout">
+          <ProviderDetail summary={summary} onBack={() => setView('monitor')} />
+        </div>
+      );
+    }
+    setView('monitor');
+    return null;
+  }
 
   return (
     <div className="app-layout">
@@ -21,29 +38,31 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
       </header>
 
       <nav className="tab-bar">
-        <button className={`tab-item ${tab === 'monitor' ? 'tab-active' : ''}`} onClick={() => setTab('monitor')}>
+        <button className={`tab-item ${view === 'monitor' ? 'tab-active' : ''}`} onClick={() => setView('monitor')}>
           📡 {t('nav.providers')}
         </button>
-        <button className={`tab-item ${tab === 'settings' ? 'tab-active' : ''}`} onClick={() => setTab('settings')}>
+        <button className={`tab-item ${view === 'settings' ? 'tab-active' : ''}`} onClick={() => setView('settings')}>
           ⚙️ {t('nav.settings')}
         </button>
       </nav>
 
       {error && <div className="error-banner"><span>⚠️ {error}</span></div>}
 
-      {tab === 'monitor' && (
+      {view === 'monitor' && (
         <main className="provider-list">
           {loading && providers.length === 0 ? (
             <div className="loading-state"><div className="skeleton-card" /><div className="skeleton-card" /></div>
           ) : providers.length === 0 ? (
             <div className="empty-state">{t('popup.empty')}</div>
           ) : (
-            providers.map(summary => <ProviderCard key={summary.provider.id} summary={summary} />)
+            providers.map(summary => (
+              <ProviderCard key={summary.provider.id} summary={summary} onSelect={() => setView({ providerId: summary.provider.id })} />
+            ))
           )}
         </main>
       )}
 
-      {tab === 'settings' && (
+      {view === 'settings' && (
         <main className="settings-panel">
           <PopupSettings providers={providers} />
         </main>
@@ -51,7 +70,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
       <footer className="app-footer">
         <span className="footer-summary">
-          {enabledProviders.length} {t('nav.providers')} · {withKey} 🔑
+          {enabledProviders.length} providers · {withKey} 🔑
         </span>
       </footer>
     </div>

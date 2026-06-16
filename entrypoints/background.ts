@@ -60,9 +60,7 @@ async function buildProviderSummaries(): Promise<ProviderSummary[]> {
   for (const provider of providers) {
     const config = configs.find(c => c.providerId === provider.id) ?? null;
 
-    // Only show enabled providers in popup (default to enabled if no config)
-    if (config && !config.enabled) continue;
-
+    // Include ALL providers — popup will filter display as needed
     const bCache = balanceCache[provider.id] ?? null;
     const sCache = statusCache[provider.id] ?? null;
 

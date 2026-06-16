@@ -8,19 +8,15 @@ import TrendBadge from './TrendBadge';
 import LastUpdatedLabel from './LastUpdatedLabel';
 import { t } from '@/utils/i18n';
 
-interface ProviderCardProps { summary: ProviderSummary; }
+interface ProviderCardProps { summary: ProviderSummary; onSelect: () => void; }
 
-function openOptionsForProvider(providerId: string) {
-  chrome.storage.local.set({ navigate_to_provider: providerId }).then(() => chrome.runtime.openOptionsPage());
-}
-
-const ProviderCard: React.FC<ProviderCardProps> = ({ summary }) => {
+const ProviderCard: React.FC<ProviderCardProps> = ({ summary, onSelect }) => {
   const { provider, config, balanceCache, statusCache, trend } = summary;
   const hasApiKey = Boolean(config?.enabled && config?.apiKey);
   const lastUpdate = Math.max(balanceCache?.lastFetchTimestamp ?? 0, statusCache?.lastFetchTimestamp ?? 0);
 
   return (
-    <div className="provider-card" onClick={() => openOptionsForProvider(provider.id)} title={`${t('card.click_config')} ${config?.displayName || provider.name}`}>
+    <div className="provider-card" onClick={onSelect} title={`${t('card.click_config')} ${config?.displayName || provider.name}`}>
       <div className="provider-card-header">
         <ProviderIcon provider={provider} size={28} />
         <div className="provider-info">
