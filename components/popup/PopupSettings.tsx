@@ -83,7 +83,7 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh }) =
       </section>
 
       <div className="about-note">
-        <p>{t('about.title')} v0.2.0</p>
+        <p>{t('about.title')} v0.3.0</p>
         <p>{t('about.desc')}</p>
         <p>{t('about.supported')}</p>
       </div>
