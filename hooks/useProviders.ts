@@ -68,5 +68,5 @@ export function useProviders() {
     }
   }, []);
 
-  return { providers, loading, error, refreshBalance, refreshStatus, refreshAll };
+  return { providers, loading, error, refreshBalance, refreshStatus, refreshAll, refreshList: fetchProviders };
 }

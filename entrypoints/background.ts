@@ -129,6 +129,9 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
           await fetchAndCacheBalance(provider, config.apiKey);
         }
       }
+
+      // Always update badge after config change (enable/disable/key change)
+      updateBadge();
       return { success: true };
     }
 

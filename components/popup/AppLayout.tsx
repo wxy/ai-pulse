@@ -7,9 +7,9 @@ import { t } from '@/utils/i18n';
 
 type View = 'monitor' | 'settings' | { providerId: string };
 
-interface AppLayoutProps { providers: ProviderSummary[]; loading: boolean; error: string | null; onRefresh: () => void; }
+interface AppLayoutProps { providers: ProviderSummary[]; loading: boolean; error: string | null; onRefresh: () => void; onSync: () => void; }
 
-const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefresh }) => {
+const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefresh, onSync }) => {
   const [view, setView] = useState<View>('monitor');
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const enabledProviders = providers.filter(p =>
@@ -19,6 +19,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
   const hideProvider = (id: string) => {
     setHiddenIds(prev => new Set(prev).add(id));
+    onSync(); // Update popup data + trigger background badge update
   };
 
   // Provider detail view
@@ -27,7 +28,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
     if (summary) {
       return (
         <div className="app-layout">
-          <ProviderDetail summary={summary} onBack={() => setView('monitor')} hideProvider={hideProvider} />
+          <ProviderDetail summary={summary} onBack={() => { setView('monitor'); onSync(); }} hideProvider={hideProvider} />
         </div>
       );
     }

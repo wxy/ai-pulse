@@ -5,7 +5,7 @@ import { useProviders } from '@/hooks/useProviders';
 import { loadLanguage, getLanguage } from '@/utils/i18n';
 
 const App: React.FC = () => {
-  const { providers, loading, error, refreshAll } = useProviders();
+  const { providers, loading, error, refreshAll, refreshList } = useProviders();
   const [lang, setLang] = useState(getLanguage());
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary key={lang}>
-      <AppLayout providers={providers} loading={loading} error={error} onRefresh={refreshAll} />
+      <AppLayout providers={providers} loading={loading} error={error} onRefresh={refreshAll} onSync={refreshList} />
     </ErrorBoundary>
   );
 };
