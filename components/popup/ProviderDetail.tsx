@@ -40,8 +40,10 @@ const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack, hidePr
         <section className="detail-section">
           <h3>{t('config.display_name')}</h3>
           <div className="detail-row">
-            <input className="detail-input flex-1" value={currentConfig?.displayName ?? ''} placeholder={provider.name}
-              onChange={e => saveConfig({
+            <input className="detail-input flex-1"
+              defaultValue={currentConfig?.displayName ?? ''}
+              placeholder={provider.name}
+              onBlur={e => saveConfig({
                 providerId: provider.id, enabled: currentConfig?.enabled !== false,
                 apiKey: currentConfig?.apiKey ?? '', displayName: e.target.value,
                 alertEnabled: currentConfig?.alertEnabled !== false,

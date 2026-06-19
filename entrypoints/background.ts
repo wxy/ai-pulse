@@ -195,5 +195,5 @@ export default defineBackground(async () => {
   // Mark as initialized so message handler can process requests
   _initResolve!();
   console.log('Background ready, calling initial badge update');
-  updateBadge();
+  await updateBadge();
 });

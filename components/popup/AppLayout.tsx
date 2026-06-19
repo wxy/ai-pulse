@@ -21,6 +21,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
     setHiddenIds(prev => new Set(prev).add(id));
   };
 
+  const clearHidden = () => setHiddenIds(new Set());
+
   // Provider detail view
   if (typeof view === 'object') {
     const summary = providers.find(p => p.provider.id === view.providerId);
@@ -71,7 +73,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
       {view === 'settings' && (
         <main className="settings-panel">
-          <PopupSettings providers={providers} onRefresh={onRefresh} />
+          <PopupSettings providers={providers} onRefresh={onRefresh} onReEnable={clearHidden} />
         </main>
       )}
 
