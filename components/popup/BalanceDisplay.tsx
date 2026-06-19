@@ -3,12 +3,7 @@ import type { BalanceEntry } from '@/types';
 import { useBalanceHistory } from '@/hooks/useBalanceHistory';
 import { t } from '@/utils/i18n';
 
-interface BalanceDisplayProps { balances: BalanceEntry[]; hasApiKey: boolean; providerId: string; }
-
-async function openOptionsForProvider(providerId: string) {
-  await chrome.storage.local.set({ navigate_to_provider: providerId });
-  chrome.runtime.openOptionsPage();
-}
+interface BalanceDisplayProps { balances: BalanceEntry[]; hasApiKey: boolean; providerId: string; onSelect: () => void; }
 
 function useDailyAvg(providerId: string): string | null {
   const { chartData } = useBalanceHistory(providerId);
@@ -23,13 +18,13 @@ function useDailyAvg(providerId: string): string | null {
   return `¥${(consumed / daysDiff).toFixed(2)}/${t('card.daily_avg')}`;
 }
 
-const BalanceDisplay: React.FC<BalanceDisplayProps> = ({ balances, hasApiKey, providerId }) => {
+const BalanceDisplay: React.FC<BalanceDisplayProps> = ({ balances, hasApiKey, providerId, onSelect }) => {
   const dailyAvg = useDailyAvg(providerId);
 
   if (!hasApiKey) {
     return (
       <div className="balance-display">
-        <button className="add-key-prompt" onClick={() => openOptionsForProvider(providerId)} title={t('card.click_config')}>
+        <button className="add-key-prompt" onClick={onSelect} title={t('card.click_config')}>
           + {t('popup.no_key')}
         </button>
       </div>

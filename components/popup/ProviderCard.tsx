@@ -29,7 +29,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ summary, onSelect }) => {
         </div>
       </div>
       <div className="provider-card-body">
-        <BalanceDisplay balances={balanceCache?.result?.balances ?? []} hasApiKey={hasApiKey} providerId={provider.id} />
+        <BalanceDisplay balances={balanceCache?.result?.balances ?? []} hasApiKey={hasApiKey} providerId={provider.id} onSelect={onSelect} />
       </div>
       <div className="provider-card-footer">
         <StatusTimeline providerId={provider.id} />
