@@ -15,7 +15,7 @@ export default defineConfig({
       'alarms',
     ],
     host_permissions: [
-      '*://*/*',
+      'https://*/*',
     ],
     action: {
       default_title: '__MSG_extActionTitle__',
