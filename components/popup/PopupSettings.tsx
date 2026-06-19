@@ -44,15 +44,6 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onR
       </section>
 
       <section className="settings-group">
-        <label className="settings-label">{t('settings.theme')}</label>
-        <select className="settings-select" value={settings.theme}
-          onChange={e => updateSetting('theme', e.target.value as 'light' | 'dark')} disabled={saving}>
-          <option value="dark">{t('settings.theme_dark')}</option>
-          <option value="light">{t('settings.theme_light')}</option>
-        </select>
-      </section>
-
-      <section className="settings-group">
         <label className="settings-label">{t('settings.language')}</label>
         <select className="settings-select" value={getLanguage()}
           onChange={e => { setLanguage(e.target.value as 'zh' | 'en'); window.location.reload(); }}>

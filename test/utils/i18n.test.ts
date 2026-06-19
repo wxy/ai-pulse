@@ -29,7 +29,7 @@ describe('i18n', () => {
         'status.running', 'status.error', 'status.unreachable',
         'nav.providers', 'nav.settings', 'nav.about',
         'providers.title', 'providers.back',
-        'settings.title', 'settings.theme', 'settings.language',
+        'settings.title', 'settings.language',
         'config.display_name', 'config.api_key',
         'chart.title', 'chart.empty',
         'error.page', 'error.refresh_failed',

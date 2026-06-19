@@ -50,14 +50,6 @@ const SettingsPanel: React.FC = () => {
         </select>
       </section>
 
-      <section className="config-section">
-        <h3>{t('settings.theme')}</h3>
-        <select className="select-input" value={settings.theme} onChange={e => updateSetting('theme', e.target.value as 'light' | 'dark')} disabled={saving}>
-          <option value="dark">{t('settings.theme_dark')}</option>
-          <option value="light">{t('settings.theme_light')}</option>
-        </select>
-      </section>
-
       {saving && <p className="saving-indicator">{t('settings.saving')}</p>}
     </div>
   );

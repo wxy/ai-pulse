@@ -17,18 +17,16 @@ describe('storage', () => {
       (chrome.storage.local.get as any).mockResolvedValueOnce({});
       const s = await getSettings();
       expect(s.refreshIntervalMinutes).toBe(60);
-      expect(['dark', 'light']).toContain(s.theme);
       expect(s.historyRetentionDays).toBe(90);
     });
 
     it('saves and retrieves settings', async () => {
-      await setSettings({ refreshIntervalMinutes: 30, theme: 'light', historyRetentionDays: 7 });
+      await setSettings({ refreshIntervalMinutes: 30, historyRetentionDays: 7 });
       (chrome.storage.local.get as any).mockResolvedValueOnce({
-        settings: { refreshIntervalMinutes: 30, theme: 'light', historyRetentionDays: 7 },
+        settings: { refreshIntervalMinutes: 30, historyRetentionDays: 7 },
       });
       const s = await getSettings();
       expect(s.refreshIntervalMinutes).toBe(30);
-      expect(s.theme).toBe('light');
     });
   });
 

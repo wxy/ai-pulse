@@ -17,7 +17,6 @@ export async function getSettings(): Promise<GlobalSettings> {
   const result = await chrome.storage.local.get(SETTINGS_KEY);
   return result[SETTINGS_KEY] ?? {
     refreshIntervalMinutes: 60,
-    theme: 'light',
     historyRetentionDays: 90,
   };
 }

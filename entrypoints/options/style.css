@@ -5,34 +5,6 @@
 }
 
 :root {
-  --bg: #0f172a;
-  --bg-card: #1a2332;
-  --bg-hover: #1e293b;
-  --border: #1e293b;
-  --border-hover: #334155;
-  --text: #f1f5f9;
-  --text-body: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --text-subtle: #475569;
-  --accent: #3b82f6;
-  --green: #22c55e;
-  --red: #ef4444;
-  --input-bg: #0f172a;
-  --skeleton-shine: #1e293b;
-  --key-ok-bg: #064e3b;
-  --key-ok-text: #6ee7b7;
-  --key-missing-bg: #451a1a;
-  --key-missing-text: #fca5a5;
-  --btn-danger-border: #7f1d1d;
-  --btn-danger-hover: #451a1a;
-  --badge-info-bg: #1e3a5f;
-  --badge-info-text: #93c5fd;
-  --toggle-bg: #334155;
-  --toggle-knob: #e2e8f0;
-}
-
-[data-theme="light"] {
   --bg: #f8fafc;
   --bg-card: #ffffff;
   --bg-hover: #f1f5f9;
@@ -44,6 +16,8 @@
   --text-dim: #94a3b8;
   --text-subtle: #94a3b8;
   --accent: #2563eb;
+  --green: #22c55e;
+  --red: #ef4444;
   --input-bg: #f1f5f9;
   --skeleton-shine: #e2e8f0;
   --key-ok-bg: #dcfce7;
@@ -56,6 +30,34 @@
   --badge-info-text: #1e40af;
   --toggle-bg: #cbd5e1;
   --toggle-knob: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --bg-card: #1a2332;
+    --bg-hover: #1e293b;
+    --border: #1e293b;
+    --border-hover: #334155;
+    --text: #f1f5f9;
+    --text-body: #e2e8f0;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --text-subtle: #475569;
+    --accent: #3b82f6;
+    --input-bg: #0f172a;
+    --skeleton-shine: #1e293b;
+    --key-ok-bg: #064e3b;
+    --key-ok-text: #6ee7b7;
+    --key-missing-bg: #451a1a;
+    --key-missing-text: #fca5a5;
+    --btn-danger-border: #7f1d1d;
+    --btn-danger-hover: #451a1a;
+    --badge-info-bg: #1e3a5f;
+    --badge-info-text: #93c5fd;
+    --toggle-bg: #334155;
+    --toggle-knob: #e2e8f0;
+  }
 }
 
 body {

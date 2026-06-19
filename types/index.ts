@@ -107,7 +107,6 @@ export interface BalanceHistory {
 
 export interface GlobalSettings {
   refreshIntervalMinutes: number;  // How often background fetches (default 60)
-  theme: 'light' | 'dark';        // UI theme
   historyRetentionDays: number;   // How long to keep balance snapshots (default 90)
 }
 

@@ -37,7 +37,6 @@ async function initializeDefaults(): Promise<void> {
     await chrome.storage.local.set({
       settings: {
         refreshIntervalMinutes: 60,
-        theme: 'light',
         historyRetentionDays: 90,
       },
     });
