@@ -62,10 +62,8 @@ export async function updateBadge(): Promise<void> {
     chrome.action.setBadgeText({ text: '' });
   }
 
-  // Badge background: red if any alert
-  if (hasAlert) {
-    chrome.action.setBadgeBackgroundColor({ color: '#ef4444' });
-  }
+  // Badge background: red if alert, reset to default otherwise
+  chrome.action.setBadgeBackgroundColor({ color: hasAlert ? '#ef4444' : '#4a4a4a' });
 
   // Tooltip
   const title = infoParts.length > 0

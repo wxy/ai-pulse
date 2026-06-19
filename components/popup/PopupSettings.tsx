@@ -6,9 +6,9 @@ import { getLanguage, setLanguage } from '@/utils/i18n';
 import { t } from '@/utils/i18n';
 import { sendMessage } from '@/core/message-bus';
 
-interface PopupSettingsProps { providers: ProviderSummary[]; onRefresh: () => void; }
+interface PopupSettingsProps { providers: ProviderSummary[]; onRefresh: () => void; onReEnable: () => void; }
 
-const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh }) => {
+const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onReEnable }) => {
   const { settings, saving, updateSetting } = useSettings();
   const [showDisabled, setShowDisabled] = useState(false);
   const [enablingIds, setEnablingIds] = useState<Set<string>>(new Set());
@@ -23,6 +23,7 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh }) =
     if (config) {
       await sendMessage('UPDATE_PROVIDER_CONFIG', { ...config, enabled: true });
     }
+    onReEnable();
     onRefresh();
   };
 

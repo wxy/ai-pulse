@@ -4,6 +4,8 @@ import ProviderCard from '@/components/popup/ProviderCard';
 import type { ProviderSummary } from '@/types';
 import { deepseekProvider } from '@/providers/deepseek';
 
+const noop = () => {};
+
 const baseSummary: ProviderSummary = {
   provider: deepseekProvider,
   config: null,
@@ -19,22 +21,22 @@ describe('ProviderCard', () => {
   });
 
   it('renders provider name', () => {
-    render(<ProviderCard summary={baseSummary} />);
+    render(<ProviderCard summary={baseSummary} onSelect={noop} />);
     expect(screen.getByText('DeepSeek')).toBeInTheDocument();
   });
 
   it('renders company name', () => {
-    render(<ProviderCard summary={baseSummary} />);
-    expect(screen.getByText('深度求索 DeepSeek')).toBeInTheDocument();
+    render(<ProviderCard summary={baseSummary} onSelect={noop} />);
+    expect(screen.getByText('深度求索')).toBeInTheDocument();
   });
 
   it('renders add API key prompt when no key configured', () => {
-    render(<ProviderCard summary={baseSummary} />);
+    render(<ProviderCard summary={baseSummary} onSelect={noop} />);
     expect(screen.getByText(/API Key/)).toBeInTheDocument();
   });
 
   it('renders status indicator', () => {
-    render(<ProviderCard summary={baseSummary} />);
+    render(<ProviderCard summary={baseSummary} onSelect={noop} />);
     expect(screen.getByText('未知')).toBeInTheDocument();
   });
 
@@ -43,7 +45,7 @@ describe('ProviderCard', () => {
       ...baseSummary,
       config: { providerId: 'deepseek', enabled: true, apiKey: '', displayName: '我的 DeepSeek', alertEnabled: false },
     };
-    render(<ProviderCard summary={summary} />);
+    render(<ProviderCard summary={summary} onSelect={noop} />);
     expect(screen.getByText('我的 DeepSeek')).toBeInTheDocument();
   });
 
@@ -62,7 +64,7 @@ describe('ProviderCard', () => {
         },
       },
     };
-    render(<ProviderCard summary={summary} />);
+    render(<ProviderCard summary={summary} onSelect={noop} />);
     expect(screen.getByText('¥100.00')).toBeInTheDocument();
   });
 });
