@@ -27,7 +27,7 @@ describe('ProviderCard', () => {
 
   it('renders company name', () => {
     render(<ProviderCard summary={baseSummary} onSelect={noop} />);
-    expect(screen.getByText('深度求索 DeepSeek')).toBeInTheDocument();
+    expect(screen.getByText('深度求索')).toBeInTheDocument();
   });
 
   it('renders add API key prompt when no key configured', () => {
