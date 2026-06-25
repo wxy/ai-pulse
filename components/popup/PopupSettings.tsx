@@ -5,12 +5,14 @@ import { getProviderConfigs } from '@/core/storage';
 import { getLanguage, setLanguage } from '@/utils/i18n';
 import { t } from '@/utils/i18n';
 import { sendMessage } from '@/core/message-bus';
+import CustomProviderForm from '@/components/options/CustomProviderForm';
 
 interface PopupSettingsProps { providers: ProviderSummary[]; onRefresh: () => void; onReEnable: () => void; }
 
 const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onReEnable }) => {
   const { settings, saving, updateSetting } = useSettings();
   const [showDisabled, setShowDisabled] = useState(false);
+  const [showCustomForm, setShowCustomForm] = useState(false);
   const [enablingIds, setEnablingIds] = useState<Set<string>>(new Set());
   const disabledProviders = providers.filter(p =>
     p.config?.enabled === false && !enablingIds.has(p.provider.id)
@@ -82,6 +84,15 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onR
           </div>
         )}
       </section>
+
+      {showCustomForm ? (
+        <CustomProviderForm onDone={() => { setShowCustomForm(false); onRefresh(); }} />
+      ) : (
+        <button className="btn btn-small" style={{ marginTop: 8, width: '100%' }}
+          onClick={() => setShowCustomForm(true)}>
+          + {t('providers.add_custom')}
+        </button>
+      )}
 
       <div className="about-note">
         <p>{t('about.title')} v0.3.0</p>
