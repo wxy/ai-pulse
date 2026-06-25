@@ -31,6 +31,20 @@ describe('provider-registry', () => {
       const oai = getProvider('openai');
       expect(oai).toBeDefined();
       expect(oai!.capabilities.canFetchStatus).toBe(true);
+      expect(oai!.balanceType).toBe('usage');
+    });
+
+    it('includes xAI and Perplexity', () => {
+      expect(getProvider('xai')).toBeDefined();
+      expect(getProvider('perplexity')).toBeDefined();
+    });
+
+    it('popular providers are marked', () => {
+      const ds = getProvider('deepseek');
+      const qwen = getProvider('qwen');
+      expect(ds!.popular).not.toBe(false);
+      // Non-popular providers exist but may not be default visible
+      expect(qwen).toBeDefined();
     });
 
     it('getBuiltinProviders returns only built-ins', () => {

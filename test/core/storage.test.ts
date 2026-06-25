@@ -21,9 +21,9 @@ describe('storage', () => {
     });
 
     it('saves and retrieves settings', async () => {
-      await setSettings({ refreshIntervalMinutes: 30, historyRetentionDays: 7 });
+      await setSettings({ refreshIntervalMinutes: 30, historyRetentionDays: 7, soundEnabled: true });
       (chrome.storage.local.get as any).mockResolvedValueOnce({
-        settings: { refreshIntervalMinutes: 30, historyRetentionDays: 7 },
+        settings: { refreshIntervalMinutes: 30, historyRetentionDays: 7, soundEnabled: true },
       });
       const s = await getSettings();
       expect(s.refreshIntervalMinutes).toBe(30);
