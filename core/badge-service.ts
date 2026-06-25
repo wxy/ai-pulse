@@ -139,35 +139,27 @@ function stopCycling(): void {
   if (cycleTimer) { clearInterval(cycleTimer); cycleTimer = null; }
 }
 
-/** Animate badge with coin emoji + notification on spend alert */
+/** Animate badge with spend-level emoji. Always runs regardless of sound setting. */
 export async function showSpendAlert(totalSpend: number, currency: string, level: 'light' | 'heavy', details: { name: string; spend: number }[]): Promise<void> {
+  // Badge animation: show single emoji matching spend level
+  const emoji = level === 'heavy' ? '💰' : '🌕';
+  const duration = level === 'heavy' ? 3000 : 2000;
+
+  chrome.action.setBadgeText({ text: emoji });
+  setTimeout(() => updateBadge(), duration);
+
+  // Sound/notification controlled by setting
   const settings = await getSettings();
   if (settings.soundEnabled === false) return;
 
-  // Badge animation: cycle coin emojis
-  const coinFrames = ['🪙', '💰', '💛', '💎'];
-  let frame = 0;
-  const animTimer = setInterval(() => {
-    chrome.action.setBadgeText({ text: coinFrames[frame % coinFrames.length] });
-    frame++;
-  }, 400);
-
-  // Stop animation after 2s (light) or 3s (heavy) and restore badge
-  const duration = level === 'heavy' ? 3000 : 2000;
-  setTimeout(() => {
-    clearInterval(animTimer);
-    updateBadge(); // restore normal badge
-  }, duration);
-
-  // Chrome notification
   if (chrome.notifications) {
     const prefix = currency === 'CNY' ? '¥' : currency === 'USD' ? '$' : '';
     const providerList = details.map(d => `${d.name}: ${prefix}${d.spend.toFixed(2)}`).join('\n');
     chrome.notifications.create('spend-alert', {
       type: 'basic',
       iconUrl: 'icons/icon-128.png',
-      title: level === 'heavy' ? '💸 Heavy spending detected' : '🪙 Spending alert',
-      message: `Today's spend ${prefix}${totalSpend.toFixed(2)}\n${providerList}`,
+      title: level === 'heavy' ? '💸 Heavy spending' : '🌕 Spending alert',
+      message: `Total ${prefix}${totalSpend.toFixed(2)}\n${providerList}`,
       priority: 1,
     });
   }
