@@ -386,6 +386,15 @@ body {
   margin-left: 4px;
 }
 
+.days-left-inline {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-left: 6px;
+  padding: 1px 5px;
+  border: 1px solid var(--border-hover);
+  border-radius: 3px;
+}
+
 /* Card Footer */
 .provider-card-footer {
   display: flex;

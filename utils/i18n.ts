@@ -185,6 +185,12 @@ const ZH: Record<string, string> = {
   'provider.cohere.name': 'Cohere',
   'provider.cohere.company': 'Cohere',
   'provider.cohere.desc': 'Command / Embed / Rerank',
+  'provider.xai.name': 'Grok',
+  'provider.xai.company': 'xAI',
+  'provider.xai.desc': 'Grok / xAI',
+  'provider.perplexity.name': 'Perplexity',
+  'provider.perplexity.company': 'Perplexity AI',
+  'provider.perplexity.desc': 'Perplexity / Sonar',
 };
 
 const EN: Record<string, string> = {
@@ -357,6 +363,12 @@ const EN: Record<string, string> = {
   'provider.cohere.name': 'Cohere',
   'provider.cohere.company': 'Cohere',
   'provider.cohere.desc': 'Command / Embed / Rerank',
+  'provider.xai.name': 'Grok',
+  'provider.xai.company': 'xAI',
+  'provider.xai.desc': 'Grok / xAI',
+  'provider.perplexity.name': 'Perplexity',
+  'provider.perplexity.company': 'Perplexity AI',
+  'provider.perplexity.desc': 'Perplexity / Sonar',
 };
 
 const translations: Record<string, Record<string, string>> = { zh: ZH, en: EN };

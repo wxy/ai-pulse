@@ -47,6 +47,8 @@ export interface Provider {
   faviconUrl?: string;           // Official favicon URL
   baseUrl: string;               // Homepage or console URL for the provider
   statusPageUrl?: string;        // Public status page URL
+  popular?: boolean;             // Show by default in popup (default true)
+  balanceType?: 'prepaid' | 'usage' | 'quota';  // Billing model (default prepaid)
 
   // Capability declaration
   capabilities: ProviderCapabilities;
