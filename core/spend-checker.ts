@@ -1,5 +1,6 @@
 import { getProviderConfigs, getBalanceCache, getSettings } from './storage';
-import type { BalanceCacheEntry, BalanceSnapshot } from '@/types';
+import { getProvider } from './provider-registry';
+import type { BalanceSnapshot } from '@/types';
 
 interface SpendResult {
   totalSpend: number;
@@ -42,7 +43,11 @@ export async function checkSpending(): Promise<SpendResult> {
     const lastBal = last.balances.find(b => b.currency === bal.currency);
     if (!firstBal || !lastBal) continue;
 
-    const providerSpend = firstBal.totalBalance - lastBal.totalBalance;
+    // Adapt spend direction to billing model
+    const bType = getProvider(providerId)?.balanceType ?? 'prepaid';
+    const providerSpend = bType === 'usage'
+      ? lastBal.totalBalance - firstBal.totalBalance   // usage grows, spend is increase
+      : firstBal.totalBalance - lastBal.totalBalance;   // prepaid decreases, spend is decrease
     if (providerSpend <= 0.01) continue; // negligible
 
     const days = Math.max(1, (last.timestamp - first.timestamp) / (1000 * 60 * 60 * 24));
