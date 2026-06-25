@@ -8,7 +8,7 @@ export default defineConfig({
   manifest: {
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
-    version: '0.3.1',
+    version: '0.4.0',
     default_locale: 'en',
     permissions: [
       'storage',
