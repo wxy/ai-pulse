@@ -11,6 +11,7 @@ const CustomProviderForm: React.FC<CustomProviderFormProps> = ({ onDone }) => {
   const [balanceUrl, setBalanceUrl] = useState('');
   const [statusUrl, setStatusUrl] = useState('');
   const [icon, setIcon] = useState('🔧');
+  const [balanceType, setBalanceType] = useState<'prepaid' | 'usage' | 'quota'>('prepaid');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +26,7 @@ const CustomProviderForm: React.FC<CustomProviderFormProps> = ({ onDone }) => {
         id, name: name.trim(), company: company.trim() || name.trim(), description: t('custom.custom_label'), icon,
         baseUrl: '',
         capabilities: { canFetchBalance: Boolean(balanceUrl.trim()), canFetchStatus: Boolean(statusUrl.trim()) },
+        balanceType,
       };
       if (balanceUrl.trim()) {
         provider.fetchBalance = async (apiKey: string) => {
@@ -62,6 +64,15 @@ const CustomProviderForm: React.FC<CustomProviderFormProps> = ({ onDone }) => {
       <div className="form-group"><label className="field-label">{t('custom.company')}</label><input className="text-input" value={company} onChange={e => setCompany(e.target.value)} /></div>
       <div className="form-group"><label className="field-label">{t('custom.icon')}</label><input className="text-input" value={icon} onChange={e => setIcon(e.target.value)} maxLength={4} style={{ width: 80 }} /></div>
       <div className="form-group"><label className="field-label">{t('custom.balance_url')}</label><input className="text-input" value={balanceUrl} onChange={e => setBalanceUrl(e.target.value)} placeholder="https://api.example.com/v1/balance" style={{ maxWidth: '100%' }} /><p className="field-hint">{t('custom.balance_hint')}</p></div>
+      {balanceUrl.trim() && (
+        <div className="form-group"><label className="field-label">{t('custom.balance_type')}</label>
+          <select className="text-input" value={balanceType} onChange={e => setBalanceType(e.target.value as any)}>
+            <option value="prepaid">{t('custom.type_prepaid')}</option>
+            <option value="usage">{t('custom.type_usage')}</option>
+            <option value="quota">{t('custom.type_quota')}</option>
+          </select>
+        </div>
+      )}
       <div className="form-group"><label className="field-label">{t('custom.status_url')}</label><input className="text-input" value={statusUrl} onChange={e => setStatusUrl(e.target.value)} placeholder="https://api.example.com/v1/models" style={{ maxWidth: '100%' }} /></div>
       {error && <p className="field-error">{error}</p>}
       <div className="form-actions">

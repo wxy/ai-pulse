@@ -147,6 +147,10 @@ const ZH: Record<string, string> = {
   'custom.error_url': '请输入状态检查 URL',
   'custom.error_save': '保存失败',
   'custom.custom_label': '自定义',
+  'custom.balance_type': '计费模式',
+  'custom.type_prepaid': '预付余额',
+  'custom.type_usage': '后付用量',
+  'custom.type_quota': '配额制',
 
   'card.click_config': '点击配置',
   'card.daily_avg': '日',
@@ -326,6 +330,10 @@ const EN: Record<string, string> = {
   'custom.error_url': 'Status check URL is required',
   'custom.error_save': 'Failed to save',
   'custom.custom_label': 'Custom',
+  'custom.balance_type': 'Billing Model',
+  'custom.type_prepaid': 'Prepaid',
+  'custom.type_usage': 'Usage-based',
+  'custom.type_quota': 'Quota',
 
   'card.click_config': 'Click to configure',
   'card.daily_avg': 'day',
