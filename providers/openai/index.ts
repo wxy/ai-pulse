@@ -61,6 +61,7 @@ export const openaiProvider: Provider = {
   faviconUrl: 'https://openai.com/favicon.ico',
   baseUrl: 'https://platform.openai.com',
   statusPageUrl: 'https://status.openai.com',
+  balanceType: 'usage',
   capabilities: {
     canFetchBalance: true,
     canFetchStatus: true,

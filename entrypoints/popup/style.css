@@ -386,6 +386,15 @@ body {
   margin-left: 4px;
 }
 
+.days-left-inline {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-left: 6px;
+  padding: 1px 5px;
+  border: 1px solid var(--border-hover);
+  border-radius: 3px;
+}
+
 /* Card Footer */
 .provider-card-footer {
   display: flex;
@@ -582,6 +591,14 @@ body {
 }
 .provider-config-header h2 { font-size: 15px; color: var(--text); margin-bottom: 2px; }
 .provider-config-header p { font-size: 11px; color: var(--text-dim); }
+
+/* Custom Provider Form */
+.custom-provider-form { margin-top: 8px; padding: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
+.custom-provider-form h3 { font-size: 14px; color: var(--text); margin-bottom: 4px; }
+.form-group { margin-bottom: 10px; }
+.form-group .text-input { width: 100%; padding: 6px 8px; background: var(--bg); border: 1px solid var(--border-hover); border-radius: 4px; color: var(--text-body); font-size: 12px; }
+.form-actions { display: flex; gap: 6px; margin-top: 10px; }
+.section-desc { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
 
 /* About section in settings */
 .about-note {

@@ -10,6 +10,8 @@ import { anthropicProvider } from '@/providers/anthropic';
 import { googleProvider } from '@/providers/google';
 import { mistralProvider } from '@/providers/mistral';
 import { cohereProvider } from '@/providers/cohere';
+import { xaiProvider } from '@/providers/xai';
+import { perplexityProvider } from '@/providers/perplexity';
 
 const registry = new Map<string, Provider>();
 
@@ -25,7 +27,15 @@ const builtinProviders: Provider[] = [
   googleProvider,
   mistralProvider,
   cohereProvider,
+  xaiProvider,
+  perplexityProvider,
 ];
+
+// Tag popular providers (shown by default, others hidden behind "Show more")
+const popularIds = new Set(['deepseek', 'moonshot', 'zhipu', 'openai', 'anthropic', 'google']);
+for (const p of builtinProviders) {
+  p.popular = popularIds.has(p.id) || p.popular !== false;
+}
 
 for (const p of builtinProviders) {
   registry.set(p.id, p);

@@ -38,6 +38,7 @@ async function initializeDefaults(): Promise<void> {
       settings: {
         refreshIntervalMinutes: 60,
         historyRetentionDays: 90,
+        soundEnabled: true,
       },
     });
     console.log('Default settings initialized');
@@ -57,16 +58,26 @@ async function buildProviderSummaries(): Promise<ProviderSummary[]> {
   const summaries: ProviderSummary[] = [];
 
   for (const provider of providers) {
-    const config = configs.find(c => c.providerId === provider.id) ?? null;
+    let config = configs.find(c => c.providerId === provider.id) ?? null;
 
-    // Include ALL providers — popup will filter display as needed
+    // Non-popular providers default to disabled on first install
+    if (!config && provider.popular === false) {
+      config = { providerId: provider.id, enabled: false, apiKey: '', displayName: '', alertEnabled: false };
+    }
+
     const bCache = balanceCache[provider.id] ?? null;
     const sCache = statusCache[provider.id] ?? null;
 
     // Compute trend from last two balance snapshots
     let trend: ProviderSummary['trend'] = 'unknown';
     if (bCache?.result?.success && bCache.result.balances.length > 0) {
-      trend = 'flat';
+      const history = await getBalanceHistory(provider.id);
+      const snaps = history.snapshots;
+      if (snaps.length >= 2) {
+        const prev = snaps[snaps.length - 2].balances[0]?.totalBalance ?? 0;
+        const curr = snaps[snaps.length - 1].balances[0]?.totalBalance ?? 0;
+        trend = curr < prev ? 'down' : curr > prev ? 'up' : 'flat';
+      }
     }
 
     summaries.push({ provider, config, balanceCache: bCache, statusCache: sCache, trend });

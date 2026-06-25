@@ -1,5 +1,5 @@
 import { getAllProviders } from './provider-registry';
-import { getProviderConfigs, getBalanceCache, getStatusCache } from './storage';
+import { getProviderConfigs, getBalanceCache, getStatusCache, getSettings } from './storage';
 import type { BalanceHistory } from '@/types';
 
 let cycleTimer: ReturnType<typeof setInterval> | null = null;
@@ -33,13 +33,16 @@ export async function updateBadge(): Promise<void> {
       line += ` ${formatShortBalance(bal.currency, amount)}`;
       activeBalances.push({ name, currency: bal.currency, amount });
 
-      // Per-provider alert: warn if balance < estimated daily consumption
+      // Per-provider alert: adapt to billing model
       if (config?.alertEnabled && amount > 0) {
         try {
-          const dailyAvg = await getDailyAvg(provider.id, bal.currency);
-          if (dailyAvg > 0 && amount < dailyAvg) {
-            hasAlert = true;
-            line += ' ⚠';
+          const { rate: dailyRate } = await getDailyAvg(provider.id, bal.currency);
+          const bType = provider.balanceType ?? 'prepaid';
+          if (dailyRate > 0) {
+            const shouldAlert = bType === 'usage'
+              ? amount > dailyRate * 7   // usage: cumulative spend > 7 days of avg? overspending!
+              : amount < dailyRate;       // prepaid/quota: remaining < 1 day? running low!
+            if (shouldAlert) { hasAlert = true; line += ' ⚠'; }
           }
         } catch { /* ignore — alert check is best-effort */ }
       }
@@ -79,12 +82,12 @@ export async function updateBadge(): Promise<void> {
   }
 }
 
-/** Compute daily avg consumption for a provider from balance history */
-async function getDailyAvg(providerId: string, currency: string): Promise<number> {
+/** Compute daily avg consumption (absolute value) from balance history */
+async function getDailyAvg(providerId: string, currency: string): Promise<{ rate: number; direction: 'up' | 'down' | 'flat' }> {
   const key = `balance_history_${providerId}`;
   const result = await chrome.storage.local.get(key);
   const history: BalanceHistory = result[key];
-  if (!history?.snapshots || history.snapshots.length < 2) return 0;
+  if (!history?.snapshots || history.snapshots.length < 2) return { rate: 0, direction: 'flat' };
 
   const snapshots = history.snapshots;
   const first = snapshots[0];
@@ -92,13 +95,14 @@ async function getDailyAvg(providerId: string, currency: string): Promise<number
 
   const firstBal = first.balances.find(b => b.currency === currency);
   const lastBal = last.balances.find(b => b.currency === currency);
-  if (!firstBal || !lastBal) return 0;
+  if (!firstBal || !lastBal) return { rate: 0, direction: 'flat' };
 
-  const consumed = firstBal.totalBalance - lastBal.totalBalance;
-  if (consumed <= 0) return 0;
+  const diff = firstBal.totalBalance - lastBal.totalBalance;
+  const abs = Math.abs(diff);
+  if (abs < 0.001) return { rate: 0, direction: 'flat' };
 
   const daysDiff = Math.max(1, (last.timestamp - first.timestamp) / (1000 * 60 * 60 * 24));
-  return consumed / daysDiff;
+  return { rate: abs / daysDiff, direction: diff > 0 ? 'down' : 'up' };
 }
 
 function formatShortBalance(currency: string, amount: number): string {
@@ -137,4 +141,30 @@ function startCycling(balances: { name: string; currency: string; amount: number
 
 function stopCycling(): void {
   if (cycleTimer) { clearInterval(cycleTimer); cycleTimer = null; }
+}
+
+/** Animate badge with spend-level emoji. Always runs regardless of sound setting. */
+export async function showSpendAlert(totalSpend: number, currency: string, level: 'light' | 'heavy', details: { name: string; spend: number }[]): Promise<void> {
+  // Badge animation: show single emoji matching spend level
+  const emoji = level === 'heavy' ? '💰' : '🌕';
+  const duration = level === 'heavy' ? 3000 : 2000;
+
+  chrome.action.setBadgeText({ text: emoji });
+  setTimeout(() => updateBadge(), duration);
+
+  // Sound/notification controlled by setting
+  const settings = await getSettings();
+  if (settings.soundEnabled === false) return;
+
+  if (chrome.notifications) {
+    const prefix = currency === 'CNY' ? '¥' : currency === 'USD' ? '$' : '';
+    const providerList = details.map(d => `${d.name}: ${prefix}${d.spend.toFixed(2)}`).join('\n');
+    chrome.notifications.create('spend-alert', {
+      type: 'basic',
+      iconUrl: 'icons/icon-128.png',
+      title: level === 'heavy' ? '💸 Heavy spending' : '🌕 Spending alert',
+      message: `Total ${prefix}${totalSpend.toFixed(2)}\n${providerList}`,
+      priority: 1,
+    });
+  }
 }

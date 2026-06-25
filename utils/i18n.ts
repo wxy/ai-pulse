@@ -64,7 +64,7 @@ const ZH: Record<string, string> = {
   'config.status_page': '状态页',
   'config.back': '← 返回服务商列表',
   'config.alert_title': '余额预警',
-  'config.alert_desc': '当余额低于预估日均消费时，扩展图标徽章变红。基于历史数据自动计算。',
+  'config.alert_desc': '余额不足或用量超常时徽章变红。基于历史数据自动计算，适配预付/后付/配额模式。',
   'config.alert_on': '已开启',
   'config.alert_off': '已关闭',
   'apikey.placeholder': '请输入 API Key（sk- 开头）',
@@ -91,6 +91,9 @@ const ZH: Record<string, string> = {
   'settings.disable': '禁用',
   'settings.enable': '启用',
   'settings.none': '无',
+  'settings.sound': '音效',
+  'settings.sound_on': '开启',
+  'settings.sound_off': '关闭',
   'settings.language': '语言',
   'settings.language_zh': '中文',
   'settings.language_en': 'English',
@@ -182,6 +185,12 @@ const ZH: Record<string, string> = {
   'provider.cohere.name': 'Cohere',
   'provider.cohere.company': 'Cohere',
   'provider.cohere.desc': 'Command / Embed / Rerank',
+  'provider.xai.name': 'Grok',
+  'provider.xai.company': 'xAI',
+  'provider.xai.desc': 'Grok / xAI',
+  'provider.perplexity.name': 'Perplexity',
+  'provider.perplexity.company': 'Perplexity AI',
+  'provider.perplexity.desc': 'Perplexity / Sonar',
 };
 
 const EN: Record<string, string> = {
@@ -237,7 +246,7 @@ const EN: Record<string, string> = {
   'config.status_only_desc': 'No public balance API. Only service status will be monitored.',
   'config.status_only_badge': 'Status Only',
   'config.alert_title': 'Balance Alert',
-  'config.alert_desc': 'Badge turns red when balance drops below estimated daily consumption. Auto-calculated from history.',
+  'config.alert_desc': 'Badge turns red when balance runs low or usage spikes. Auto-calibrated for prepaid/usage/quota billing.',
   'config.alert_on': 'Enabled',
   'config.alert_off': 'Disabled',
   'config.links': 'Links',
@@ -267,6 +276,9 @@ const EN: Record<string, string> = {
   'settings.disable': 'Disable',
   'settings.enable': 'Enable',
   'settings.none': 'None',
+  'settings.sound': 'Sound',
+  'settings.sound_on': 'On',
+  'settings.sound_off': 'Off',
   'settings.language': 'Language',
   'settings.language_zh': '中文',
   'settings.language_en': 'English',
@@ -351,6 +363,12 @@ const EN: Record<string, string> = {
   'provider.cohere.name': 'Cohere',
   'provider.cohere.company': 'Cohere',
   'provider.cohere.desc': 'Command / Embed / Rerank',
+  'provider.xai.name': 'Grok',
+  'provider.xai.company': 'xAI',
+  'provider.xai.desc': 'Grok / xAI',
+  'provider.perplexity.name': 'Perplexity',
+  'provider.perplexity.company': 'Perplexity AI',
+  'provider.perplexity.desc': 'Perplexity / Sonar',
 };
 
 const translations: Record<string, Record<string, string>> = { zh: ZH, en: EN };

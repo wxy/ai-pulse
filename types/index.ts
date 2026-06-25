@@ -47,6 +47,8 @@ export interface Provider {
   faviconUrl?: string;           // Official favicon URL
   baseUrl: string;               // Homepage or console URL for the provider
   statusPageUrl?: string;        // Public status page URL
+  popular?: boolean;             // Show by default in popup (default true)
+  balanceType?: 'prepaid' | 'usage' | 'quota';  // Billing model (default prepaid)
 
   // Capability declaration
   capabilities: ProviderCapabilities;
@@ -108,6 +110,7 @@ export interface BalanceHistory {
 export interface GlobalSettings {
   refreshIntervalMinutes: number;  // How often background fetches (default 60)
   historyRetentionDays: number;   // How long to keep balance snapshots (default 90)
+  soundEnabled: boolean;          // Play sound + animate badge on spending (default true)
 }
 
 /** Custom provider definition stored by user */
