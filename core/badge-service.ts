@@ -1,5 +1,5 @@
 import { getAllProviders } from './provider-registry';
-import { getProviderConfigs, getBalanceCache, getStatusCache } from './storage';
+import { getProviderConfigs, getBalanceCache, getStatusCache, getSettings } from './storage';
 import type { BalanceHistory } from '@/types';
 
 let cycleTimer: ReturnType<typeof setInterval> | null = null;
@@ -137,4 +137,38 @@ function startCycling(balances: { name: string; currency: string; amount: number
 
 function stopCycling(): void {
   if (cycleTimer) { clearInterval(cycleTimer); cycleTimer = null; }
+}
+
+/** Animate badge with coin emoji + notification on spend alert */
+export async function showSpendAlert(totalSpend: number, currency: string, level: 'light' | 'heavy', details: { name: string; spend: number }[]): Promise<void> {
+  const settings = await getSettings();
+  if (settings.soundEnabled === false) return;
+
+  // Badge animation: cycle coin emojis
+  const coinFrames = ['🪙', '💰', '💛', '💎'];
+  let frame = 0;
+  const animTimer = setInterval(() => {
+    chrome.action.setBadgeText({ text: coinFrames[frame % coinFrames.length] });
+    frame++;
+  }, 400);
+
+  // Stop animation after 2s (light) or 3s (heavy) and restore badge
+  const duration = level === 'heavy' ? 3000 : 2000;
+  setTimeout(() => {
+    clearInterval(animTimer);
+    updateBadge(); // restore normal badge
+  }, duration);
+
+  // Chrome notification
+  if (chrome.notifications) {
+    const prefix = currency === 'CNY' ? '¥' : currency === 'USD' ? '$' : '';
+    const providerList = details.map(d => `${d.name}: ${prefix}${d.spend.toFixed(2)}`).join('\n');
+    chrome.notifications.create('spend-alert', {
+      type: 'basic',
+      iconUrl: 'icons/icon-128.png',
+      title: level === 'heavy' ? '💸 Heavy spending detected' : '🪙 Spending alert',
+      message: `Today's spend ${prefix}${totalSpend.toFixed(2)}\n${providerList}`,
+      priority: 1,
+    });
+  }
 }

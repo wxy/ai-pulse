@@ -3,7 +3,8 @@ import { getProviderConfigs } from './storage';
 import { getAllProviders } from './provider-registry';
 import { fetchAndCacheBalance } from './balance-service';
 import { fetchAndCacheStatus } from './status-service';
-import { updateBadge } from './badge-service';
+import { updateBadge, showSpendAlert } from './badge-service';
+import { checkSpending } from './spend-checker';
 
 const ALARM_NAME = 'fetch-balance-status';
 let lastInterval = 0;
@@ -89,6 +90,12 @@ export async function runFetchCycle(): Promise<void> {
 
   // Update extension badge
   await updateBadge();
+
+  // Check spending and alert if needed
+  const spend = await checkSpending();
+  if (spend.level !== 'none') {
+    showSpendAlert(spend.totalSpend, spend.currency, spend.level, spend.details);
+  }
 }
 
 export function setupAlarmListener(): void {

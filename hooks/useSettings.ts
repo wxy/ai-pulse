@@ -5,6 +5,7 @@ import { sendMessage } from '@/core/message-bus';
 const DEFAULT_SETTINGS: GlobalSettings = {
   refreshIntervalMinutes: 60,
   historyRetentionDays: 90,
+  soundEnabled: true,
 };
 
 export function useSettings() {

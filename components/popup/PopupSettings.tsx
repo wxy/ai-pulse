@@ -44,6 +44,15 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onR
       </section>
 
       <section className="settings-group">
+        <label className="settings-label">🔔 {t('settings.sound')}</label>
+        <select className="settings-select" value={settings.soundEnabled !== false ? 'on' : 'off'}
+          onChange={e => updateSetting('soundEnabled', e.target.value === 'on')} disabled={saving}>
+          <option value="on">{t('settings.sound_on')}</option>
+          <option value="off">{t('settings.sound_off')}</option>
+        </select>
+      </section>
+
+      <section className="settings-group">
         <label className="settings-label">{t('settings.language')}</label>
         <select className="settings-select" value={getLanguage()}
           onChange={e => { setLanguage(e.target.value as 'zh' | 'en'); window.location.reload(); }}>

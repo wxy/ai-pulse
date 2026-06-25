@@ -108,6 +108,7 @@ export interface BalanceHistory {
 export interface GlobalSettings {
   refreshIntervalMinutes: number;  // How often background fetches (default 60)
   historyRetentionDays: number;   // How long to keep balance snapshots (default 90)
+  soundEnabled: boolean;          // Play sound + animate badge on spending (default true)
 }
 
 /** Custom provider definition stored by user */

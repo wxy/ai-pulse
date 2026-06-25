@@ -38,6 +38,7 @@ async function initializeDefaults(): Promise<void> {
       settings: {
         refreshIntervalMinutes: 60,
         historyRetentionDays: 90,
+        soundEnabled: true,
       },
     });
     console.log('Default settings initialized');
