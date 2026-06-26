@@ -29,34 +29,38 @@
     "deepseek-v4-pro": {
       "provider": "deepseek",
       "name": "DeepSeek V4 Pro",
-      "in_price_per_mtok": 0.5,
-      "out_price_per_mtok": 2.2,
-      "cache_price_per_mtok": 0.05,
-      "currency": "USD"
+      "in_price_per_mtok": 0.42,
+      "out_price_per_mtok": 0.83,
+      "cache_price_per_mtok": 0.0035,
+      "currency": "USD",
+      "_note": "¥3/¥6 per M tokens, CNY→USD @7.2"
     },
     "deepseek-v4-flash": {
       "provider": "deepseek",
       "name": "DeepSeek V4 Flash",
-      "in_price_per_mtok": 0.25,
-      "out_price_per_mtok": 1.1,
-      "cache_price_per_mtok": 0.025,
-      "currency": "USD"
+      "in_price_per_mtok": 0.14,
+      "out_price_per_mtok": 0.28,
+      "cache_price_per_mtok": 0.0028,
+      "currency": "USD",
+      "_note": "¥1/¥2 per M tokens, CNY→USD @7.2"
     },
     "deepseek-chat": {
       "provider": "deepseek",
-      "name": "DeepSeek Chat (V3)",
-      "in_price_per_mtok": 0.27,
-      "out_price_per_mtok": 1.1,
-      "cache_price_per_mtok": 0.07,
-      "currency": "USD"
+      "name": "DeepSeek Chat (V3, deprecated Jul 24)",
+      "in_price_per_mtok": 0.14,
+      "out_price_per_mtok": 0.28,
+      "cache_price_per_mtok": 0.0028,
+      "currency": "USD",
+      "_note": "maps to deepseek-v4-flash non-thinking mode"
     },
     "deepseek-reasoner": {
       "provider": "deepseek",
-      "name": "DeepSeek Reasoner (R1)",
-      "in_price_per_mtok": 0.55,
-      "out_price_per_mtok": 2.19,
-      "cache_price_per_mtok": 0.14,
-      "currency": "USD"
+      "name": "DeepSeek Reasoner (R1, deprecated Jul 24)",
+      "in_price_per_mtok": 0.14,
+      "out_price_per_mtok": 0.28,
+      "cache_price_per_mtok": 0.0028,
+      "currency": "USD",
+      "_note": "maps to deepseek-v4-flash thinking mode"
     },
     "gpt-4o": {
       "provider": "openai",
