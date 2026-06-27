@@ -3,12 +3,13 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
 
+  outDir: 'dist',
   publicDir: 'public',
 
   manifest: {
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
-    version: '0.4.0',
+    version: '0.4.1',
     default_locale: 'en',
     permissions: [
       'storage',
