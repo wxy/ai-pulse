@@ -53,6 +53,9 @@ export interface Provider {
   // Capability declaration
   capabilities: ProviderCapabilities;
 
+  // Shown when canFetchBalance is false — explains why
+  noBalanceNote?: string;
+
   // API Methods (optional — guarded by capabilities)
   fetchBalance?(apiKey: string): Promise<BalanceResult>;
   fetchStatus?(): Promise<StatusResult>;

@@ -33,5 +33,6 @@ export const baichuanProvider: Provider = {
     canFetchBalance: false,
     canFetchStatus: true,
   },
+  noBalanceNote: 'provider.baichuan.no_balance_note',
   fetchStatus,
 };

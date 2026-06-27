@@ -33,5 +33,6 @@ export const qwenProvider: Provider = {
     canFetchBalance: false,
     canFetchStatus: true,
   },
+  noBalanceNote: 'provider.qwen.no_balance_note',
   fetchStatus,
 };

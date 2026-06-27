@@ -3,7 +3,7 @@ import type { BalanceEntry } from '@/types';
 import { useBalanceHistory } from '@/hooks/useBalanceHistory';
 import { t } from '@/utils/i18n';
 
-interface BalanceDisplayProps { balances: BalanceEntry[]; hasApiKey: boolean; providerId: string; onSelect: () => void; }
+interface BalanceDisplayProps { balances: BalanceEntry[]; hasApiKey: boolean; providerId: string; onSelect: () => void; canFetchBalance?: boolean; noBalanceNote?: string; }
 
 function useStats(providerId: string, currency: string | null, balance: number): { dailyAvg: string | null; daysLeft: string | null } {
   const { chartData } = useBalanceHistory(providerId);
@@ -24,9 +24,17 @@ function useStats(providerId: string, currency: string | null, balance: number):
   };
 }
 
-const BalanceDisplay: React.FC<BalanceDisplayProps> = ({ balances, hasApiKey, providerId, onSelect }) => {
+const BalanceDisplay: React.FC<BalanceDisplayProps> = ({ balances, hasApiKey, providerId, onSelect, canFetchBalance, noBalanceNote }) => {
   const bal = balances[0];
   const stats = useStats(providerId, bal?.currency ?? null, bal?.totalBalance ?? 0);
+
+  if (canFetchBalance === false && noBalanceNote) {
+    return (
+      <div className="balance-display">
+        <p className="no-data-hint">{t(noBalanceNote)}</p>
+      </div>
+    );
+  }
 
   if (!hasApiKey) {
     return (

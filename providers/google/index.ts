@@ -34,5 +34,6 @@ export const googleProvider: Provider = {
     canFetchBalance: false,
     canFetchStatus: true,
   },
+  noBalanceNote: 'provider.google.no_balance_note',
   fetchStatus,
 };

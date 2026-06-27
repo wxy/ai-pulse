@@ -36,5 +36,6 @@ export const cohereProvider: Provider = {
     canFetchBalance: false,
     canFetchStatus: true,
   },
+  noBalanceNote: 'provider.cohere.no_balance_note',
   fetchStatus,
 };

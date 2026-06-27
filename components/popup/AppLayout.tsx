@@ -73,7 +73,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ providers, loading, error, onRefr
 
       {view === 'settings' && (
         <main className="settings-panel">
-          <PopupSettings providers={providers} onRefresh={onRefresh} onReEnable={clearHidden} />
+          <PopupSettings providers={providers} onRefresh={onRefresh} onSync={onSync} onReEnable={clearHidden} />
         </main>
       )}
 

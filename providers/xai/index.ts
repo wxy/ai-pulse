@@ -26,5 +26,6 @@ export const xaiProvider: Provider = {
   faviconUrl: 'https://x.ai/favicon.ico',
   baseUrl: 'https://console.x.ai',
   capabilities: { canFetchBalance: false, canFetchStatus: true },
+  noBalanceNote: 'provider.xai.no_balance_note',
   fetchStatus,
 };

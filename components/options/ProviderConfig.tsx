@@ -53,8 +53,7 @@ const ProviderConfig: React.FC<ProviderConfigProps> = ({ provider, onBack }) => 
       {!provider.capabilities.canFetchBalance && (
         <section className="config-section">
           <h3>{t('config.status_only_title')}</h3>
-          <p className="section-desc">{t('config.status_only_desc')}</p>
-          <span className="badge badge-info">{t('config.status_only_badge')}</span>
+          <p className="section-desc">{provider.noBalanceNote ? t(provider.noBalanceNote) : t('config.status_only_desc')}</p>
         </section>
       )}
 

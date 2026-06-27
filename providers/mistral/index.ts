@@ -36,5 +36,6 @@ export const mistralProvider: Provider = {
     canFetchBalance: false,
     canFetchStatus: true,
   },
+  noBalanceNote: 'provider.mistral.no_balance_note',
   fetchStatus,
 };
