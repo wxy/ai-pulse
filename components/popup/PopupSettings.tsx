@@ -7,9 +7,9 @@ import { t } from '@/utils/i18n';
 import { sendMessage } from '@/core/message-bus';
 import CustomProviderForm from '@/components/options/CustomProviderForm';
 
-interface PopupSettingsProps { providers: ProviderSummary[]; onRefresh: () => void; onReEnable: () => void; }
+interface PopupSettingsProps { providers: ProviderSummary[]; onRefresh: () => void; onSync: () => void; onReEnable: () => void; }
 
-const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onReEnable }) => {
+const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onSync, onReEnable }) => {
   const { settings, saving, updateSetting } = useSettings();
   const [showDisabled, setShowDisabled] = useState(false);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -22,11 +22,12 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onR
     setEnablingIds(prev => new Set(prev).add(providerId)); // Optimistic remove
     const configs = await getProviderConfigs();
     const config = configs.find(c => c.providerId === providerId);
-    if (config) {
-      await sendMessage('UPDATE_PROVIDER_CONFIG', { ...config, enabled: true });
-    }
+    // Create config if it doesn't exist yet (e.g. first install for non-popular providers)
+    await sendMessage('UPDATE_PROVIDER_CONFIG', config
+      ? { ...config, enabled: true }
+      : { providerId, enabled: true, apiKey: '', displayName: '', alertEnabled: false });
     onReEnable();
-    onRefresh();
+    onSync();
   };
 
   return (
@@ -75,6 +76,10 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onR
               disabledProviders.map(p => (
                 <div key={p.provider.id} className="disabled-row">
                   <span>{p.provider.icon} {p.config?.displayName || p.provider.name}</span>
+                  <span className="capability-icons">
+                    {p.provider.capabilities.canFetchBalance && <span title={t('config.api_key')}>🔑</span>}
+                    {p.provider.capabilities.canFetchStatus && <span title={t('config.status_page')}>💡</span>}
+                  </span>
                   <button className="btn-small-enable" onClick={() => handleToggleProvider(p.provider.id)}>
                     {t('settings.enable')}
                   </button>
@@ -95,7 +100,7 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onR
       )}
 
       <div className="about-note">
-        <p>{t('about.title')} v0.3.0</p>
+        <p>{t('about.title')} v0.4.1</p>
         <p>{t('about.desc')}</p>
         <p>{t('about.supported')}</p>
       </div>

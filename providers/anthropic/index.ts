@@ -36,5 +36,6 @@ export const anthropicProvider: Provider = {
     canFetchBalance: false,
     canFetchStatus: true,
   },
+  noBalanceNote: 'provider.anthropic.no_balance_note',
   fetchStatus,
 };

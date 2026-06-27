@@ -28,5 +28,6 @@ export const perplexityProvider: Provider = {
   faviconUrl: 'https://perplexity.ai/favicon.ico',
   baseUrl: 'https://www.perplexity.ai',
   capabilities: { canFetchBalance: false, canFetchStatus: true },
+  noBalanceNote: 'provider.perplexity.no_balance_note',
   fetchStatus,
 };

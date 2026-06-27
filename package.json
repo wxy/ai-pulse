@@ -1,6 +1,6 @@
 {
   "name": "ai-pulse",
-  "version": "0.2.0",
+  "version": "0.4.1",
   "description": "Monitor AI service providers' usage and balance",
   "private": true,
   "scripts": {

@@ -46,7 +46,7 @@ const AppLayout: React.FC = () => {
           <div className="about-page">
             <h2>{t('about.title')}</h2>
             <p>{t('about.desc')}</p>
-            <p className="version">{t('about.version')} 0.1.0</p>
+            <p className="version">{t('about.version')} 0.4.1</p>
             <div className="about-links"><p>{t('about.supported')}</p></div>
           </div>
         )}

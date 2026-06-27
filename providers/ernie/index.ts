@@ -33,5 +33,6 @@ export const ernieProvider: Provider = {
     canFetchBalance: false,
     canFetchStatus: true,
   },
+  noBalanceNote: 'provider.ernie.no_balance_note',
   fetchStatus,
 };

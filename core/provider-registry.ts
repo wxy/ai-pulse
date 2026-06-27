@@ -31,10 +31,11 @@ const builtinProviders: Provider[] = [
   perplexityProvider,
 ];
 
-// Tag popular providers (shown by default, others hidden behind "Show more")
-const popularIds = new Set(['deepseek', 'moonshot', 'zhipu', 'openai', 'anthropic', 'google']);
+// Tag popular providers (shown by default, others hidden behind "Show more").
+// Only providers with balance APIs are popular by default.
+const popularIds = new Set(['deepseek', 'moonshot', 'openai', 'zhipu']);
 for (const p of builtinProviders) {
-  p.popular = popularIds.has(p.id) || p.popular !== false;
+  p.popular = popularIds.has(p.id) || p.popular === true;
 }
 
 for (const p of builtinProviders) {

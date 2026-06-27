@@ -195,6 +195,17 @@ const ZH: Record<string, string> = {
   'provider.perplexity.name': 'Perplexity',
   'provider.perplexity.company': 'Perplexity AI',
   'provider.perplexity.desc': 'Perplexity / Sonar',
+
+  // No-balance-API notes
+  'provider.anthropic.no_balance_note': '未开放公开用量 API，请在 console.anthropic.com 查看余额',
+  'provider.baichuan.no_balance_note': '未开放公开用量 API，请在 platform.baichuan-ai.com 查看',
+  'provider.cohere.no_balance_note': '未开放公开用量 API，请在 dashboard.cohere.com 查看',
+  'provider.ernie.no_balance_note': '未开放公开用量 API，请在 console.bce.baidu.com 查看计费',
+  'provider.google.no_balance_note': '未开放公开用量 API，请在 aistudio.google.com 查看用量',
+  'provider.mistral.no_balance_note': 'Admin Billing API 需 admin key，暂不支持集成。请在 console.mistral.ai 查看',
+  'provider.perplexity.no_balance_note': '未开放公开用量 API，请在 www.perplexity.ai 查看用量',
+  'provider.qwen.no_balance_note': '未开放公开用量 API，请在 dashscope.console.aliyun.com 查看计费',
+  'provider.xai.no_balance_note': '未开放公开用量 API，请在 x.ai/api 查看用量',
 };
 
 const EN: Record<string, string> = {
@@ -377,6 +388,17 @@ const EN: Record<string, string> = {
   'provider.perplexity.name': 'Perplexity',
   'provider.perplexity.company': 'Perplexity AI',
   'provider.perplexity.desc': 'Perplexity / Sonar',
+
+  // No-balance-API notes
+  'provider.anthropic.no_balance_note': 'No public usage API. Check balance at console.anthropic.com',
+  'provider.baichuan.no_balance_note': 'No public usage API. Check at platform.baichuan-ai.com',
+  'provider.cohere.no_balance_note': 'No public usage API. Check at dashboard.cohere.com',
+  'provider.ernie.no_balance_note': 'No public usage API. Check billing at console.bce.baidu.com',
+  'provider.google.no_balance_note': 'No public usage API. Check usage at aistudio.google.com',
+  'provider.mistral.no_balance_note': 'Admin Billing API exists but requires admin key — not supported. Check at console.mistral.ai',
+  'provider.perplexity.no_balance_note': 'No public usage API. Check usage at www.perplexity.ai',
+  'provider.qwen.no_balance_note': 'No public usage API. Check billing at dashscope.console.aliyun.com',
+  'provider.xai.no_balance_note': 'No public usage API. Check usage at x.ai/api',
 };
 
 const translations: Record<string, Record<string, string>> = { zh: ZH, en: EN };
