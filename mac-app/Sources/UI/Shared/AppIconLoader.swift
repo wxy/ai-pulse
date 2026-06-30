@@ -29,6 +29,6 @@ enum AppIconLoader {
                 return img
             }
         }
-        return NSImage(systemSymbolName: "fuelpump.fill", accessibilityDescription: nil)!
+        return NSImage(size: NSSize(width: 128, height: 128))
     }
 }
