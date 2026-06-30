@@ -160,8 +160,8 @@ struct GeneralTab: View {
             // Coin sound toggle
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("花费音效").font(.body)
-                    Text("检测到余额消费时播放金币音效")
+                    Text(I18n.t("general.coin_sound")).font(.body)
+                    Text(I18n.t("general.coin_sound_desc"))
                         .font(.caption2).foregroundColor(.secondary)
                 }
                 Spacer()

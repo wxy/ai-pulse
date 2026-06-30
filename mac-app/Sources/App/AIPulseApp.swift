@@ -9,8 +9,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var menuBarController: MenuBarController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.applicationIconImage = AppIconLoader.load()
-
         // Resolve security-scoped bookmarks for sandbox file access
         securityScopedURLs = BookmarkManager.resolveAll()
 
