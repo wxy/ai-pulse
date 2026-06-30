@@ -183,8 +183,10 @@ struct OnboardingView: View {
 
             HStack {
                 Button(action: pickDir) {
-                    Label(I18n.t("repos.add"), systemImage: "plus.circle").font(.caption)
+                    Label(I18n.t("repos.add"), systemImage: "plus.circle")
+                        .font(.body).padding(.vertical, 4).padding(.horizontal, 12)
                 }
+                .buttonStyle(.bordered)
                 Spacer()
             }
             .padding(.bottom, 8)
@@ -323,11 +325,16 @@ struct OnboardingView: View {
 
     func close() {
         finish()
+        NotificationCenter.default.post(name: .dashboardRefresh, object: nil)
         OnboardingWindowManager.shared.window?.close()
     }
 }
 
 // MARK: - Window Manager
+
+extension Notification.Name {
+    static let dashboardRefresh = Notification.Name("dashboardRefresh")
+}
 
 final class OnboardingWindowManager {
     static let shared = OnboardingWindowManager()

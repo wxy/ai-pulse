@@ -81,6 +81,9 @@ struct DashboardView: View {
         .background(Color(nsColor: .windowBackgroundColor))
         .task { await load() }
         .onChange(of: timeRange) { _, _ in Task { await load() } }
+        .onReceive(NotificationCenter.default.publisher(for: .dashboardRefresh)) { _ in
+            Task { await load() }
+        }
     }
 
     // MARK: - CPL guidance (no A-grade)

@@ -101,7 +101,11 @@ struct IntegrationsSettingsTab: View {
                     }
 
                     if !notConfigured.isEmpty {
-                        Text(I18n.t("integrations.needs_config")).font(.caption).foregroundColor(.secondary).padding(.top, 8)
+                        HStack {
+                            Text(I18n.t("integrations.needs_config")).font(.caption).foregroundColor(.secondary)
+                            Spacer()
+                        }
+                        .padding(.top, 8)
                         ForEach(notConfigured, id: \.0.id) { (i, r) in
                             IntegrationRow(integration: i, detected: r)
                         }
