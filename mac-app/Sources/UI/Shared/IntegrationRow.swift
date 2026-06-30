@@ -115,13 +115,14 @@ struct IntegrationRow: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
+                    .frame(minWidth: 40)
                     .disabled(keyInput.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             } else {
                 HStack(spacing: 6) {
                     Text("••••••••").foregroundColor(.secondary)
                     Button(I18n.t("integrations.key_change")) { keyInput = ""; showKey = true }
-                        .font(.caption).buttonStyle(.borderless)
+                        .font(.caption).buttonStyle(.borderless).frame(minWidth: 32)
                     if saved { Image(systemName: "checkmark.circle.fill").foregroundColor(.green) }
                 }
             }
