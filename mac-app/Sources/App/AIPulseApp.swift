@@ -9,6 +9,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var menuBarController: MenuBarController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Register defaults (fresh install values)
+        UserDefaults.standard.register(defaults: ["coin_sound_enabled": true])
+
         // Resolve security-scoped bookmarks for sandbox file access
         securityScopedURLs = BookmarkManager.resolveAll()
 

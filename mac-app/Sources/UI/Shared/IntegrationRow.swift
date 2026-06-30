@@ -47,8 +47,8 @@ struct IntegrationRow: View {
 
             Spacer()
 
-            // Controls on the right
-            if detected.found {
+            // Controls on the right. B-grade always shows key input (not auto-detectable).
+            if detected.found || integration.grade == .B {
                 controls
             }
         }

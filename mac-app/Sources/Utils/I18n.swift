@@ -303,7 +303,12 @@ enum I18n {
     static func getLang() -> String {
         if let l = currentLang { return l }
         let saved = UserDefaults.standard.string(forKey: langKey)
-        let lang = saved ?? (Locale.current.language.languageCode?.identifier == "zh" ? "zh" : "en")
+        let lang: String
+        if let s = saved { lang = s }
+        else {
+            let preferred = Locale.preferredLanguages.first ?? ""
+            lang = preferred.hasPrefix("zh") ? "zh" : "en"
+        }
         currentLang = lang
         return lang
     }
