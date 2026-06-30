@@ -106,18 +106,15 @@ struct IntegrationRow: View {
                 HStack(spacing: 6) {
                     TextField(I18n.t("integrations.key_placeholder"), text: $keyInput)
                         .textFieldStyle(.roundedBorder).frame(width: 160)
-                    Button(action: {
+                    Button(I18n.t("integrations.key_save")) {
                         let k = keyInput.trimmingCharacters(in: .whitespaces)
                         guard !k.isEmpty else { return }
                         ApiKeyManager.shared.set(integration.id, key: k)
                         ApiPoller.shared.fetchNow(providerId: integration.id)
                         enabled = true; saved = true; showKey = false; saveConfig()
-                    }) {
-                        Text(I18n.t("integrations.key_save"))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8)
                     }
                     .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
                     .disabled(keyInput.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             } else {
