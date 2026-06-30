@@ -32,8 +32,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // P3: Dock fuel gauge
         DockManager.shared.start()
 
-        // Show Dashboard as the primary window
-        openDashboard()
+        // Dashboard opens on Dock click or Cmd+Tab — not auto-launched
 
         // Request notification permission (only works in .app bundle, not bare binary)
         if Bundle.main.bundleIdentifier != nil {

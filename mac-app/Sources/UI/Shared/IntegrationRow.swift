@@ -113,7 +113,7 @@ struct IntegrationRow: View {
                         ApiPoller.shared.fetchNow(providerId: integration.id)
                         enabled = true; saved = true; showKey = false; saveConfig()
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.bordered)
                     .controlSize(.small)
                     .frame(minWidth: 40)
                     .disabled(keyInput.trimmingCharacters(in: .whitespaces).isEmpty)
