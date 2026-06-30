@@ -89,7 +89,8 @@ struct IntegrationsSettingsTab: View {
                 .font(.caption).foregroundColor(.secondary)
 
             let detected = results.filter(\.1.found)
-            let notDetected = results.filter { !$0.1.found }
+            let notConfigured = results.filter { !$0.1.found && $0.0.grade == .B }
+            let notInstalled = results.filter { !$0.1.found && $0.0.grade != .B }
 
             ScrollView {
                 VStack(spacing: 6) {
@@ -99,7 +100,14 @@ struct IntegrationsSettingsTab: View {
                         }
                     }
 
-                    if !notDetected.isEmpty {
+                    if !notConfigured.isEmpty {
+                        Text(I18n.t("integrations.needs_config")).font(.caption).foregroundColor(.secondary).padding(.top, 8)
+                        ForEach(notConfigured, id: \.0.id) { (i, r) in
+                            IntegrationRow(integration: i, detected: r)
+                        }
+                    }
+
+                    if !notInstalled.isEmpty {
                         HStack {
                             Text(I18n.t("integrations.not_installed")).font(.caption).foregroundColor(.secondary)
                             Spacer()
@@ -110,7 +118,7 @@ struct IntegrationsSettingsTab: View {
                             }
                         }
                         .padding(.top, 8)
-                        ForEach(notDetected, id: \.0.id) { (i, r) in
+                        ForEach(notInstalled, id: \.0.id) { (i, r) in
                             IntegrationRow(integration: i, detected: r)
                         }
                     }
