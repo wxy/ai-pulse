@@ -94,7 +94,7 @@ enum AppIconLoader {
             // Top edge, left→right
             Segment(from: CGPoint(x: r.x + cr, y: r.y), to: CGPoint(x: r.x + w - cr, y: r.y), corner: nil, cornerStart: 0, cornerEnd: 0),
             // Top-right corner
-            Segment(from: CGPoint(x: r.x + w - cr, y: r.y), to: CGPoint(x: r.x + w, y: r.y + cr), corner: CGPoint(x: r.x + w - cr, y: r.y + cr), cornerStart: 3 * .pi / 2, cornerEnd: 2*.pi),
+            Segment(from: CGPoint(x: r.x + w - cr, y: r.y), to: CGPoint(x: r.x + w, y: r.y + cr), corner: CGPoint(x: r.x + w - cr, y: r.y + cr), cornerStart: 3 * .pi / 2, cornerEnd: 2 * .pi),
             // Right edge, top→center (back to 3 o'clock)
             Segment(from: CGPoint(x: r.x + w, y: r.y + cr), to: CGPoint(x: r.x + w, y: r.y + h/2), corner: nil, cornerStart: 0, cornerEnd: 0),
         ]
