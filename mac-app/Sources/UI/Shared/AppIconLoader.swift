@@ -15,44 +15,49 @@ enum AppIconLoader {
         return resized
     }
 
-    /// macOS 26 standard sizes on a 1024×1024 canvas
+    /// macOS 26 standard sizes on a 1024×1024 canvas.
+    /// The squircle icon shape is inset 20px from the canvas edge.
     private static let canvasSize: CGFloat = 1024
-    private static let cornerRadius: CGFloat = 185.4  // official macOS 26 squircle radius
-    private static let contentInset: CGFloat = 100    // 824×824 content area
+    private static let outerPad: CGFloat = 20       // squircle outer edge inset
+    private static let cornerRadius: CGFloat = 178.0  // adjusted for the 20px pad
+    private static let contentInset: CGFloat = 80    // artwork inset inside squircle
 
     static func drawSquircleIcon(artwork: NSImage?, progress: Double, size: CGFloat) -> NSImage {
         let scale = size / canvasSize
+        let pad = outerPad * scale
         let cr = cornerRadius * scale
-        let inset = contentInset * scale
+        let artInset = contentInset * scale
 
         let img = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
-            let squircle = NSBezierPath(roundedRect: rect, xRadius: cr, yRadius: cr)
+            let iconRect = rect.insetBy(dx: pad, dy: pad)
+            let squircle = NSBezierPath(roundedRect: iconRect, xRadius: cr, yRadius: cr)
             squircle.addClip()
 
             // White background
             NSColor.white.setFill()
             squircle.fill()
 
-            // Artwork — 824×824 content area
+            // Artwork — centered inside squircle
             if let art = artwork {
-                art.draw(in: rect.insetBy(dx: inset, dy: inset))
+                art.draw(in: iconRect.insetBy(dx: artInset, dy: artInset))
             }
 
             // Progress arc along the rounded-rect perimeter
             let p = CGFloat(min(max(progress, 0.05), 1))
-            let arcInset = size * 0.045
-            let arcRect = rect.insetBy(dx: arcInset, dy: arcInset)
-            let arcCr = cr - arcInset
-            let arcPath = progressArc(in: arcRect, cornerRadius: max(arcCr, 0), fraction: p)
+            let arcInset = size * 0.035
+            let arcRect = iconRect.insetBy(dx: arcInset, dy: arcInset)
+            let arcCr = max(cr - arcInset, 0)
+            let arcPath = progressArc(in: arcRect, cornerRadius: arcCr, fraction: p)
             NSColor.systemGreen.setStroke()
-            arcPath.lineWidth = size * 0.05
+            arcPath.lineWidth = size * 0.04
             arcPath.lineCapStyle = .round
             arcPath.stroke()
 
             // Border
-            let border = NSBezierPath(roundedRect: rect.insetBy(dx: 3 * scale, dy: 3 * scale), xRadius: cr - 3 * scale, yRadius: cr - 3 * scale)
+            let borderInset = 2 * scale
+            let border = NSBezierPath(roundedRect: iconRect.insetBy(dx: borderInset, dy: borderInset), xRadius: cr - borderInset, yRadius: cr - borderInset)
             NSColor(white: 0.80, alpha: 1).setStroke()
-            border.lineWidth = size * 0.03
+            border.lineWidth = size * 0.025
             border.stroke()
 
             return true
