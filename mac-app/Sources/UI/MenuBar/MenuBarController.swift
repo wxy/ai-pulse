@@ -94,8 +94,8 @@ final class MenuBarController: NSObject {
 
     // MARK: - Data
 
-    private struct RepoStat { let name: String; let added: Int; let deleted: Int
-        var summary: String { "+\(added)/-\(deleted) \(I18n.t("menu.lines"))" } }
+    private struct RepoStat { let name: String; let added: Int; let deleted: Int; let cost: Double
+        var summary: String { "$\(String(format: "%.2f", cost)) · +\(added)/-\(deleted) \(I18n.t("menu.lines"))" } }
     private struct Stats { let todaySummary: String?; let weekSummary: String?; let repos: [RepoStat]; let providerCosts: [(providerId: String, cost: Double)]; let hasActivity: Bool }
 
     private func fetchStats() async -> Stats {
@@ -156,11 +156,19 @@ final class MenuBarController: NSObject {
             }
             providerCosts.sort { $0.cost > $1.cost }
 
-            // Repos: code changes only (balance spend has no repo attribution)
+            // Repo cost from backfilled usage_event (log-based, per-repo attribution)
+            var cbr: [String: Double] = [:]
+            let rcRows: [Row] = try await AppDatabase.shared.read { db in
+                try Row.fetchAll(db, sql: "SELECT repo_path AS p, COALESCE(SUM(cost_usd),0) AS c FROM usage_event WHERE repo_path IS NOT NULL AND ts >= ? GROUP BY repo_path", arguments: [weekStart])
+            }
+            for r in rcRows { if let p: String = r["p"], !p.isEmpty { cbr[p] = r["c"] ?? 0 } }
+
+            // Repos: cost from logs + code changes from git
             var repos: [RepoStat] = []
-            for (path, (a, d)) in repoAddDel {
-                guard a > 0 || d > 0 else { continue }
-                repos.append(RepoStat(name: URL(fileURLWithPath: path).lastPathComponent, added: a, deleted: d))
+            for (path, cost) in cbr {
+                let (a, d) = repoAddDel[path] ?? (0, 0)
+                guard a > 0 || d > 0, cost > 0 else { continue }
+                repos.append(RepoStat(name: URL(fileURLWithPath: path).lastPathComponent, added: a, deleted: d, cost: cost))
             }
 
             // --- Helper to format a stats line ---
