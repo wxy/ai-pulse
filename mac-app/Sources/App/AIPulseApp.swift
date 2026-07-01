@@ -28,6 +28,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         showOnboardingIfNeeded()
         // Start all enabled, detected integrations via the registry
         IntegrationRegistry.startAllEnabled()
+        // B-grade balance polling
+        ApiPoller.shared.start()
 
         // P3: Dock fuel gauge
         DockManager.shared.start()

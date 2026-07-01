@@ -24,9 +24,9 @@ enum AppIconLoader {
             NSColor.white.setFill()
             squircle.fill()
 
-            // Artwork
+            // Artwork — standard macOS icon content area (≈85% of canvas)
             if let art = artwork {
-                let inset = size * 0.03
+                let inset = size * 0.10
                 art.draw(in: rect.insetBy(dx: inset, dy: inset))
             }
 
@@ -56,13 +56,13 @@ enum AppIconLoader {
         let w = rect.width; let h = rect.height
         let cx = rect.midX; let cy = rect.midY
         let rx = w / 2; let ry = h / 2
-        let n: CGFloat = 4.0
+        let n: CGFloat = 5.0
         let totalSteps = 360
         let arcSteps = max(Int(CGFloat(totalSteps) * fraction), 2)
 
-        // Start at top (θ = -π/2)
+        // Start at 3 o'clock (θ = 0)
         for i in 0...arcSteps {
-            let theta = -CGFloat.pi / 2 + CGFloat(i) * 2 * .pi / CGFloat(totalSteps)
+            let theta = CGFloat(i) * 2 * .pi / CGFloat(totalSteps)
             let cosT = abs(cos(theta)); let sinT = abs(sin(theta))
             let denom = pow(pow(cosT, n) + pow(sinT, n), 1.0 / n)
             let x = denom > 0 ? rx * cosT / denom * (cos(theta) >= 0 ? 1 : -1) : 0
@@ -80,7 +80,7 @@ enum AppIconLoader {
         let w = rect.width; let h = rect.height
         let cx = rect.midX; let cy = rect.midY
         let rx = w / 2; let ry = h / 2
-        let n: CGFloat = 4.0
+        let n: CGFloat = 5.0
         let steps = 120
         path.move(to: NSPoint(x: cx + rx, y: cy))
         for i in 1...steps {
