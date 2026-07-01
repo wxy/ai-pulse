@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(/Users/xingyuwang/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.0/skills/subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-07-01-ai-pulse-website-pages-plan.md 2)",
+      "Bash(/Users/xingyuwang/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.0/skills/subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-07-01-ai-pulse-website-pages-plan.md 3)",
+      "Bash(/Users/xingyuwang/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.0/skills/subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-07-01-ai-pulse-website-pages-plan.md 4)",
+      "Bash(/Users/xingyuwang/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.0/skills/subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-07-01-ai-pulse-website-pages-plan.md 5)"
+    ],
+    "additionalDirectories": [
+      "/Users/xingyuwang/develop/xingyu.wang/.superpowers/sdd",
+      "/Users/xingyuwang/develop/xingyu.wang/src/app/[locale]/extensions/[slug]",
+      "/Users/xingyuwang/develop/xingyu.wang/src/app/[locale]/extensions/[slug]/about",
+      "/Users/xingyuwang/develop/xingyu.wang/src/app/[locale]/apps/[slug]/privacy",
+      "/Users/xingyuwang/develop/xingyu.wang/messages",
+      "/Users/xingyuwang/develop/xingyu.wang/src/app/[locale]/apps/[slug]"
+    ]
+  }
+}
