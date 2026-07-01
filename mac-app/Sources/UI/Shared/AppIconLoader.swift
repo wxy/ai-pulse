@@ -18,8 +18,8 @@ enum AppIconLoader {
     /// macOS 26 standard sizes on a 1024×1024 canvas.
     /// The squircle icon shape is inset 20px from the canvas edge.
     private static let canvasSize: CGFloat = 1024
-    private static let outerPad: CGFloat = 20       // squircle outer edge inset
-    private static let cornerRadius: CGFloat = 178.0  // adjusted for the 20px pad
+    private static let outerPad: CGFloat = 60       // squircle occupies ~90% of canvas
+    private static let cornerRadius: CGFloat = 165.0  // scaled for smaller squircle
     private static let contentInset: CGFloat = 80    // artwork inset inside squircle
 
     static func drawSquircleIcon(artwork: NSImage?, progress: Double, size: CGFloat) -> NSImage {
