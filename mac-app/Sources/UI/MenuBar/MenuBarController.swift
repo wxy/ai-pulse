@@ -156,19 +156,25 @@ final class MenuBarController: NSObject {
             }
             providerCosts.sort { $0.cost > $1.cost }
 
-            // Repo cost from backfilled usage_event (log-based, per-repo attribution)
+            // Repo cost: attribute total balance spend to repos proportionally by usage_event cost.
+            // Single-provider single-repo use case → same total as provider submenu.
+            let totalBalanceCost = spendByProvider.values.reduce(0, +)
             var cbr: [String: Double] = [:]
             let rcRows: [Row] = try await AppDatabase.shared.read { db in
                 try Row.fetchAll(db, sql: "SELECT repo_path AS p, COALESCE(SUM(cost_usd),0) AS c FROM usage_event WHERE repo_path IS NOT NULL AND ts >= ? GROUP BY repo_path", arguments: [weekStart])
             }
-            for r in rcRows { if let p: String = r["p"], !p.isEmpty { cbr[p] = r["c"] ?? 0 } }
+            var logTotal: Double = 0
+            for r in rcRows { if let p: String = r["p"], !p.isEmpty, let c: Double = r["c"] { cbr[p] = c; logTotal += c } }
+            // Scale log costs to match balance total
+            let scale = logTotal > 0 ? totalBalanceCost / logTotal : 1.0
 
-            // Repos: cost from logs + code changes from git
+            // Repos: scaled cost + code changes from git
             var repos: [RepoStat] = []
-            for (path, cost) in cbr {
+            for (path, logCost) in cbr {
                 let (a, d) = repoAddDel[path] ?? (0, 0)
-                guard a > 0 || d > 0, cost > 0 else { continue }
-                repos.append(RepoStat(name: URL(fileURLWithPath: path).lastPathComponent, added: a, deleted: d, cost: cost))
+                let scaledCost = logCost * scale
+                guard a > 0 || d > 0, scaledCost > 0.001 else { continue }
+                repos.append(RepoStat(name: URL(fileURLWithPath: path).lastPathComponent, added: a, deleted: d, cost: scaledCost))
             }
 
             // --- Helper to format a stats line ---
