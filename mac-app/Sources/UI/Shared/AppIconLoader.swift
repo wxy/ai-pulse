@@ -72,7 +72,7 @@ enum AppIconLoader {
             (CGPoint(x: r.x + cr, y: r.y + cr), .pi, 3 * .pi / 2),
             (CGPoint(x: r.x + w - cr, y: r.y + cr), 3 * .pi / 2, 2 * .pi),
         ]
-        let edges: [(CGPoint, CGPoint)] = [
+        let edges: [(from: CGPoint, to: CGPoint)] = [
             (CGPoint(x: r.x + w, y: r.y + h / 2), CGPoint(x: r.x + w, y: r.y + h - cr)),
             (CGPoint(x: r.x + w - cr, y: r.y + h), CGPoint(x: r.x + cr, y: r.y + h)),
             (CGPoint(x: r.x, y: r.y + h - cr), CGPoint(x: r.x, y: r.y + cr)),
