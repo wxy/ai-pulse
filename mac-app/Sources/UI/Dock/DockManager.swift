@@ -3,8 +3,9 @@ import AppKit
 /// Dock icon with a green progress bar along the rounded-rect border that
 /// fills as daily spend grows.
 ///
-/// The bar starts at top-center and fills clockwise; a full loop represents
-/// 3× the 30-day daily average.
+/// The bar starts at the 3 o'clock position and fills clockwise; a full loop
+/// represents 3× the 30-day daily average. "Spend" here is the combined figure
+/// (API balance spend + subscription amortization) shown on the Dashboard.
 final class DockManager {
     static let shared = DockManager()
     private var timer: Timer?
@@ -19,19 +20,18 @@ final class DockManager {
 
     func stop() { timer?.invalidate(); timer = nil }
 
-    /// 30-day rolling daily average — only counts days with actual cost
+    /// 30-day rolling daily average of combined spend (API + subscription amortization).
     private func rollingDailyAvg() async -> Double {
-        let stats = await StatsService.dailyStats(days: 30)
-        let daysWithCost = stats.filter { $0.cost > 0.001 }
-        guard !daysWithCost.isEmpty else { return 0 }
-        let total = daysWithCost.reduce(0.0) { $0 + $1.cost }
-        return total / Double(daysWithCost.count)
+        let cal = Calendar.current
+        guard let start = cal.date(byAdding: .day, value: -29, to: cal.startOfDay(for: Date())) else { return 0 }
+        let total = await StatsService.combinedSpend(sinceMs: Int64(start.timeIntervalSince1970 * 1000))
+        return total / 30.0
     }
 
     private func refresh() {
         Task {
-            let stats = await StatsService.dailyStats(days: 1)
-            let todayCost = stats.first?.cost ?? 0
+            let todayStartMs = Int64(Calendar.current.startOfDay(for: Date()).timeIntervalSince1970 * 1000)
+            let todayCost = await StatsService.combinedSpend(sinceMs: todayStartMs)
             let dailyAvg = await rollingDailyAvg()
 
             await MainActor.run {

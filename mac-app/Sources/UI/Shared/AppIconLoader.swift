@@ -94,10 +94,11 @@ enum AppIconLoader {
 
     // MARK: - Progress bar along the rounded-rect perimeter
 
-    /// Build a polyline that walks the rounded-rect border starting at top-center
-    /// and running clockwise, cut off at `fraction` of the total perimeter.
-    /// Sampling the corners as short line segments avoids the winding-direction
-    /// ambiguity of `appendArc`, which is where earlier attempts went wrong.
+    /// Build a polyline that walks the rounded-rect border starting at the
+    /// 3 o'clock position (right edge, vertically centered) and running clockwise,
+    /// cut off at `fraction` of the total perimeter. Sampling the corners as short
+    /// line segments avoids the winding-direction ambiguity of `appendArc`, which
+    /// is where earlier attempts went wrong.
     private static func progressPath(rect: CGRect, cornerRadius cr: CGFloat, fraction: CGFloat) -> NSBezierPath {
         let pts = perimeterPoints(rect: rect, cornerRadius: cr)
         let path = NSBezierPath()
@@ -129,9 +130,13 @@ enum AppIconLoader {
         return path
     }
 
-    /// Ordered points tracing the rounded rectangle clockwise from top-center.
+    /// Ordered points tracing the rounded rectangle clockwise from the 3 o'clock
+    /// position (right edge, vertically centered). In this non-flipped bitmap
+    /// context y increases upward, so "clockwise" starts by heading down the
+    /// right edge toward the bottom.
     private static func perimeterPoints(rect: CGRect, cornerRadius cr: CGFloat) -> [CGPoint] {
-        let minX = rect.minX, maxX = rect.maxX, minY = rect.minY, maxY = rect.maxY, midX = rect.midX
+        let minX = rect.minX, maxX = rect.maxX, minY = rect.minY, maxY = rect.maxY
+        let midY = rect.midY
         let steps = 24  // samples per corner
         var pts: [CGPoint] = []
 
@@ -142,16 +147,16 @@ enum AppIconLoader {
             }
         }
 
-        pts.append(CGPoint(x: midX, y: maxY))                 // start: top-center
-        pts.append(CGPoint(x: maxX - cr, y: maxY))            // top edge → right
-        arc(center: CGPoint(x: maxX - cr, y: maxY - cr), from: 90, to: 0)    // top-right
+        pts.append(CGPoint(x: maxX, y: midY))                 // start: 3 o'clock (right-middle)
         pts.append(CGPoint(x: maxX, y: minY + cr))            // right edge ↓
-        arc(center: CGPoint(x: maxX - cr, y: minY + cr), from: 0, to: -90)   // bottom-right
+        arc(center: CGPoint(x: maxX - cr, y: minY + cr), from: 0, to: -90)    // bottom-right
         pts.append(CGPoint(x: minX + cr, y: minY))            // bottom edge ←
         arc(center: CGPoint(x: minX + cr, y: minY + cr), from: -90, to: -180) // bottom-left
         pts.append(CGPoint(x: minX, y: maxY - cr))            // left edge ↑
-        arc(center: CGPoint(x: minX + cr, y: maxY - cr), from: -180, to: -270) // top-left
-        pts.append(CGPoint(x: midX, y: maxY))                 // top edge → back to start
+        arc(center: CGPoint(x: minX + cr, y: maxY - cr), from: 180, to: 90)   // top-left
+        pts.append(CGPoint(x: maxX - cr, y: maxY))            // top edge →
+        arc(center: CGPoint(x: maxX - cr, y: maxY - cr), from: 90, to: 0)     // top-right
+        pts.append(CGPoint(x: maxX, y: midY))                 // right edge ↓ back to start
         return pts
     }
 

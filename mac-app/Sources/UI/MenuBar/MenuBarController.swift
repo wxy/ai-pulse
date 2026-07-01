@@ -109,9 +109,8 @@ final class MenuBarController: NSObject {
             let todayCnt: Int = try await AppDatabase.shared.read { db in
                 try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM usage_event WHERE ts >= ? AND (model IS NULL OR model != '<synthetic>')", arguments: [todayStart]) ?? 0
             }
-            let todayCst: Double? = try await AppDatabase.shared.read { db in
-                try Double.fetchOne(db, sql: "SELECT COALESCE(SUM(cost_usd),0) FROM usage_event WHERE ts >= ? AND (model IS NULL OR model != '<synthetic>')", arguments: [todayStart])
-            }
+            // Combined spend (API balance spend + subscription amortization) — matches Dashboard.
+            let todayCst = await StatsService.combinedSpend(sinceMs: Int64(todayStart))
             let todayAdded: Int = try await AppDatabase.shared.read { db in
                 try Int.fetchOne(db, sql: "SELECT COALESCE(SUM(added),0) FROM code_change WHERE is_merge = 0 AND ts >= ?", arguments: [todayStart]) ?? 0
             }
@@ -123,9 +122,7 @@ final class MenuBarController: NSObject {
             let weekCnt: Int = try await AppDatabase.shared.read { db in
                 try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM usage_event WHERE ts >= ? AND (model IS NULL OR model != '<synthetic>')", arguments: [weekStart]) ?? 0
             }
-            let weekCst: Double? = try await AppDatabase.shared.read { db in
-                try Double.fetchOne(db, sql: "SELECT COALESCE(SUM(cost_usd),0) FROM usage_event WHERE ts >= ? AND (model IS NULL OR model != '<synthetic>')", arguments: [weekStart])
-            }
+            let weekCst = await StatsService.combinedSpend(sinceMs: Int64(weekStart))
             let weekAdded: Int = try await AppDatabase.shared.read { db in
                 try Int.fetchOne(db, sql: "SELECT COALESCE(SUM(added),0) FROM code_change WHERE is_merge = 0 AND ts >= ?", arguments: [weekStart]) ?? 0
             }
@@ -169,16 +166,16 @@ final class MenuBarController: NSObject {
 
             // --- Helper to format a stats line ---
             func makeSummary(cnt: Int, cost: Double, added: Int, deleted: Int, label: String) -> String? {
-                guard cnt > 0 || added > 0 || deleted > 0 else { return nil }
+                guard cnt > 0 || added > 0 || deleted > 0 || cost > 0.0001 else { return nil }
                 let cS = cost > 0.0001 ? "$\(String(format: "%.2f", cost))" : "~$0"
                 let linesStr = "+\(added)/-\(deleted) \(I18n.t("menu.lines"))"
                 return "\(label) · \(cS) · \(linesStr)"
             }
 
-            let todaySum = makeSummary(cnt: todayCnt, cost: todayCst ?? 0, added: todayAdded, deleted: todayDeleted, label: I18n.t("menu.today"))
-            let weekSum  = makeSummary(cnt: weekCnt,  cost: weekCst ?? 0,  added: weekAdded,  deleted: weekDeleted,  label: I18n.t("menu.this_week"))
+            let todaySum = makeSummary(cnt: todayCnt, cost: todayCst, added: todayAdded, deleted: todayDeleted, label: I18n.t("menu.today"))
+            let weekSum  = makeSummary(cnt: weekCnt,  cost: weekCst,  added: weekAdded,  deleted: weekDeleted,  label: I18n.t("menu.this_week"))
 
-            let hasActivity = weekCnt > 0 || !repos.isEmpty || weekAdded > 0 || weekDeleted > 0
+            let hasActivity = weekCnt > 0 || !repos.isEmpty || weekAdded > 0 || weekDeleted > 0 || weekCst > 0.0001
             if !hasActivity {
                 return Stats(todaySummary: nil, weekSummary: nil, repos: [], providerCosts: [], hasActivity: false)
             }
