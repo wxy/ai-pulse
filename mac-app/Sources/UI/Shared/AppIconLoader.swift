@@ -1,9 +1,10 @@
 import AppKit
 
 enum AppIconLoader {
+    /// Load the icon with an optional progress arc drawn along the perimeter.
     static func load(progress: Double = 0) -> NSImage {
         let artwork = findArtwork()
-        return drawSquircleIcon(artwork: artwork, progress: progress, size: 1024)
+        return drawIcon(artwork: artwork, progress: progress)
     }
 
     static func uiImage(size: CGFloat) -> NSImage {
@@ -15,121 +16,115 @@ enum AppIconLoader {
         return resized
     }
 
-    /// macOS 26 standard sizes on a 1024×1024 canvas.
-    /// The squircle icon shape is inset 20px from the canvas edge.
-    private static let canvasSize: CGFloat = 1024
-    private static let outerPad: CGFloat = 60       // squircle occupies ~90% of canvas
-    private static let cornerRadius: CGFloat = 165.0  // scaled for smaller squircle
-    private static let contentInset: CGFloat = 80    // artwork inset inside squircle
-
-    static func drawSquircleIcon(artwork: NSImage?, progress: Double, size: CGFloat) -> NSImage {
-        let scale = size / canvasSize
-        let pad = outerPad * scale
-        let cr = cornerRadius * scale
-        let artInset = contentInset * scale
+    /// macOS applies the squircle mask automatically — we just draw content
+    /// within the safe zone (~960×960 on a 1024 canvas).
+    private static func drawIcon(artwork: NSImage?, progress: Double) -> NSImage {
+        let size: CGFloat = 1024
+        let safeInset: CGFloat = 32   // HIG safe zone
+        let cornerFraction: CGFloat = 0.2285  // official macOS corner radius ratio
 
         let img = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
-            let iconRect = rect.insetBy(dx: pad, dy: pad)
-            let squircle = NSBezierPath(roundedRect: iconRect, xRadius: cr, yRadius: cr)
-            squircle.addClip()
+            let safeRect = rect.insetBy(dx: safeInset, dy: safeInset)
+            let cr = safeRect.width * cornerFraction
 
-            // White background
+            // Background
             NSColor.white.setFill()
-            squircle.fill()
+            rect.fill()
 
-            // Artwork — centered inside squircle
+            // Artwork inside safe zone
             if let art = artwork {
-                art.draw(in: iconRect.insetBy(dx: artInset, dy: artInset))
+                let artInset: CGFloat = 48
+                art.draw(in: safeRect.insetBy(dx: artInset, dy: artInset))
             }
 
-            // Progress arc along the rounded-rect perimeter
-            let p = CGFloat(min(max(progress, 0.05), 1))
-            let arcInset = size * 0.035
-            let arcRect = iconRect.insetBy(dx: arcInset, dy: arcInset)
-            let arcCr = max(cr - arcInset, 0)
-            let arcPath = progressArc(in: arcRect, cornerRadius: arcCr, fraction: p)
-            NSColor.systemGreen.setStroke()
-            arcPath.lineWidth = size * 0.04
-            arcPath.lineCapStyle = .round
-            arcPath.stroke()
-
-            // Border
-            let borderInset = 2 * scale
-            let border = NSBezierPath(roundedRect: iconRect.insetBy(dx: borderInset, dy: borderInset), xRadius: cr - borderInset, yRadius: cr - borderInset)
-            NSColor(white: 0.80, alpha: 1).setStroke()
-            border.lineWidth = size * 0.025
-            border.stroke()
+            // Progress arc
+            if progress > 0.01 {
+                let p = CGFloat(min(max(progress, 0), 1))
+                let arcInset: CGFloat = 32
+                let arcRect = safeRect.insetBy(dx: arcInset, dy: arcInset)
+                let arcCr = cr - arcInset
+                let arcPath = progressArc(in: arcRect, cornerRadius: max(arcCr, 0), fraction: p)
+                NSColor.systemGreen.setStroke()
+                arcPath.lineWidth = 20
+                arcPath.lineCapStyle = .round
+                arcPath.stroke()
+            }
 
             return true
         }
         return img
     }
 
-    /// Arc along a rounded rectangle perimeter, from 3 o'clock clockwise.
+    // MARK: - Arc along rounded rect perimeter
+
     private static func progressArc(in rect: CGRect, cornerRadius cr: CGFloat, fraction: CGFloat) -> NSBezierPath {
         let path = NSBezierPath()
         let perimeter = 2 * (rect.width + rect.height - 4 * cr) + 2 * .pi * cr
-        let totalLength = fraction * perimeter
-        var remaining = totalLength
+        var remaining = fraction * perimeter
 
-        // Start at 3 o'clock = right edge midpoint
-        let startX = rect.maxX
-        let startY = rect.midY
+        let r = rect.origin; let w = rect.width; let h = rect.height
+        let startX = r.x + w; let startY = r.y + h / 2
         path.move(to: NSPoint(x: startX, y: startY))
 
-        // Walk around the perimeter: right edge → bottom-right corner → bottom edge → ...
-        // We walk LEFT along the top? Actually from 3 o'clock going clockwise:
-        // 3 o'clock → go DOWN along right edge → bottom-right corner → LEFT along bottom → ...
-        // Actually: 3 o'clock is at (right, midY). Clockwise means going DOWN the right edge.
-        struct Segment { let from: CGPoint; let to: CGPoint; let corner: CGPoint?; let cornerStart: CGFloat; let cornerEnd: CGFloat }
-        let r = rect.origin; let w = rect.width; let h = rect.height
-        let segments: [Segment] = [
-            // Right edge, top→bottom (from 3 o'clock going down = from midY to bottom)
-            Segment(from: CGPoint(x: r.x + w, y: r.y + h/2), to: CGPoint(x: r.x + w, y: r.y + h - cr), corner: nil, cornerStart: 0, cornerEnd: 0),
-            // Bottom-right corner
-            Segment(from: CGPoint(x: r.x + w, y: r.y + h - cr), to: CGPoint(x: r.x + w - cr, y: r.y + h), corner: CGPoint(x: r.x + w - cr, y: r.y + h - cr), cornerStart: 0, cornerEnd: .pi/2),
-            // Bottom edge, right→left
-            Segment(from: CGPoint(x: r.x + w - cr, y: r.y + h), to: CGPoint(x: r.x + cr, y: r.y + h), corner: nil, cornerStart: 0, cornerEnd: 0),
-            // Bottom-left corner
-            Segment(from: CGPoint(x: r.x + cr, y: r.y + h), to: CGPoint(x: r.x, y: r.y + h - cr), corner: CGPoint(x: r.x + cr, y: r.y + h - cr), cornerStart: .pi/2, cornerEnd: .pi),
-            // Left edge, bottom→top
-            Segment(from: CGPoint(x: r.x, y: r.y + h - cr), to: CGPoint(x: r.x, y: r.y + cr), corner: nil, cornerStart: 0, cornerEnd: 0),
-            // Top-left corner
-            Segment(from: CGPoint(x: r.x, y: r.y + cr), to: CGPoint(x: r.x + cr, y: r.y), corner: CGPoint(x: r.x + cr, y: r.y + cr), cornerStart: .pi, cornerEnd: 3 * .pi / 2),
-            // Top edge, left→right
-            Segment(from: CGPoint(x: r.x + cr, y: r.y), to: CGPoint(x: r.x + w - cr, y: r.y), corner: nil, cornerStart: 0, cornerEnd: 0),
-            // Top-right corner
-            Segment(from: CGPoint(x: r.x + w - cr, y: r.y), to: CGPoint(x: r.x + w, y: r.y + cr), corner: CGPoint(x: r.x + w - cr, y: r.y + cr), cornerStart: 3 * .pi / 2, cornerEnd: 2 * .pi),
-            // Right edge, top→center (back to 3 o'clock)
-            Segment(from: CGPoint(x: r.x + w, y: r.y + cr), to: CGPoint(x: r.x + w, y: r.y + h/2), corner: nil, cornerStart: 0, cornerEnd: 0),
+        let corners: [(CGPoint, CGFloat, CGFloat)] = [
+            (CGPoint(x: r.x + w - cr, y: r.y + h - cr), 0, .pi / 2),
+            (CGPoint(x: r.x + cr, y: r.y + h - cr), .pi / 2, .pi),
+            (CGPoint(x: r.x + cr, y: r.y + cr), .pi, 3 * .pi / 2),
+            (CGPoint(x: r.x + w - cr, y: r.y + cr), 3 * .pi / 2, 2 * .pi),
+        ]
+        let edges: [(CGPoint, CGPoint)] = [
+            (CGPoint(x: r.x + w, y: r.y + h / 2), CGPoint(x: r.x + w, y: r.y + h - cr)),
+            (CGPoint(x: r.x + w - cr, y: r.y + h), CGPoint(x: r.x + cr, y: r.y + h)),
+            (CGPoint(x: r.x, y: r.y + h - cr), CGPoint(x: r.x, y: r.y + cr)),
+            (CGPoint(x: r.x + cr, y: r.y), CGPoint(x: r.x + w - cr, y: r.y)),
+            (CGPoint(x: r.x + w, y: r.y + cr), CGPoint(x: r.x + w, y: r.y + h / 2)),
         ]
 
-        for seg in segments {
-            guard remaining > 0 else { break }
-            if let corner = seg.corner {
-                let arcLen = .pi/2 * cr
-                if remaining >= arcLen {
-                    path.appendArc(withCenter: corner, radius: cr, startAngle: seg.cornerStart * 180 / .pi, endAngle: seg.cornerEnd * 180 / .pi, clockwise: true)
-                    remaining -= arcLen
-                } else {
-                    let sweep = (remaining / arcLen) * .pi/2
-                    path.appendArc(withCenter: corner, radius: cr, startAngle: seg.cornerStart * 180 / .pi, endAngle: (seg.cornerStart + sweep) * 180 / .pi, clockwise: true)
-                    remaining = 0
-                }
-            } else {
-                let dist = hypot(seg.to.x - seg.from.x, seg.to.y - seg.from.y)
-                if remaining >= dist {
-                    path.line(to: seg.to)
-                    remaining -= dist
-                } else {
-                    let t = remaining / dist
-                    path.line(to: NSPoint(x: seg.from.x + (seg.to.x - seg.from.x) * t, y: seg.from.y + (seg.to.y - seg.from.y) * t))
-                    remaining = 0
-                }
+        for i in 0..<4 {
+            // Edge
+            let edge = edges[i]
+            let edgeLen = hypot(edge.to.x - edge.from.x, edge.to.y - edge.from.y)
+            if remaining >= edgeLen {
+                path.line(to: edge.to)
+                remaining -= edgeLen
+            } else if remaining > 0 {
+                let t = remaining / edgeLen
+                path.line(to: NSPoint(x: edge.from.x + (edge.to.x - edge.from.x) * t,
+                                       y: edge.from.y + (edge.to.y - edge.from.y) * t))
+                remaining = 0
+            }
+            // Corner
+            let corner = corners[i]
+            let arcLen = .pi / 2 * cr
+            if remaining >= arcLen {
+                path.appendArc(withCenter: corner.0, radius: cr,
+                               startAngle: corner.1 * 180 / .pi,
+                               endAngle: corner.2 * 180 / .pi, clockwise: true)
+                remaining -= arcLen
+            } else if remaining > 0 {
+                let sweep = (remaining / arcLen) * .pi / 2
+                path.appendArc(withCenter: corner.0, radius: cr,
+                               startAngle: corner.1 * 180 / .pi,
+                               endAngle: (corner.1 + sweep) * 180 / .pi, clockwise: true)
+                remaining = 0
+            }
+            if remaining <= 0 { break }
+        }
+        // Last edge back to start
+        if remaining > 0 {
+            let last = edges[4]
+            let lastLen = hypot(last.to.x - last.from.x, last.to.y - last.from.y)
+            if remaining >= lastLen { path.line(to: last.to) }
+            else {
+                let t = remaining / lastLen
+                path.line(to: NSPoint(x: last.from.x + (last.to.x - last.from.x) * t,
+                                       y: last.from.y + (last.to.y - last.from.y) * t))
             }
         }
         return path
     }
+
+    // MARK: - Artwork
 
     private static func findArtwork() -> NSImage? {
         if let bundleImg = NSImage(contentsOf: Bundle.main.resourceURL?
