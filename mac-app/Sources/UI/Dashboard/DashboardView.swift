@@ -150,8 +150,8 @@ struct DashboardView: View {
 
     var summaryCards: some View {
         let apiSpent = dailyStats.reduce(0.0) { $0 + $1.cost }
-        let added = dailyStats.reduce(0) { $0 + max(0, $1.netLines) }
-        let deleted = dailyStats.reduce(0) { $0 + max(0, -$1.netLines) }
+        let added = codeChanges.reduce(0) { $0 + $1.added }
+        let deleted = codeChanges.reduce(0) { $0 + $1.deleted }
         let periodLabel = timeRange.label
         return VStack(spacing: 8) {
             HStack(spacing: 8) {
