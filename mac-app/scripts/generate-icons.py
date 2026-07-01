@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Generate macOS 26 app icon: apply rounded-rect mask (185.4px radius on 1024px canvas)
-to the square AIPulse.png, produce all 10 iconset sizes, and package into AIPulse.icns.
+Generate macOS 26 app icon: place the square AIPulse.png into an 824×824 rounded
+body centered on a 1024 canvas (100px transparent margin, corner radius 185.4px),
+produce all 10 iconset sizes, and package into AIPulse.icns.
 
 Usage:  python3 scripts/generate-icons.py
 Output: Resources/AIPulse.iconset/  +  Resources/AIPulse.icns
@@ -18,7 +19,13 @@ ICONSET = os.path.join(RESOURCES, "AIPulse.iconset")
 ICNS = os.path.join(RESOURCES, "AIPulse.icns")
 
 CANVAS = 1024
-CORNER_RADIUS = 185.4  # macOS 26 official rounded-rect corner radius
+# macOS 26 icon grid: an 824×824 rounded body centered in a 1024 canvas,
+# leaving a 100px transparent margin on every side (matches every stock app
+# icon in the Dock). The system adds the drop shadow, so we bake none.
+BODY = 824
+MARGIN = (CANVAS - BODY) // 2  # 100
+CORNER_RADIUS = 185.4  # continuous corner radius of the 824px body (≈22.5%)
+COVERAGE = 0.72  # artwork span as a fraction of the body
 
 # Standard macOS iconset sizes: (logical, scale, filename)
 SIZES = [
@@ -43,19 +50,43 @@ def rounded_rect_mask(size, radius):
     return mask
 
 
+def content_bbox(im: Image.Image):
+    """Bounding box of the visible (opaque, non-white) artwork."""
+    px = im.load()
+    w, h = im.size
+    minx, miny, maxx, maxy = w, h, -1, -1
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a > 10 and (r + g + b) < 3 * 245:
+                if x < minx: minx = x
+                if x > maxx: maxx = x
+                if y < miny: miny = y
+                if y > maxy: maxy = y
+    if maxx < minx:
+        return (0, 0, w, h)
+    return (minx, miny, maxx + 1, maxy + 1)
+
+
 def make_rounded_icon(source: Image.Image) -> Image.Image:
-    """Apply the macOS-26 rounded-rect mask to a square source image."""
-    # Scale radius proportionally if source isn't exactly CANVAS
-    scale = source.width / CANVAS
-    radius = CORNER_RADIUS * scale
+    """Center the cropped artwork in an 824px white rounded body on a 1024 canvas."""
+    canvas = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
 
-    # Generate mask at source resolution
-    mask = rounded_rect_mask(source.width, radius)
+    # White rounded body.
+    body = Image.new("RGBA", (BODY, BODY), (255, 255, 255, 255))
 
-    # Apply mask to alpha channel
-    result = source.copy()
-    result.putalpha(mask)
-    return result
+    # Crop the robot out of its wide white margins, then size it to COVERAGE.
+    robot = source.crop(content_bbox(source))
+    cw, ch = robot.size
+    scale = (COVERAGE * BODY) / max(cw, ch)
+    nw, nh = round(cw * scale), round(ch * scale)
+    robot = robot.resize((nw, nh), Image.LANCZOS)
+    body.alpha_composite(robot, ((BODY - nw) // 2, (BODY - nh) // 2))
+
+    # Round the corners and drop the body onto the transparent canvas.
+    body.putalpha(rounded_rect_mask(BODY, CORNER_RADIUS))
+    canvas.paste(body, (MARGIN, MARGIN), body)
+    return canvas
 
 
 def main():
@@ -63,8 +94,8 @@ def main():
     source = Image.open(SOURCE_PNG).convert("RGBA")
     print(f"  Size: {source.size}, Mode: {source.mode}")
 
-    # Apply rounded-rect mask at full resolution
-    print(f"Applying rounded-rect mask (r={CORNER_RADIUS}px @ {CANVAS}x{CANVAS})...")
+    # Compose the 824px rounded body on the 1024 canvas.
+    print(f"Composing {BODY}px rounded body (r={CORNER_RADIUS}px, margin={MARGIN}px)...")
     rounded = make_rounded_icon(source)
 
     # Write iconset

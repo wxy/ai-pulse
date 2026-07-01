@@ -1,10 +1,10 @@
 import AppKit
 
-/// Dock icon with a "gauge arc" overlay that fills as daily spend grows.
+/// Dock icon with a green progress bar along the rounded-rect border that
+/// fills as daily spend grows.
 ///
-/// Arc colors: green (normal), orange (>1.5x daily avg), red (>3x).
-/// The arc fills clockwise from the X-axis (3-o'clock position); a full circle
-/// represents 3× the 30-day daily average.
+/// The bar starts at top-center and fills clockwise; a full loop represents
+/// 3× the 30-day daily average.
 final class DockManager {
     static let shared = DockManager()
     private var timer: Timer?
@@ -12,7 +12,6 @@ final class DockManager {
 
     func start() {
         refresh()
-        NSApp.applicationIconImage = AppIconLoader.load(progress: 0.1)  // test arc
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             self?.refresh()
         }
@@ -45,27 +44,18 @@ final class DockManager {
                 }
                 tile.badgeLabel = "$\(String(format: "%.2f", todayCost))"
 
-                // Gauge arc fill = today / (avg × 3), capped at 100%
+                // Green bar fills the icon border as today's spend approaches
+                // 3× the 30-day daily average (capped at 100%).
                 let fillFraction: CGFloat
-                let arcColor: NSColor
                 if dailyAvg > 0 {
                     let ratio = todayCost / dailyAvg
-                    let fill = min(CGFloat(ratio / 3.0), 1.0)
-                    print("Dock: today=$\(String(format: "%.2f", todayCost)), avg=$\(String(format: "%.2f", dailyAvg)), ratio=\(String(format: "%.2f", ratio)), fill=\(String(format: "%.1f%%", fill*100))")
-                    if ratio > 3 { fillFraction = fill; arcColor = .systemRed }
-                    else if ratio > 1.5 { fillFraction = fill; arcColor = .systemOrange }
-                    else { fillFraction = fill; arcColor = .systemGreen }
+                    fillFraction = min(CGFloat(ratio / 3.0), 1.0)
                 } else {
-                    fillFraction = 0; arcColor = .clear
+                    fillFraction = 0
                 }
 
                 NSApp.applicationIconImage = AppIconLoader.load(progress: Double(fillFraction))
             }
         }
-    }
-
-    /// Legacy arc drawing — replaced by AppIconLoader's squircle progress ring.
-    private func iconWithArc(fill: CGFloat, color: NSColor) -> NSImage {
-        return AppIconLoader.load(progress: Double(fill))
     }
 }

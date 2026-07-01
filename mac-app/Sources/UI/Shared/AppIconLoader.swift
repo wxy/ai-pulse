@@ -1,130 +1,207 @@
 import AppKit
 
 enum AppIconLoader {
-    /// Load the icon with an optional progress arc drawn along the perimeter.
+    // macOS 26 icon grid: an 824px rounded body centered on a 1024 canvas, with
+    // a 100px transparent margin so it matches every stock Dock icon. The system
+    // adds the drop shadow, so we bake none.
+    private static let size: CGFloat = 1024
+    private static let margin: CGFloat = 100
+    private static let cornerRadius: CGFloat = 185.4  // continuous corner radius of the 824px body
+    private static let coverage: CGFloat = 0.72       // artwork span as a fraction of the body
+
+    private static var canvasRect: CGRect { CGRect(x: 0, y: 0, width: size, height: size) }
+    private static var bodyRect: CGRect { canvasRect.insetBy(dx: margin, dy: margin) }
+
+    /// The base tile (white rounded body + centered artwork, no progress),
+    /// rendered once and reused. Identical to the static `.icns`.
+    private static let baseTile: NSImage = renderBase()
+
+    /// Load the icon, optionally stroking a green spend bar along the border.
     static func load(progress: Double = 0) -> NSImage {
-        let artwork = findArtwork()
-        return drawIcon(artwork: artwork, progress: progress)
+        guard progress > 0.001 else { return baseTile }
+        return renderProgress(fraction: CGFloat(min(max(progress, 0), 1)))
     }
 
     static func uiImage(size: CGFloat) -> NSImage {
-        let img = load()
-        let resized = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
+        let img = baseTile
+        return NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
             img.draw(in: rect)
             return true
         }
-        return resized
     }
 
-    /// macOS 26 applies a rounded-rect mask automatically (185.4px corner radius
-    /// on a 1024×1024 canvas). We just draw content within the HIG safe zone.
-    private static func drawIcon(artwork: NSImage?, progress: Double) -> NSImage {
-        let size: CGFloat = 1024
-        let safeInset: CGFloat = 32   // HIG safe zone
-        let cornerFraction: CGFloat = 185.4 / 1024  // macOS 26 official rounded-rect radius
+    // MARK: - Tile rendering
 
-        let img = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
-            let safeRect = rect.insetBy(dx: safeInset, dy: safeInset)
-            let cr = safeRect.width * cornerFraction
+    /// Render the white rounded body with the artwork centered inside it.
+    /// We clip ourselves because a programmatic `applicationIconImage` bypasses
+    /// the system's automatic mask (which only applies to the `.icns` file).
+    private static func renderBase() -> NSImage {
+        let px = Int(size)
+        guard let rep = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: px, pixelsHigh: px,
+            bitsPerSample: 8, samplesPerPixel: 4,
+            hasAlpha: true, isPlanar: false,
+            colorSpaceName: .deviceRGB,
+            bytesPerRow: 0, bitsPerPixel: 0
+        ) else { return NSImage(size: NSSize(width: size, height: size)) }
 
-            // Background
-            NSColor.white.setFill()
-            rect.fill()
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
 
-            // Artwork inside safe zone
-            if let art = artwork {
-                let artInset: CGFloat = 48
-                art.draw(in: safeRect.insetBy(dx: artInset, dy: artInset))
-            }
+        let body = bodyRect
+        NSBezierPath(roundedRect: body, xRadius: cornerRadius, yRadius: cornerRadius).addClip()
 
-            // Progress arc
-            if progress > 0.01 {
-                let p = CGFloat(min(max(progress, 0), 1))
-                let arcInset: CGFloat = 32
-                let arcRect = safeRect.insetBy(dx: arcInset, dy: arcInset)
-                let arcCr = cr - arcInset
-                let arcPath = progressArc(in: arcRect, cornerRadius: max(arcCr, 0), fraction: p)
-                NSColor.systemGreen.setStroke()
-                arcPath.lineWidth = 20
-                arcPath.lineCapStyle = .round
-                arcPath.stroke()
-            }
+        NSColor.white.setFill()
+        body.fill()
 
-            return true
+        if let art = artwork {
+            let maxDim = max(art.size.width, art.size.height)
+            let scale = (coverage * body.width) / maxDim
+            let w = art.size.width * scale
+            let h = art.size.height * scale
+            let target = CGRect(x: body.midX - w / 2, y: body.midY - h / 2, width: w, height: h)
+            art.image.draw(in: target)
         }
+
+        NSGraphicsContext.restoreGraphicsState()
+
+        let img = NSImage(size: NSSize(width: size, height: size))
+        img.addRepresentation(rep)
         return img
     }
 
-    // MARK: - Arc along rounded rect perimeter
+    /// Draw the cached base tile and stroke a green bar along the body border.
+    private static func renderProgress(fraction: CGFloat) -> NSImage {
+        let img = NSImage(size: NSSize(width: size, height: size))
+        img.lockFocus()
+        baseTile.draw(in: canvasRect)
 
-    private static func progressArc(in rect: CGRect, cornerRadius cr: CGFloat, fraction: CGFloat) -> NSBezierPath {
+        let lineWidth: CGFloat = 40
+        // Inset by half the stroke width so the bar sits fully inside the body.
+        let barRect = bodyRect.insetBy(dx: lineWidth / 2, dy: lineWidth / 2)
+        let barCr = cornerRadius - lineWidth / 2
+        let barPath = progressPath(rect: barRect, cornerRadius: max(barCr, 0), fraction: fraction)
+        NSColor.systemGreen.setStroke()
+        barPath.lineWidth = lineWidth
+        barPath.lineCapStyle = .round
+        barPath.lineJoinStyle = .round
+        barPath.stroke()
+
+        img.unlockFocus()
+        return img
+    }
+
+    // MARK: - Progress bar along the rounded-rect perimeter
+
+    /// Build a polyline that walks the rounded-rect border starting at top-center
+    /// and running clockwise, cut off at `fraction` of the total perimeter.
+    /// Sampling the corners as short line segments avoids the winding-direction
+    /// ambiguity of `appendArc`, which is where earlier attempts went wrong.
+    private static func progressPath(rect: CGRect, cornerRadius cr: CGFloat, fraction: CGFloat) -> NSBezierPath {
+        let pts = perimeterPoints(rect: rect, cornerRadius: cr)
         let path = NSBezierPath()
-        let perimeter = 2 * (rect.width + rect.height - 4 * cr) + 2 * .pi * cr
-        var remaining = fraction * perimeter
+        guard pts.count > 1 else { return path }
 
-        let r = rect.origin; let w = rect.width; let h = rect.height
-        let startX = r.x + w; let startY = r.y + h / 2
-        path.move(to: NSPoint(x: startX, y: startY))
-
-        let corners: [(CGPoint, CGFloat, CGFloat)] = [
-            (CGPoint(x: r.x + w - cr, y: r.y + h - cr), 0, .pi / 2),
-            (CGPoint(x: r.x + cr, y: r.y + h - cr), .pi / 2, .pi),
-            (CGPoint(x: r.x + cr, y: r.y + cr), .pi, 3 * .pi / 2),
-            (CGPoint(x: r.x + w - cr, y: r.y + cr), 3 * .pi / 2, 2 * .pi),
-        ]
-        let edges: [(from: CGPoint, to: CGPoint)] = [
-            (CGPoint(x: r.x + w, y: r.y + h / 2), CGPoint(x: r.x + w, y: r.y + h - cr)),
-            (CGPoint(x: r.x + w - cr, y: r.y + h), CGPoint(x: r.x + cr, y: r.y + h)),
-            (CGPoint(x: r.x, y: r.y + h - cr), CGPoint(x: r.x, y: r.y + cr)),
-            (CGPoint(x: r.x + cr, y: r.y), CGPoint(x: r.x + w - cr, y: r.y)),
-            (CGPoint(x: r.x + w, y: r.y + cr), CGPoint(x: r.x + w, y: r.y + h / 2)),
-        ]
-
-        for i in 0..<4 {
-            // Edge
-            let edge = edges[i]
-            let edgeLen = hypot(edge.to.x - edge.from.x, edge.to.y - edge.from.y)
-            if remaining >= edgeLen {
-                path.line(to: edge.to)
-                remaining -= edgeLen
-            } else if remaining > 0 {
-                let t = remaining / edgeLen
-                path.line(to: NSPoint(x: edge.from.x + (edge.to.x - edge.from.x) * t,
-                                       y: edge.from.y + (edge.to.y - edge.from.y) * t))
-                remaining = 0
-            }
-            // Corner
-            let corner = corners[i]
-            let arcLen = .pi / 2 * cr
-            if remaining >= arcLen {
-                path.appendArc(withCenter: corner.0, radius: cr,
-                               startAngle: corner.1 * 180 / .pi,
-                               endAngle: corner.2 * 180 / .pi, clockwise: true)
-                remaining -= arcLen
-            } else if remaining > 0 {
-                let sweep = (remaining / arcLen) * .pi / 2
-                path.appendArc(withCenter: corner.0, radius: cr,
-                               startAngle: corner.1 * 180 / .pi,
-                               endAngle: (corner.1 + sweep) * 180 / .pi, clockwise: true)
-                remaining = 0
-            }
-            if remaining <= 0 { break }
+        // Cumulative arc length along the sampled perimeter.
+        var lengths: [CGFloat] = [0]
+        var total: CGFloat = 0
+        for i in 1..<pts.count {
+            total += hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y)
+            lengths.append(total)
         }
-        // Last edge back to start
-        if remaining > 0 {
-            let last = edges[4]
-            let lastLen = hypot(last.to.x - last.from.x, last.to.y - last.from.y)
-            if remaining >= lastLen { path.line(to: last.to) }
-            else {
-                let t = remaining / lastLen
-                path.line(to: NSPoint(x: last.from.x + (last.to.x - last.from.x) * t,
-                                       y: last.from.y + (last.to.y - last.from.y) * t))
+
+        let target = min(max(fraction, 0), 1) * total
+        guard target > 0 else { return path }
+
+        path.move(to: pts[0])
+        for i in 1..<pts.count {
+            if lengths[i] <= target {
+                path.line(to: pts[i])
+            } else {
+                let segLen = lengths[i] - lengths[i - 1]
+                let t = segLen > 0 ? (target - lengths[i - 1]) / segLen : 0
+                path.line(to: NSPoint(x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * t,
+                                       y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * t))
+                break
             }
         }
         return path
     }
 
+    /// Ordered points tracing the rounded rectangle clockwise from top-center.
+    private static func perimeterPoints(rect: CGRect, cornerRadius cr: CGFloat) -> [CGPoint] {
+        let minX = rect.minX, maxX = rect.maxX, minY = rect.minY, maxY = rect.maxY, midX = rect.midX
+        let steps = 24  // samples per corner
+        var pts: [CGPoint] = []
+
+        func arc(center: CGPoint, from startDeg: CGFloat, to endDeg: CGFloat) {
+            for i in 0...steps {
+                let a = (startDeg + (endDeg - startDeg) * CGFloat(i) / CGFloat(steps)) * .pi / 180
+                pts.append(CGPoint(x: center.x + cr * cos(a), y: center.y + cr * sin(a)))
+            }
+        }
+
+        pts.append(CGPoint(x: midX, y: maxY))                 // start: top-center
+        pts.append(CGPoint(x: maxX - cr, y: maxY))            // top edge → right
+        arc(center: CGPoint(x: maxX - cr, y: maxY - cr), from: 90, to: 0)    // top-right
+        pts.append(CGPoint(x: maxX, y: minY + cr))            // right edge ↓
+        arc(center: CGPoint(x: maxX - cr, y: minY + cr), from: 0, to: -90)   // bottom-right
+        pts.append(CGPoint(x: minX + cr, y: minY))            // bottom edge ←
+        arc(center: CGPoint(x: minX + cr, y: minY + cr), from: -90, to: -180) // bottom-left
+        pts.append(CGPoint(x: minX, y: maxY - cr))            // left edge ↑
+        arc(center: CGPoint(x: minX + cr, y: maxY - cr), from: -180, to: -270) // top-left
+        pts.append(CGPoint(x: midX, y: maxY))                 // top edge → back to start
+        return pts
+    }
+
     // MARK: - Artwork
+
+    /// The artwork cropped to its visible (non-white) bounds, computed once.
+    /// Cropping removes the source PNG's wide white margins so the robot fills
+    /// the tile like a normal app-icon glyph instead of floating in white.
+    private static let artwork: (image: NSImage, size: CGSize)? = loadArtwork()
+
+    private static func loadArtwork() -> (image: NSImage, size: CGSize)? {
+        guard let src = findArtwork(),
+              let tiff = src.tiffRepresentation,
+              let rep = NSBitmapImageRep(data: tiff),
+              let cg = rep.cgImage,
+              let data = rep.bitmapData else { return nil }
+
+        let w = rep.pixelsWide
+        let h = rep.pixelsHigh
+        let bpp = rep.bitsPerPixel / 8
+        let bpr = rep.bytesPerRow
+        let hasAlpha = rep.hasAlpha
+
+        var minX = w, minY = h, maxX = -1, maxY = -1
+        for y in 0..<h {
+            let row = data + y * bpr
+            for x in 0..<w {
+                let p = row + x * bpp
+                let a = hasAlpha ? Int(p[3]) : 255
+                let lum = Int(p[0]) + Int(p[1]) + Int(p[2])
+                if a > 10 && lum < 3 * 245 {  // opaque and not near-white
+                    if x < minX { minX = x }
+                    if x > maxX { maxX = x }
+                    if y < minY { minY = y }
+                    if y > maxY { maxY = y }
+                }
+            }
+        }
+
+        guard maxX >= minX, maxY >= minY else {
+            return (src, CGSize(width: w, height: h))
+        }
+
+        let crop = CGRect(x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1)
+        guard let cropped = cg.cropping(to: crop) else {
+            return (src, CGSize(width: w, height: h))
+        }
+        let img = NSImage(cgImage: cropped, size: NSSize(width: crop.width, height: crop.height))
+        return (img, crop.size)
+    }
 
     private static func findArtwork() -> NSImage? {
         if let bundleImg = NSImage(contentsOf: Bundle.main.resourceURL?
