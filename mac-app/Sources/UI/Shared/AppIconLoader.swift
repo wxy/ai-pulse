@@ -1,14 +1,13 @@
 import AppKit
 
-/// Shared helper to load AIPulse.png regardless of how the binary is run
-/// (bare executable from .build/debug/ or proper .app bundle).
-/// Generates a macOS-style squircle icon matching the system icon mask.
 enum AppIconLoader {
-    static func load() -> NSImage { _load() }
+    static func load() -> NSImage {
+        let artwork = findArtwork()
+        return drawSquircleIcon(artwork: artwork, size: 1024)
+    }
 
-    /// Resized version for UI (SwiftUI Image)
     static func uiImage(size: CGFloat) -> NSImage {
-        let img = _load()
+        let img = load()
         let resized = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
             img.draw(in: rect)
             return true
@@ -16,18 +15,67 @@ enum AppIconLoader {
         return resized
     }
 
-    private static func _load() -> NSImage {
-        let artwork = findArtwork()
-        return generateSquircleIcon(artwork: artwork, size: 1024)
+    // MARK: - Squircle icon (artwork + border)
+
+    static func drawSquircleIcon(artwork: NSImage?, size: CGFloat) -> NSImage {
+        let img = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
+            // Squircle clip
+            let squircle = squirclePath(in: rect)
+            squircle.addClip()
+
+            // Background fill
+            let bg = NSGradient(
+                starting: NSColor(red: 0.15, green: 0.16, blue: 0.18, alpha: 1),
+                ending: NSColor(red: 0.10, green: 0.11, blue: 0.13, alpha: 1)
+            )
+            bg?.draw(in: rect, angle: 135)
+
+            // Artwork centered
+            if let art = artwork {
+                let inset = size * 0.24
+                art.draw(in: rect.insetBy(dx: inset, dy: inset))
+            }
+
+            // Squircle border
+            let border = squirclePath(in: rect.insetBy(dx: 3, dy: 3))
+            NSColor.white.withAlphaComponent(0.25).setStroke()
+            border.lineWidth = size * 0.02
+            border.stroke()
+
+            return true
+        }
+        return img
     }
 
+    // MARK: - Squircle path (x^4 + y^4 = r^4)
+
+    private static func squirclePath(in rect: CGRect) -> NSBezierPath {
+        let path = NSBezierPath()
+        let w = rect.width; let h = rect.height
+        let cx = rect.midX; let cy = rect.midY
+        let rx = w / 2; let ry = h / 2
+        let n: CGFloat = 4.0
+        let steps = 120
+        path.move(to: NSPoint(x: cx + rx, y: cy))
+        for i in 1...steps {
+            let theta = CGFloat(i) * 2 * .pi / CGFloat(steps)
+            let cosT = abs(cos(theta)); let sinT = abs(sin(theta))
+            let denom = pow(pow(cosT, n) + pow(sinT, n), 1.0 / n)
+            let x = denom > 0 ? rx * cosT / denom * (cos(theta) >= 0 ? 1 : -1) : 0
+            let y = denom > 0 ? ry * sinT / denom * (sin(theta) >= 0 ? 1 : -1) : 0
+            path.line(to: NSPoint(x: cx + x, y: cy + y))
+        }
+        path.close()
+        return path
+    }
+
+    // MARK: - Artwork
+
     private static func findArtwork() -> NSImage? {
-        // .app bundle
         if let bundleImg = NSImage(contentsOf: Bundle.main.resourceURL?
             .appendingPathComponent("AIPulse.png") ?? URL(fileURLWithPath: "")) {
             return bundleImg
         }
-        // Bare binary: search upward from binary location
         let binaryDir = URL(fileURLWithPath: CommandLine.arguments[0]).deletingLastPathComponent()
         for depth in 1...4 {
             let up = (0..<depth).map { _ in ".." }.joined(separator: "/")
@@ -36,50 +84,5 @@ enum AppIconLoader {
             }
         }
         return nil
-    }
-
-    /// Generate a macOS-style squircle icon with border only.
-    /// Uses x^4 + y^4 = r^4 — matches system icon mask.
-    static func generateSquircleIcon(artwork: NSImage?, size: CGFloat) -> NSImage {
-        let img = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
-            // 1. Draw artwork at full size
-            if let art = artwork {
-                art.draw(in: rect)
-            }
-
-            // 2. Draw squircle border on top
-            let border = squirclePath(in: rect.insetBy(dx: 4, dy: 4))
-            NSColor.controlAccentColor.setStroke()
-            border.lineWidth = size * 0.04
-            border.stroke()
-            return true
-        }
-        return img
-    }
-
-    /// macOS-style superellipse (squircle): x^4 + y^4 = r^4.
-    private static func squirclePath(in rect: CGRect) -> NSBezierPath {
-        let path = NSBezierPath()
-        let w = rect.width
-        let h = rect.height
-        let cx = rect.midX
-        let cy = rect.midY
-        let rx = w / 2
-        let ry = h / 2
-        let n: CGFloat = 4.0  // superellipse exponent (macOS icon shape)
-
-        let steps = 120
-        path.move(to: NSPoint(x: cx + rx, y: cy))
-        for i in 1...steps {
-            let theta = CGFloat(i) * 2 * .pi / CGFloat(steps)
-            let cosT = abs(cos(theta))
-            let sinT = abs(sin(theta))
-            let denom = pow(pow(cosT, n) + pow(sinT, n), 1.0 / n)
-            let x = denom > 0 ? rx * cosT / denom * (cos(theta) >= 0 ? 1 : -1) : rx * cos(theta)
-            let y = denom > 0 ? ry * sinT / denom * (sin(theta) >= 0 ? 1 : -1) : ry * sin(theta)
-            path.line(to: NSPoint(x: cx + x, y: cy + y))
-        }
-        path.close()
-        return path
     }
 }
