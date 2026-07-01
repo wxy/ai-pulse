@@ -96,36 +96,4 @@ final class PricingManager {
 
     /// Backfill NULL cost_usd and provider_id in usage_event table.
     /// One-time fix for events recorded before the pricing catalog was available.
-    func backfillCosts() async {
-        guard catalog != nil else { return }
-        let backfillKey = "pricing_backfill_done"
-        guard !UserDefaults.standard.bool(forKey: backfillKey) else { return }
-
-        do {
-            let rows = try await AppDatabase.shared.read { db -> [Row] in
-                try Row.fetchAll(db, sql: "SELECT rowid, model, in_tokens, out_tokens, cache_tokens FROM usage_event WHERE cost_usd IS NULL AND model IS NOT NULL LIMIT 50000")
-            }
-            guard !rows.isEmpty else { return }
-
-            // Batch update: collect all updates into a single write transaction
-            try await AppDatabase.shared.write { db in
-                for r in rows {
-                    let rowid: Int64 = r["rowid"] ?? 0
-                    let model: String? = r["model"]
-                    let inT: Int64 = r["in_tokens"] ?? 0
-                    let outT: Int64 = r["out_tokens"] ?? 0
-                    let cacheT: Int64 = r["cache_tokens"] ?? 0
-
-                    let pid = providerId(for: model) ?? "unknown"
-                    let cost = costUSD(model: model, inTokens: Int(inT), outTokens: Int(outT), cacheTokens: Int(cacheT)) ?? 0
-
-                    try db.execute(sql: "UPDATE usage_event SET cost_usd = ?, provider_id = ? WHERE rowid = ?", arguments: [cost, pid, rowid])
-                }
-            }
-            UserDefaults.standard.set(true, forKey: backfillKey)
-            print("PricingManager: backfilled \(rows.count) events")
-        } catch {
-            print("PricingManager: backfill failed: \(error)")
-        }
-    }
 }

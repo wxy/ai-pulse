@@ -30,8 +30,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         IntegrationRegistry.startAllEnabled()
         // B-grade balance polling
         ApiPoller.shared.start()
-        // Backfill NULL costs from before catalog fix
-        Task { await PricingManager.shared.backfillCosts() }
 
         // P3: Dock fuel gauge
         DockManager.shared.start()
