@@ -24,6 +24,8 @@ cp "$BUILD_DIR/Resources/Info.plist" "$APP_DIR/Contents/"
 # Copy icons (AppIconLoader needs .png at runtime; .icns for system)
 cp "$BUILD_DIR/Resources/AIPulse.icns" "$APP_DIR/Contents/Resources/"
 cp "$BUILD_DIR/Resources/AIPulse.png" "$APP_DIR/Contents/Resources/"
+# Copy pricing catalog (bundle resource lookup)
+cp "$BUILD_DIR/../shared/pricing-catalog.json" "$APP_DIR/Contents/Resources/"
 
 # Copy libgit2 dylib
 cp "$BUILD_DIR/Libraries/libgit2/lib/libgit2.1.9.dylib" "$APP_DIR/Contents/Frameworks/"

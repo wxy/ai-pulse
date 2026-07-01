@@ -35,7 +35,8 @@ final class PricingManager {
         let searchPaths = [
             Bundle.main.path(forResource: "pricing-catalog", ofType: "json"),
             "../shared/pricing-catalog.json",    // from mac-app/ (swift run cwd)
-            "../../shared/pricing-catalog.json", // from .build/debug/ (actual binary)
+            "../../shared/pricing-catalog.json", // from .build/debug/
+            "../../../../../../shared/pricing-catalog.json", // from .app bundle
             "./shared/pricing-catalog.json",
         ]
         for path in searchPaths {

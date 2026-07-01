@@ -16,12 +16,12 @@ enum AppIconLoader {
         return resized
     }
 
-    /// macOS applies the squircle mask automatically — we just draw content
-    /// within the safe zone (~960×960 on a 1024 canvas).
+    /// macOS 26 applies a rounded-rect mask automatically (185.4px corner radius
+    /// on a 1024×1024 canvas). We just draw content within the HIG safe zone.
     private static func drawIcon(artwork: NSImage?, progress: Double) -> NSImage {
         let size: CGFloat = 1024
         let safeInset: CGFloat = 32   // HIG safe zone
-        let cornerFraction: CGFloat = 0.2285  // official macOS corner radius ratio
+        let cornerFraction: CGFloat = 185.4 / 1024  // macOS 26 official rounded-rect radius
 
         let img = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
             let safeRect = rect.insetBy(dx: safeInset, dy: safeInset)
