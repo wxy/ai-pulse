@@ -149,7 +149,7 @@ struct DashboardView: View {
     // MARK: - Summary cards (3×2 grid)
 
     var summaryCards: some View {
-        let apiSpent = dailyStats.reduce(0.0) { $0 + $1.cost }
+        let apiSpent = balanceSpend.reduce(0.0) { $0 + $1.spend }
         let added = codeChanges.reduce(0) { $0 + $1.added }
         let deleted = codeChanges.reduce(0) { $0 + $1.deleted }
         let periodLabel = timeRange.label
@@ -163,12 +163,11 @@ struct DashboardView: View {
                      value: "+\(added)")
             }
             HStack(spacing: 8) {
-                card(title: "\(periodLabel)\(I18n.t("dashboard.api_projected"))",
-                     value: prediction.map { "$\(String(format: "%.2f", $0.monthProjected))" } ?? "--")
                 card(title: I18n.t("dashboard.sub_monthly_label"),
                      value: "$\(String(format: "%.2f", totalSubMonthly()))")
                 card(title: "\(periodLabel)\(I18n.t("dashboard.code_deleted"))",
                      value: "-\(deleted)")
+                card(title: "", value: "")
             }
         }
     }
@@ -505,43 +504,12 @@ struct DashboardView: View {
     var bottomCards: some View {
         HStack(alignment: .top, spacing: 16) {
             apiBreakdownCard
-            balanceSpendCard
             if hasAGrade || hasCertainEditorMapping {
                 cplInfoCard
             } else {
                 cplGuidanceCard
             }
         }
-    }
-
-    var balanceSpendCard: some View {
-        guard !balanceSpend.isEmpty else { return AnyView(EmptyView()) }
-        let total = balanceSpend.reduce(0.0) { $0 + $1.spend }
-        return AnyView(
-            VStack(alignment: .leading, spacing: 6) {
-                Text("余额消费").font(.headline)
-                Text("基于余额变化计算（已过滤充值）")
-                    .font(.caption2).foregroundColor(.secondary)
-                ForEach(balanceSpend, id: \.providerId) { item in
-                    HStack {
-                        Text(item.name).font(.caption)
-                        Spacer()
-                        Text("$\(String(format: "%.2f", item.spend))").font(.caption).monospacedDigit()
-                    }
-                }
-                if balanceSpend.count > 1 {
-                    Divider()
-                    HStack {
-                        Text(I18n.t("dashboard.total")).font(.caption).fontWeight(.medium)
-                        Spacer()
-                        Text("$\(String(format: "%.2f", total))").font(.caption).monospacedDigit().fontWeight(.medium)
-                    }
-                }
-            }
-            .padding(12)
-            .frame(maxWidth: .infinity)
-            .background(Color(nsColor: .quaternarySystemFill).opacity(0.3)).cornerRadius(10)
-        )
     }
 
     // MARK: - Empty state (no integrations)
