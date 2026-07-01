@@ -38,22 +38,20 @@ enum AppIconLoader {
         return nil
     }
 
-    /// Generate a macOS-style squircle (superellipse) icon.
+    /// Generate a macOS-style squircle icon with border only.
     /// Uses x^4 + y^4 = r^4 — matches system icon mask.
     static func generateSquircleIcon(artwork: NSImage?, size: CGFloat) -> NSImage {
         let img = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
-            // 1. Draw squircle background fill
-            let squircle = squirclePath(in: rect)
-            NSColor.controlAccentColor.setFill()
-            squircle.fill()
-
-            // 2. Draw artwork centered inside
+            // 1. Draw artwork at full size
             if let art = artwork {
-                let inset = size * 0.22  // macOS icon content area inset
-                let artRect = rect.insetBy(dx: inset, dy: inset)
-                squircle.addClip()  // Clip artwork to squircle shape
-                art.draw(in: artRect)
+                art.draw(in: rect)
             }
+
+            // 2. Draw squircle border on top
+            let border = squirclePath(in: rect.insetBy(dx: 4, dy: 4))
+            NSColor.controlAccentColor.setStroke()
+            border.lineWidth = size * 0.04
+            border.stroke()
             return true
         }
         return img
