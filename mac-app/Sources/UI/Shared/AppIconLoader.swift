@@ -23,23 +23,20 @@ enum AppIconLoader {
             let squircle = squirclePath(in: rect)
             squircle.addClip()
 
-            // Background fill
-            let bg = NSGradient(
-                starting: NSColor(red: 0.15, green: 0.16, blue: 0.18, alpha: 1),
-                ending: NSColor(red: 0.10, green: 0.11, blue: 0.13, alpha: 1)
-            )
-            bg?.draw(in: rect, angle: 135)
+            // Background fill (white)
+            NSColor.white.setFill()
+            squircle.fill()
 
-            // Artwork centered
+            // Artwork centered — large fill
             if let art = artwork {
-                let inset = size * 0.24
+                let inset = size * 0.08
                 art.draw(in: rect.insetBy(dx: inset, dy: inset))
             }
 
-            // Squircle border
-            let border = squirclePath(in: rect.insetBy(dx: 3, dy: 3))
-            NSColor.white.withAlphaComponent(0.25).setStroke()
-            border.lineWidth = size * 0.02
+            // Squircle border — thin gray
+            let border = squirclePath(in: rect.insetBy(dx: 2, dy: 2))
+            NSColor(white: 0.85, alpha: 1).setStroke()
+            border.lineWidth = size * 0.015
             border.stroke()
 
             return true
