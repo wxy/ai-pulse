@@ -58,9 +58,13 @@ export async function runFetchCycle(): Promise<void> {
   const tasks: Promise<void>[] = [];
 
   for (const provider of providers) {
-    const config = configs.find(c => c.providerId === provider.id);
-    // Skip disabled providers entirely
-    if (config && !config.enabled) continue;
+    // Resolve effective config — match UI logic (ProviderList/AppLayout):
+    //   enabled := config?.enabled !== false  (no config → enabled for popular providers)
+    let config = configs.find(c => c.providerId === provider.id) ?? null;
+    if (!config && provider.popular === false) {
+      config = { providerId: provider.id, enabled: false, apiKey: '', displayName: '', alertEnabled: false };
+    }
+    if (config?.enabled === false) continue; // explicitly disabled → skip
 
     // Fetch status
     if (provider.capabilities.canFetchStatus) {
