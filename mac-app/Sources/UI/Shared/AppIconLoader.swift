@@ -1,9 +1,9 @@
 import AppKit
 
 enum AppIconLoader {
-    static func load() -> NSImage {
+    static func load(progress: Double = 0) -> NSImage {
         let artwork = findArtwork()
-        return drawSquircleIcon(artwork: artwork, size: 1024)
+        return drawSquircleIcon(artwork: artwork, progress: progress, size: 1024)
     }
 
     static func uiImage(size: CGFloat) -> NSImage {
@@ -15,33 +15,64 @@ enum AppIconLoader {
         return resized
     }
 
-    // MARK: - Squircle icon (artwork + border)
-
-    static func drawSquircleIcon(artwork: NSImage?, size: CGFloat) -> NSImage {
+    static func drawSquircleIcon(artwork: NSImage?, progress: Double, size: CGFloat) -> NSImage {
         let img = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
-            // Squircle clip
             let squircle = squirclePath(in: rect)
             squircle.addClip()
 
-            // Background fill (white)
+            // White background
             NSColor.white.setFill()
             squircle.fill()
 
-            // Artwork centered — large fill
+            // Artwork
             if let art = artwork {
                 let inset = size * 0.08
                 art.draw(in: rect.insetBy(dx: inset, dy: inset))
             }
 
-            // Squircle border — thin gray
-            let border = squirclePath(in: rect.insetBy(dx: 2, dy: 2))
-            NSColor(white: 0.85, alpha: 1).setStroke()
-            border.lineWidth = size * 0.015
+            // Progress arc (green, along squircle perimeter, from 12 o'clock clockwise)
+            if progress > 0.01 {
+                let p = CGFloat(min(max(progress, 0), 1))
+                let arcPath = NSBezierPath()
+                let inset = size * 0.045
+                drawSquircleArc(path: arcPath, in: rect.insetBy(dx: inset, dy: inset), fraction: p)
+                NSColor.systemGreen.setStroke()
+                arcPath.lineWidth = size * 0.04
+                arcPath.lineCapStyle = .round
+                arcPath.stroke()
+            }
+
+            // Border — thicker gray
+            let border = squirclePath(in: rect.insetBy(dx: 3, dy: 3))
+            NSColor(white: 0.82, alpha: 1).setStroke()
+            border.lineWidth = size * 0.025
             border.stroke()
 
             return true
         }
         return img
+    }
+
+    /// Draw a partial squircle arc from 12 o'clock clockwise, covering `fraction` of the perimeter.
+    private static func drawSquircleArc(path: NSBezierPath, in rect: CGRect, fraction: CGFloat) {
+        let w = rect.width; let h = rect.height
+        let cx = rect.midX; let cy = rect.midY
+        let rx = w / 2; let ry = h / 2
+        let n: CGFloat = 4.0
+        let totalSteps = 360
+        let arcSteps = max(Int(CGFloat(totalSteps) * fraction), 2)
+
+        // Start at top (θ = -π/2)
+        for i in 0...arcSteps {
+            let theta = -CGFloat.pi / 2 + CGFloat(i) * 2 * .pi / CGFloat(totalSteps)
+            let cosT = abs(cos(theta)); let sinT = abs(sin(theta))
+            let denom = pow(pow(cosT, n) + pow(sinT, n), 1.0 / n)
+            let x = denom > 0 ? rx * cosT / denom * (cos(theta) >= 0 ? 1 : -1) : 0
+            let y = denom > 0 ? ry * sinT / denom * (sin(theta) >= 0 ? 1 : -1) : 0
+            let pt = NSPoint(x: cx + x, y: cy + y)
+            if i == 0 { path.move(to: pt) }
+            else { path.line(to: pt) }
+        }
     }
 
     // MARK: - Squircle path (x^4 + y^4 = r^4)
@@ -65,8 +96,6 @@ enum AppIconLoader {
         path.close()
         return path
     }
-
-    // MARK: - Artwork
 
     private static func findArtwork() -> NSImage? {
         if let bundleImg = NSImage(contentsOf: Bundle.main.resourceURL?

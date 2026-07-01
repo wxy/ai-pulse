@@ -59,43 +59,13 @@ final class DockManager {
                     fillFraction = 0; arcColor = .clear
                 }
 
-                NSApp.applicationIconImage = iconWithArc(fill: fillFraction, color: arcColor)
+                NSApp.applicationIconImage = AppIconLoader.load(progress: Double(fillFraction))
             }
         }
     }
 
-    /// Draw the base icon with a coloured arc segment around its outer ring.
+    /// Legacy arc drawing — replaced by AppIconLoader's squircle progress ring.
     private func iconWithArc(fill: CGFloat, color: NSColor) -> NSImage {
-        let size = baseIcon.size
-        let image = NSImage(size: size, flipped: false) { rect in
-            // 1. Base icon
-            self.baseIcon.draw(in: rect)
-
-            guard fill > 0, color != .clear else { return true }
-
-            // 2. Arc overlay — matches the icon's own ring geometry.
-            //    Source icon: 1024×1024, ring Ø=960 (r=480), stroke=48
-            //    Scale factor relative to render size (e.g. 128 for Dock).
-            let scale = size.width / 1024.0
-            let center = CGPoint(x: size.width / 2, y: size.height / 2)
-            let radius: CGFloat = 480 * scale      // ring midline radius
-            let lineWidth: CGFloat = 48 * scale     // ring stroke width
-
-            let path = NSBezierPath()
-            let startAngle: CGFloat = 0             // X-axis (3 o'clock)
-            let sweepAngle: CGFloat = 360 * fill    // full circle at 3× daily avg
-            path.appendArc(
-                withCenter: center, radius: radius,
-                startAngle: startAngle, endAngle: startAngle - sweepAngle,
-                clockwise: true
-            )
-            color.setStroke()
-            path.lineWidth = lineWidth
-            path.lineCapStyle = .round
-            path.stroke()
-
-            return true
-        }
-        return image
+        return AppIconLoader.load(progress: Double(fill))
     }
 }
