@@ -11,8 +11,8 @@ final class DockManager {
     private let baseIcon: NSImage = AppIconLoader.load()
 
     func start() {
-        NSApp.applicationIconImage = baseIcon
         refresh()
+        NSApp.applicationIconImage = AppIconLoader.load(progress: 0.1)  // test arc
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             self?.refresh()
         }

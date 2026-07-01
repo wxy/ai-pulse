@@ -26,26 +26,24 @@ enum AppIconLoader {
 
             // Artwork
             if let art = artwork {
-                let inset = size * 0.08
+                let inset = size * 0.03
                 art.draw(in: rect.insetBy(dx: inset, dy: inset))
             }
 
-            // Progress arc (green, along squircle perimeter, from 12 o'clock clockwise)
-            if progress > 0.01 {
-                let p = CGFloat(min(max(progress, 0), 1))
-                let arcPath = NSBezierPath()
-                let inset = size * 0.045
-                drawSquircleArc(path: arcPath, in: rect.insetBy(dx: inset, dy: inset), fraction: p)
-                NSColor.systemGreen.setStroke()
-                arcPath.lineWidth = size * 0.04
-                arcPath.lineCapStyle = .round
-                arcPath.stroke()
-            }
+            // Progress arc — always draw a sliver to confirm visibility
+            let p = CGFloat(min(max(progress, 0.05), 1))
+            let arcPath = NSBezierPath()
+            let arcInset = size * 0.05
+            drawSquircleArc(path: arcPath, in: rect.insetBy(dx: arcInset, dy: arcInset), fraction: p)
+            NSColor.systemGreen.setStroke()
+            arcPath.lineWidth = size * 0.05
+            arcPath.lineCapStyle = .round
+            arcPath.stroke()
 
-            // Border — thicker gray
+            // Border
             let border = squirclePath(in: rect.insetBy(dx: 3, dy: 3))
-            NSColor(white: 0.82, alpha: 1).setStroke()
-            border.lineWidth = size * 0.025
+            NSColor(white: 0.80, alpha: 1).setStroke()
+            border.lineWidth = size * 0.03
             border.stroke()
 
             return true
