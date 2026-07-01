@@ -59,7 +59,7 @@ final class MenuBarController: NSObject {
 
                 // Provider submenu — consumption from DB (USD)
                 if !stats.providerCosts.isEmpty {
-                    let m = NSMenuItem(title: I18n.t("menu.by_provider"), action: #selector(self.openDashboard), keyEquivalent: "")
+                    let m = NSMenuItem(title: "\(I18n.t("menu.this_week"))\(I18n.t("menu.by_provider"))", action: #selector(self.openDashboard), keyEquivalent: "")
                     m.target = self
                     let s = NSMenu()
                     for pc in stats.providerCosts {
@@ -74,7 +74,7 @@ final class MenuBarController: NSObject {
                     m.submenu = s; self.menu.addItem(m)
                 }
                 if !stats.repos.isEmpty {
-                    let m = NSMenuItem(title: I18n.t("menu.by_repo"), action: #selector(self.openDashboard), keyEquivalent: "")
+                    let m = NSMenuItem(title: "\(I18n.t("menu.this_week"))\(I18n.t("menu.by_repo"))", action: #selector(self.openDashboard), keyEquivalent: "")
                     m.target = self
                     let s = NSMenu()
                     for r in stats.repos {
@@ -94,8 +94,8 @@ final class MenuBarController: NSObject {
 
     // MARK: - Data
 
-    private struct RepoStat { let name: String; let added: Int; let deleted: Int; let cost: Double
-        var summary: String { "$\(String(format: "%.2f", cost)) · +\(added)/-\(deleted) \(I18n.t("menu.lines"))" } }
+    private struct RepoStat { let name: String; let added: Int; let deleted: Int
+        var summary: String { "+\(added)/-\(deleted) \(I18n.t("menu.lines"))" } }
     private struct Stats { let todaySummary: String?; let weekSummary: String?; let repos: [RepoStat]; let providerCosts: [(providerId: String, cost: Double)]; let hasActivity: Bool }
 
     private func fetchStats() async -> Stats {
@@ -143,25 +143,24 @@ final class MenuBarController: NSObject {
                 repoAddDel[path] = (Int(a), Int(d))
             }
 
-            // Repo cost per repo
-            var cbr: [String: Double] = [:]
-            let rcRows: [Row] = try await AppDatabase.shared.read { db in
-                try Row.fetchAll(db, sql: "SELECT repo_path AS p, COALESCE(SUM(cost_usd),0) AS c FROM usage_event WHERE repo_path IS NOT NULL AND ts >= ? GROUP BY repo_path", arguments: [weekStart])
-            }
-            for r in rcRows { if let p: String = r["p"], !p.isEmpty { cbr[p] = r["c"] ?? 0 } }
-
-            // Per-provider cost this week (consumption from DB, not balance API)
+            // Per-provider spend this week from balance snapshots
+            let cal2 = Calendar.current
+            let weekDays = cal2.dateComponents([.day], from: cal2.date(from: cal2.dateComponents([.yearForWeekOfYear, .weekOfYear], from: Date()))!, to: cal2.startOfDay(for: Date())).day! + 1
+            let rawSpend = await StatsService.balanceDailySpend(days: weekDays, sinceMs: Int64(weekStart))
+            var spendByProvider: [String: Double] = [:]
+            for s in rawSpend { spendByProvider[s.providerId, default: 0] += s.spend }
             var providerCosts: [(providerId: String, cost: Double)] = []
-            let pcRows: [Row] = try await AppDatabase.shared.read { db in
-                try Row.fetchAll(db, sql: "SELECT provider_id AS p, COALESCE(SUM(cost_usd),0) AS c FROM usage_event WHERE ts >= ? AND (model IS NULL OR model != '<synthetic>') GROUP BY provider_id ORDER BY c DESC", arguments: [weekStart])
+            for (pid, cost) in spendByProvider where cost > 0.001 {
+                let enabledB = Set(IntegrationRegistry.enabledBGrade().map { $0.id })
+                if enabledB.contains(pid) { providerCosts.append((pid, cost)) }
             }
-            for r in pcRows { if let p: String = r["p"], !p.isEmpty, let c: Double = r["c"], c > 0 { providerCosts.append((p, c)) } }
+            providerCosts.sort { $0.cost > $1.cost }
 
+            // Repos: code changes only (balance spend has no repo attribution)
             var repos: [RepoStat] = []
-            for (path, cost) in cbr {
-                let (a, d) = repoAddDel[path] ?? (0, 0)
-                guard a > 0 || d > 0, cost > 0 else { continue }
-                repos.append(RepoStat(name: URL(fileURLWithPath: path).lastPathComponent, added: a, deleted: d, cost: cost))
+            for (path, (a, d)) in repoAddDel {
+                guard a > 0 || d > 0 else { continue }
+                repos.append(RepoStat(name: URL(fileURLWithPath: path).lastPathComponent, added: a, deleted: d))
             }
 
             // --- Helper to format a stats line ---
