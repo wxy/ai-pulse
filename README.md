@@ -62,3 +62,7 @@ utils/                # i18n, formatters, validators
 - **Storage**: chrome.storage.local
 - **Testing**: Vitest + React Testing Library
 - **CI**: GitHub Actions (typecheck + tests + build)
+
+## Related
+
+- [AI Pulse for macOS](https://github.com/wxy/ai-pulse-macos) — Desktop app with local code-aware cost tracking
