@@ -1,5 +1,5 @@
 import { t } from '@/utils/i18n';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { ProviderSummary } from '@/types';
 import { sendMessage } from '@/core/message-bus';
 

@@ -1,6 +1,5 @@
 import { getAllProviders } from './provider-registry';
-import { getProviderConfigs, getBalanceCache, getStatusCache, getSettings } from './storage';
-import type { BalanceHistory } from '@/types';
+import { getProviderConfigs, getBalanceCache, getStatusCache, getSettings, getBalanceDelta } from './storage';
 
 /** Suppress spend alerts for the first 30 s after SW start to avoid flash on load. */
 let startupGraceUntil = Date.now() + 30_000;
@@ -73,25 +72,14 @@ export async function updateBadge(): Promise<void> {
 
 /** Compute daily avg consumption (absolute value) from balance history */
 async function getDailyAvg(providerId: string, currency: string): Promise<{ rate: number }> {
-  const key = `balance_history_${providerId}`;
-  const result = await chrome.storage.local.get(key);
-  const history: BalanceHistory = result[key];
-  if (!history?.snapshots || history.snapshots.length < 2) return { rate: 0 };
+  const delta = await getBalanceDelta(providerId, currency);
+  if (!delta) return { rate: 0 };
 
-  const snapshots = history.snapshots;
-  const first = snapshots[0];
-  const last = snapshots[snapshots.length - 1];
-
-  const firstBal = first.balances.find(b => b.currency === currency);
-  const lastBal = last.balances.find(b => b.currency === currency);
-  if (!firstBal || !lastBal) return { rate: 0 };
-
-  const diff = firstBal.totalBalance - lastBal.totalBalance;
+  const diff = delta.firstBalance - delta.lastBalance;
   const abs = Math.abs(diff);
   if (abs < 0.001) return { rate: 0 };
 
-  const daysDiff = Math.max(1, (last.timestamp - first.timestamp) / (1000 * 60 * 60 * 24));
-  return { rate: abs / daysDiff };
+  return { rate: abs / delta.daysDiff };
 }
 
 function formatShortBalance(currency: string, amount: number): string {

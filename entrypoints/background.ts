@@ -179,7 +179,7 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
 // ============================================================
 
 export default defineBackground(async () => {
-  (async () => {
+  try {
     console.log('AI Pulse background service worker started');
 
     // Load language preference and custom providers
@@ -207,9 +207,9 @@ export default defineBackground(async () => {
     _initResolve!();
     console.log('Background ready, calling initial badge update');
     await updateBadge();
-  })().catch(err => {
+  } catch (err) {
     console.error('Background initialization failed:', err);
     // Still resolve the promise so message handler doesn't hang
     _initResolve?.();
-  });
+  }
 });

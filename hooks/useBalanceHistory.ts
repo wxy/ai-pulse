@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { BalanceHistory } from '@/types';
 import { sendMessage } from '@/core/message-bus';
 import { getLanguage } from '@/utils/i18n';
@@ -36,26 +36,30 @@ export function useBalanceHistory(providerId: string | null) {
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, []); // empty deps: only bind once
 
-  const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const recentSnapshots = (history?.snapshots ?? []).filter(s => s.timestamp > cutoff);
+  const { chartData, currencies } = useMemo(() => {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const recentSnapshots = (history?.snapshots ?? []).filter(s => s.timestamp > cutoff);
 
-  // Use numeric timestamps — Recharts handles time spacing naturally
-  const chartData: ChartDataPoint[] = recentSnapshots.map(snapshot => {
-    const point: ChartDataPoint = { timestamp: snapshot.timestamp };
-    for (const balance of snapshot.balances) {
-      point[balance.currency] = balance.totalBalance;
+    // Use numeric timestamps — Recharts handles time spacing naturally
+    const data: ChartDataPoint[] = recentSnapshots.map(snapshot => {
+      const point: ChartDataPoint = { timestamp: snapshot.timestamp };
+      for (const balance of snapshot.balances) {
+        point[balance.currency] = balance.totalBalance;
+      }
+      return point;
+    });
+
+    const currencySet = new Set<string>();
+    for (const snapshot of recentSnapshots) {
+      for (const balance of snapshot.balances) {
+        currencySet.add(balance.currency);
+      }
     }
-    return point;
-  });
 
-  const currencies = new Set<string>();
-  for (const snapshot of recentSnapshots) {
-    for (const balance of snapshot.balances) {
-      currencies.add(balance.currency);
-    }
-  }
+    return { chartData: data, currencies: Array.from(currencySet) };
+  }, [history]);
 
-  return { history, loading, chartData, currencies: Array.from(currencies), reload: loadHistory };
+  return { history, loading, chartData, currencies, reload: loadHistory };
 }
 
 /** Format timestamp for chart axis / tooltip */
