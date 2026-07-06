@@ -3,7 +3,7 @@ import type { BalanceHistory } from '@/types';
 import { sendMessage } from '@/core/message-bus';
 import { getLanguage } from '@/utils/i18n';
 
-interface ChartDataPoint {
+export interface ChartDataPoint {
   timestamp: number;
   [currency: string]: number | string;
 }
@@ -59,7 +59,7 @@ export function useBalanceHistory(providerId: string | null) {
 }
 
 /** Format timestamp for chart axis / tooltip */
-function formatChartTime(ts: number, lang: string): string {
+export function formatChartTime(ts: number, lang: string): string {
   const d = new Date(ts);
   const month = d.getMonth() + 1;
   const day = d.getDate();
