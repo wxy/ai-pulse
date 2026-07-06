@@ -44,6 +44,8 @@ export async function checkSpending(): Promise<SpendResult> {
     if (!firstBal || !lastBal) continue;
 
     // Adapt spend direction to billing model
+    // - 'usage': cumulative usage (increases over time), spend = increase in balance
+    // - 'prepaid': prepaid balance (decreases over time), spend = decrease in balance
     const bType = getProvider(providerId)?.balanceType ?? 'prepaid';
     const providerSpend = bType === 'usage'
       ? lastBal.totalBalance - firstBal.totalBalance   // usage grows, spend is increase

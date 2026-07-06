@@ -11,7 +11,18 @@ export async function fetchAndCacheBalance(provider: Provider, apiKey: string): 
     };
   }
 
-  const result = await provider.fetchBalance(apiKey);
+  let result;
+  try {
+    result = await provider.fetchBalance(apiKey);
+  } catch (err) {
+    console.error(`Failed to fetch balance for ${provider.id}:`, err);
+    result = {
+      success: false,
+      balances: [],
+      rawTimestamp: Date.now(),
+      error: err instanceof Error ? err.message : 'Unknown error',
+    };
+  }
 
   const entry: BalanceCacheEntry = {
     providerId: provider.id,

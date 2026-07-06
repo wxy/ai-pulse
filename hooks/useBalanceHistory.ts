@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { BalanceHistory } from '@/types';
 import { sendMessage } from '@/core/message-bus';
 import { getLanguage } from '@/utils/i18n';
@@ -26,11 +26,15 @@ export function useBalanceHistory(providerId: string | null) {
 
   useEffect(() => { loadHistory(); }, [loadHistory]);
 
+  // Use a ref to avoid re-binding the listener on every loadHistory change
+  const loadHistoryRef = useRef(loadHistory);
+  loadHistoryRef.current = loadHistory;
+
   useEffect(() => {
-    const onVisible = () => loadHistory();
+    const onVisible = () => loadHistoryRef.current();
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
-  }, [loadHistory]);
+  }, []); // empty deps: only bind once
 
   const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const recentSnapshots = (history?.snapshots ?? []).filter(s => s.timestamp > cutoff);
@@ -55,7 +59,7 @@ export function useBalanceHistory(providerId: string | null) {
 }
 
 /** Format timestamp for chart axis / tooltip */
-export function formatChartTime(ts: number, lang: string): string {
+function formatChartTime(ts: number, lang: string): string {
   const d = new Date(ts);
   const month = d.getMonth() + 1;
   const day = d.getDate();
