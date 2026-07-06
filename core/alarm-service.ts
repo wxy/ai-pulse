@@ -80,11 +80,13 @@ export async function runFetchCycle(): Promise<void> {
     // Fetch balance if API key is configured
     if (provider.capabilities.canFetchBalance && config?.apiKey) {
       tasks.push(
-        fetchAndCacheBalance(provider, config.apiKey).then(() =>
-          console.log(`Balance fetched for ${provider.id}`)
-        ).catch(err =>
-          console.error(`Balance fetch failed for ${provider.id}:`, err)
-        )
+        fetchAndCacheBalance(provider, config.apiKey).then(entry => {
+          if (entry.result?.success) {
+            console.log(`Balance fetched for ${provider.id}`);
+          } else {
+            console.error(`Balance fetch failed for ${provider.id}:`, entry.result?.error);
+          }
+        })
       );
     }
   }

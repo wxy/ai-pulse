@@ -1,6 +1,5 @@
-import { getProviderConfigs, getBalanceCache, getSettings } from './storage';
+import { getProviderConfigs, getBalanceCache, getSettings, getBalanceDelta } from './storage';
 import { getProvider } from './provider-registry';
-import type { BalanceSnapshot } from '@/types';
 
 interface SpendResult {
   totalSpend: number;
@@ -29,29 +28,19 @@ export async function checkSpending(): Promise<SpendResult> {
     const bal = entry.result.balances[0];
     currency = bal.currency;
 
-    // Compute daily avg from this provider's history
-    const historyKey = `balance_history_${providerId}`;
-    const histResult = await chrome.storage.local.get(historyKey);
-    const history: { snapshots: BalanceSnapshot[] } = histResult[historyKey];
-    if (!history?.snapshots || history.snapshots.length < 2) continue;
-
-    const snapshots = history.snapshots;
-    const first = snapshots[0];
-    const last = snapshots[snapshots.length - 1];
-
-    const firstBal = first.balances.find(b => b.currency === bal.currency);
-    const lastBal = last.balances.find(b => b.currency === bal.currency);
-    if (!firstBal || !lastBal) continue;
+    const delta = await getBalanceDelta(providerId, bal.currency);
+    if (!delta) continue;
 
     // Adapt spend direction to billing model
+    // - 'usage': cumulative usage (increases over time), spend = increase in balance
+    // - 'prepaid': prepaid balance (decreases over time), spend = decrease in balance
     const bType = getProvider(providerId)?.balanceType ?? 'prepaid';
     const providerSpend = bType === 'usage'
-      ? lastBal.totalBalance - firstBal.totalBalance   // usage grows, spend is increase
-      : firstBal.totalBalance - lastBal.totalBalance;   // prepaid decreases, spend is decrease
+      ? delta.lastBalance - delta.firstBalance   // usage grows, spend is increase
+      : delta.firstBalance - delta.lastBalance;   // prepaid decreases, spend is decrease
     if (providerSpend <= 0.01) continue; // negligible
 
-    const days = Math.max(1, (last.timestamp - first.timestamp) / (1000 * 60 * 60 * 24));
-    const dailyAvg = providerSpend / days;
+    const dailyAvg = providerSpend / delta.daysDiff;
 
     const name = config.displayName || providerId;
 

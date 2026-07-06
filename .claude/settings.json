@@ -8,7 +8,17 @@
       "Bash(/Users/xingyuwang/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.0/skills/subagent-driven-development/scripts/task-brief docs/superpowers/plans/2026-07-01-ai-pulse-website-pages-plan.md 5)",
       "Bash(xcodebuild archive *)",
       "Bash(codesign -dvvv /Users/xingyuwang/develop/ai-pulse/mac-app/.build/AIPulse-mas-export/AIPulse.pkg)",
-      "Bash(pkgutil --check-signature /Users/xingyuwang/develop/ai-pulse/mac-app/.build/AIPulse-mas-export/AIPulse.pkg)"
+      "Bash(pkgutil --check-signature /Users/xingyuwang/develop/ai-pulse/mac-app/.build/AIPulse-mas-export/AIPulse.pkg)",
+      "Bash(git -C /Users/xingyuwang/develop/ai-pulse-macos add -A)",
+      "Bash(git -C /Users/xingyuwang/develop/ai-pulse-macos commit -m \"fix: 修正 PBXFileSystemSynchronizedRootGroup path AIPulse → .. \\(源文件在仓库根目录\\)\")",
+      "Bash(git -C /Users/xingyuwang/develop/ai-pulse-macos push origin main)",
+      "Bash(ls -la /Users/xingyuwang/develop/ai-pulse-macos/AIPulse.xcworkspace/xcshareddata/swiftpm/ *)",
+      "Read(//Users/xingyuwang/develop/ai-pulse-macos/AIPulse.xcworkspace/xcshareddata/swiftpm/**)",
+      "Bash(echo '{ *)",
+      "Bash(git -C /Users/xingyuwang/develop/ai-pulse-macos add AIPulse.xcworkspace/xcshareddata/swiftpm/Package.resolved)",
+      "Bash(git -C /Users/xingyuwang/develop/ai-pulse-macos status --short)",
+      "Bash(git -C /Users/xingyuwang/develop/ai-pulse-macos commit -m \"fix: 恢复 workspace Package.resolved \\(GRDB SPM 依赖在 Xcode 中不可见\\)\")",
+      "Bash(echo \"---exists check exit: $?---\")"
     ],
     "additionalDirectories": [
       "/Users/xingyuwang/develop/xingyu.wang/.superpowers/sdd",

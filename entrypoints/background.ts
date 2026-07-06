@@ -179,31 +179,37 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
 // ============================================================
 
 export default defineBackground(async () => {
-  console.log('AI Pulse background service worker started');
+  try {
+    console.log('AI Pulse background service worker started');
 
-  // Load language preference and custom providers
-  await loadLanguage();
-  await initCustomProviders();
+    // Load language preference and custom providers
+    await loadLanguage();
+    await initCustomProviders();
 
-  // Initialize default settings
-  chrome.runtime.onInstalled.addListener(async () => {
-    await initializeDefaults();
-    // Start periodic fetching after install
+    // Initialize default settings
+    chrome.runtime.onInstalled.addListener(async () => {
+      await initializeDefaults();
+      // Start periodic fetching after install
+      await startPeriodicFetch();
+    });
+
+    // Set up alarm listener
+    setupAlarmListener();
+
+    // Set up message handler for popup/options communication
+    registerMessageHandler(handleMessage);
+    startMessageListener();
+
+    // Start periodic fetch on startup (in case SW was terminated)
     await startPeriodicFetch();
-  });
 
-  // Set up alarm listener
-  setupAlarmListener();
-
-  // Set up message handler for popup/options communication
-  registerMessageHandler(handleMessage);
-  startMessageListener();
-
-  // Start periodic fetch on startup (in case SW was terminated)
-  await startPeriodicFetch();
-
-  // Mark as initialized so message handler can process requests
-  _initResolve!();
-  console.log('Background ready, calling initial badge update');
-  await updateBadge();
+    // Mark as initialized so message handler can process requests
+    _initResolve!();
+    console.log('Background ready, calling initial badge update');
+    await updateBadge();
+  } catch (err) {
+    console.error('Background initialization failed:', err);
+    // Still resolve the promise so message handler doesn't hang
+    _initResolve?.();
+  }
 });

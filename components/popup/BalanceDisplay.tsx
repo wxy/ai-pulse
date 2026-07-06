@@ -1,12 +1,11 @@
 import React from 'react';
 import type { BalanceEntry } from '@/types';
-import { useBalanceHistory } from '@/hooks/useBalanceHistory';
+import { useBalanceHistory, type ChartDataPoint } from '@/hooks/useBalanceHistory';
 import { t } from '@/utils/i18n';
 
 interface BalanceDisplayProps { balances: BalanceEntry[]; hasApiKey: boolean; providerId: string; onSelect: () => void; canFetchBalance?: boolean; noBalanceNote?: string; }
 
-function useStats(providerId: string, currency: string | null, balance: number): { dailyAvg: string | null; daysLeft: string | null } {
-  const { chartData } = useBalanceHistory(providerId);
+function useStats(chartData: ChartDataPoint[], currency: string | null, balance: number): { dailyAvg: string | null; daysLeft: string | null } {
   if (chartData.length < 2 || !currency) return { dailyAvg: null, daysLeft: null };
   const first = chartData[0], last = chartData[chartData.length - 1];
   const daysDiff = Math.max(1, (last.timestamp - first.timestamp) / (1000 * 60 * 60 * 24));
@@ -26,7 +25,8 @@ function useStats(providerId: string, currency: string | null, balance: number):
 
 const BalanceDisplay: React.FC<BalanceDisplayProps> = ({ balances, hasApiKey, providerId, onSelect, canFetchBalance, noBalanceNote }) => {
   const bal = balances[0];
-  const stats = useStats(providerId, bal?.currency ?? null, bal?.totalBalance ?? 0);
+  const { chartData } = useBalanceHistory(providerId);
+  const stats = useStats(chartData, bal?.currency ?? null, bal?.totalBalance ?? 0);
 
   if (canFetchBalance === false && noBalanceNote) {
     return (

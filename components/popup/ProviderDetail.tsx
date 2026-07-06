@@ -11,7 +11,8 @@ interface ProviderDetailProps { summary: ProviderSummary; onBack: () => void; hi
 const ProviderDetail: React.FC<ProviderDetailProps> = ({ summary, onBack, hideProvider, onSynced }) => {
   const { provider, config } = summary;
   const { configs, saveConfig } = useProviderConfigs();
-  const currentConfig = configs.find(c => c.providerId === provider.id) || config;
+  const foundConfig = configs.find(c => c.providerId === provider.id) || config;
+  const currentConfig = foundConfig ?? { enabled: true, apiKey: '', displayName: '', alertEnabled: true };
 
   const handleSaveKey = async (key: string) => {
     await saveConfig({

@@ -149,6 +149,40 @@ export async function clearBalanceHistory(providerId: string): Promise<void> {
 }
 
 // ============================================================
+// Balance Delta — shared by badge-service and spend-checker
+// ============================================================
+
+export interface BalanceDelta {
+  firstBalance: number;
+  lastBalance: number;
+  daysDiff: number;
+}
+
+/**
+ * Compute balance delta between first and last snapshots for a given currency.
+ * Returns null if there aren't enough snapshots or the currency isn't found.
+ */
+export async function getBalanceDelta(providerId: string, currency: string): Promise<BalanceDelta | null> {
+  const history = await getBalanceHistory(providerId);
+  if (!history?.snapshots || history.snapshots.length < 2) return null;
+
+  const first = history.snapshots[0];
+  const last = history.snapshots[history.snapshots.length - 1];
+
+  const firstBal = first.balances.find(b => b.currency === currency);
+  const lastBal = last.balances.find(b => b.currency === currency);
+  if (!firstBal || !lastBal) return null;
+
+  const daysDiff = Math.max(1, (last.timestamp - first.timestamp) / (1000 * 60 * 60 * 24));
+
+  return {
+    firstBalance: firstBal.totalBalance,
+    lastBalance: lastBal.totalBalance,
+    daysDiff,
+  };
+}
+
+// ============================================================
 // Status History (rolling window of recent status checks)
 // ============================================================
 
