@@ -19,7 +19,9 @@ async function fetchBalance(apiKey: string): Promise<BalanceResult> {
 
   const json = await res.json();
   const data = json?.data ?? json;
-  const totalBalance = parseFloat(data?.balance ?? data?.total_balance ?? '0');
+  // Moonshot API returns { available_balance: number }, not { balance: string }
+  const bal = data?.available_balance ?? data?.balance;
+  const totalBalance = typeof bal === 'number' ? bal : parseFloat(String(bal ?? '0'));
 
   return {
     success: true,

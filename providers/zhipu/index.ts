@@ -1,10 +1,10 @@
 import { t } from '@/utils/i18n';
 import type { Provider, BalanceResult, StatusResult } from '@/types';
 
-const ZHIPU_QUOTA_URL = 'https://bigmodel.cn/api/monitor/usage/quota/limit';
+const ZHIPU_BALANCE_URL = 'https://www.bigmodel.cn/api/biz/account/query-customer-account-report';
 
 async function fetchBalance(apiKey: string): Promise<BalanceResult> {
-  const res = await fetch(ZHIPU_QUOTA_URL, {
+  const res = await fetch(ZHIPU_BALANCE_URL, {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
 
@@ -18,14 +18,15 @@ async function fetchBalance(apiKey: string): Promise<BalanceResult> {
   }
 
   const json = await res.json();
-  const limits = json?.data?.limits ?? [];
-  const tokenLimit = limits.find((l: { type: string }) => l.type === 'TOKENS_LIMIT');
+  const balance = json?.balance ?? json?.data ?? {};
+  const available = balance?.availableBalance ?? balance?.balance ?? 0;
+  const totalBalance = typeof available === 'number' ? available : parseFloat(String(available));
 
   return {
     success: true,
     balances: [{
-      currency: 'tokens',
-      totalBalance: tokenLimit?.remaining ?? tokenLimit?.currentValue ?? 0,
+      currency: 'CNY',
+      totalBalance,
       grantedBalance: 0,
       toppedUpBalance: 0,
     }],
