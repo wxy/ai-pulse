@@ -1,7 +1,7 @@
 # 🤖 AI Pulse
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/nnjaedlkifjimaajkgaifknaapapbloc)](https://chromewebstore.google.com/detail/ai-pulse/nnjaedlkifjimaajkgaifknaapapbloc)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/dpacojibmleehcmmkcabnbgeadofkkpe)](https://chromewebstore.google.com/detail/ai-pulse/dpacojibmleehcmmkcabnbgeadofkkpe)
 [![Platform](https://img.shields.io/badge/platform-Chrome%2FEdge-lightgrey)]()
 
 Monitor AI service providers' usage, balance, and service status — all in one popup.
