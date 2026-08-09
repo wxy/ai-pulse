@@ -20,31 +20,91 @@ Monitor usage, balance, and service status of your AI service providers, with sp
 
 **中文**
 
-一站式监控您的 AI 服务商用量、余额与服务状态。
+AI Pulse 在一个弹窗里监控您的所有 AI 服务商——无需打开多个窗口，也无需切换标签页。
 
-主要功能：
-- 支持 DeepSeek、Kimi、ChatGLM、OpenAI、Anthropic、Gemini、Grok、Perplexity 等 13 家主流 AI 服务商，并支持自定义添加
-- 余额监控：实时展示余额/用量、余额历史图表、日均消费与剩余天数预估
-- 服务状态：三态检测（运行中 / 需注意 / 服务异常），结合官方状态页辅助判断，探测来源一目了然
-- 花费告警：消费异常时徽章动画与系统通知提醒
-- 隐私友好：API Key 仅保存在本地，只发送给您配置的服务商
+📡 多服务商支持
+内置 13 家主流 AI 服务商，覆盖国内外主流 AI 平台；支持通过自定义 API 地址添加服务商，绝不锁定。
+
+🔑 双模式监控
+• 配置 API Key — 实时余额追踪、日均消费估算、历史图表与花费预测
+• 未配置 API Key — 仅服务可用性与健康监控
+
+💰 智能花费告警
+• 消费超出日均水平时徽章动画提醒
+• 余额旁显示“剩余天数”预测
+• 趋势指示器展示余额走势
+• 可选桌面通知，附带各服务商明细
+
+📐 多计费模式
+• 预付余额 — “剩余 $50”
+• 后付用量 — “本期已花费 $12.50”
+• 令牌配额 — “剩余 800K tokens”
+• 告警自动适配各服务商计费模式
+
+🎨 功能
+• 深色/浅色主题（跟随系统）
+• 中英文界面（自动检测浏览器语言）
+• 服务商单独启用/禁用 + 自定义显示名称
+• 点击卡片即可内联配置
+• 官方 favicon 图标
+• 自定义服务商 — 添加任意 API 端点
+
+🔄 后台监控
+• 可配置刷新间隔（15 分钟 – 24 小时）
+• 状态时间线展示近期可用性历史
+
+🛡️ 隐私
+• 所有 API Key 仅保存在本地 chrome.storage.local
+• 无外部分析或追踪
+• 开源（GitHub）
 
 产品家族：
 AI Pulse 还提供 macOS 桌面版与 iOS/watchOS 版本。桌面版与移动版数据互通，支持本地代码级成本统计；浏览器扩展为独立工具，数据仅保存在本地，不与桌面版同步。
+https://apps.apple.com/us/app/ai-pulse/id6786290416?mt=12
 
 **English**
 
-Monitor usage, balance, and service status of your AI service providers — all in one place.
+AI Pulse monitors your AI service providers in one popup — no separate windows, no switching tabs.
 
-Features:
-- Support for 13 major AI providers: DeepSeek, Kimi, ChatGLM, OpenAI, Anthropic, Gemini, Grok, Perplexity, and more; custom providers supported
-- Balance monitoring: real-time balance, history charts, daily average spend, and estimated days remaining
-- Service status: three-state checks (operational / attention / down), augmented by official status pages, with the probe source shown at a glance
-- Spend alerts: badge animation and system notifications when spending is unusual
-- Privacy-friendly: API keys are stored locally and only sent to the providers you configure
+📡 Multi-Provider Support
+13 built-in providers covering major AI platforms worldwide. Custom providers supported via user-defined API URLs — you're never locked in.
+
+🔑 Dual-Mode Monitoring
+• With API Key — real-time balance tracking, daily consumption estimates, history charts, and spend prediction
+• Without API Key — service uptime and health monitoring only
+
+💰 Smart Spend Alerts
+• Badge animation when spending exceeds daily average
+• "X days remaining" prediction next to balance
+• Trend indicator showing balance direction
+• Optional desktop notification with provider breakdown
+
+📐 Multi-Billing Support
+• Prepaid balance — "remaining $50"
+• Post-paid usage — "spent $12.50 this period"
+• Token quota — "800K tokens remaining"
+• Alerts automatically adapt to each provider's billing model
+
+🎨 Features
+• Dark/Light theme (follows system preference)
+• Chinese/English (auto-detects browser language)
+• Per-provider enable/disable + custom display names
+• Click any card for full inline configuration
+• Official favicon icons
+• Custom provider support — add any API endpoint
+
+🔄 Background Monitoring
+• Configurable refresh interval (15 min – 24 h)
+• Status timeline showing recent uptime history
+
+🛡️ Privacy
+• All API keys stored locally in chrome.storage.local
+• No external analytics or tracking
+• Open source (GitHub)
 
 Product family:
 AI Pulse also offers a macOS desktop app and iOS/watchOS apps. The desktop and mobile apps share the same data and provide local code-aware cost tracking; the browser extension is an independent tool whose data stays local and is not synced with the desktop app.
+https://apps.apple.com/us/app/ai-pulse/id6786290416?mt=12
 
 ## 发布说明（What's new — 0.4.3）
 
