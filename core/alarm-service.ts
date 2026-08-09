@@ -1,5 +1,6 @@
 import { getSettings } from './storage';
 import { getProviderConfigs } from './storage';
+import { getLastCycleAt, setLastCycleAt } from './storage';
 import { getAllProviders } from './provider-registry';
 import { fetchAndCacheBalance } from './balance-service';
 import { fetchAndCacheStatus } from './status-service';
@@ -7,7 +8,22 @@ import { updateBadge, showSpendAlert } from './badge-service';
 import { checkSpending } from './spend-checker';
 
 const ALARM_NAME = 'fetch-balance-status';
+const FETCH_CONCURRENCY = 3;
 let lastInterval = 0;
+
+/** Run async tasks with a bounded concurrency limit. */
+export async function runWithConcurrency<T>(tasks: (() => Promise<T>)[], limit: number): Promise<T[]> {
+  const results: T[] = new Array(tasks.length);
+  let next = 0;
+  const worker = async (): Promise<void> => {
+    while (next < tasks.length) {
+      const i = next++;
+      results[i] = await tasks[i]();
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, () => worker()));
+  return results;
+}
 
 export async function startPeriodicFetch(): Promise<void> {
   const settings = await getSettings();
@@ -32,21 +48,21 @@ export async function startPeriodicFetch(): Promise<void> {
     }
   }
 
-  // Only run immediate fetch if no recent data (avoid fetching on every SW wake)
-  const statusCache = await import('./storage').then(m => m.getStatusCache());
-  const cacheEntries = Object.values(statusCache);
-  if (cacheEntries.length === 0) {
+  // Only run an immediate fetch when a full cycle hasn't run within the interval.
+  // Do NOT scan per-provider cache entries: disabled providers keep old entries
+  // forever, which previously made every SW wake look "stale" and fetch again.
+  const lastCycle = await getLastCycleAt();
+  const intervalMs = interval * 60 * 1000;
+  if (lastCycle === 0) {
     // First ever run — fetch immediately
-    runFetchCycle();
+    console.log('First run — fetching immediately');
+    await runFetchCycle();
+  } else if (Date.now() - lastCycle > intervalMs) {
+    // Alarm hasn't fired recently (e.g., SW was asleep) — catch up once
+    console.log('Last cycle is older than the refresh interval — fetching');
+    await runFetchCycle();
   } else {
-    const oldestFetch = Math.min(...cacheEntries.map(e => e.lastFetchTimestamp || 0));
-    const halfInterval = interval * 60 * 1000 / 2;
-    if (Date.now() - oldestFetch > halfInterval) {
-      // Data is stale — fetch
-      runFetchCycle();
-    } else {
-      console.log('Recent data exists, skipping immediate fetch');
-    }
+    console.log(`Recent cycle exists (${Math.round((Date.now() - lastCycle) / 60000)} min ago), skipping immediate fetch`);
   }
 }
 
@@ -55,7 +71,7 @@ export async function runFetchCycle(): Promise<void> {
   const configs = await getProviderConfigs();
   const providers = getAllProviders();
 
-  const tasks: Promise<void>[] = [];
+  const tasks: (() => Promise<void>)[] = [];
 
   for (const provider of providers) {
     // Resolve effective config — match UI logic (ProviderList/AppLayout):
@@ -68,30 +84,36 @@ export async function runFetchCycle(): Promise<void> {
 
     // Fetch status
     if (provider.capabilities.canFetchStatus) {
-      tasks.push(
-        fetchAndCacheStatus(provider, config?.apiKey || undefined).then(() =>
-          console.log(`Status fetched for ${provider.id}`)
-        ).catch(err =>
-          console.error(`Status fetch failed for ${provider.id}:`, err)
-        )
-      );
+      tasks.push(async () => {
+        try {
+          await fetchAndCacheStatus(provider, config?.apiKey || undefined);
+          console.log(`Status fetched for ${provider.id}`);
+        } catch (err) {
+          console.error(`Status fetch failed for ${provider.id}:`, err);
+        }
+      });
     }
 
     // Fetch balance if API key is configured
     if (provider.capabilities.canFetchBalance && config?.apiKey) {
-      tasks.push(
-        fetchAndCacheBalance(provider, config.apiKey).then(entry => {
+      tasks.push(async () => {
+        try {
+          const entry = await fetchAndCacheBalance(provider, config.apiKey);
           if (entry.result?.success) {
             console.log(`Balance fetched for ${provider.id}`);
           } else {
             console.error(`Balance fetch failed for ${provider.id}:`, entry.result?.error);
           }
-        })
-      );
+        } catch (err) {
+          console.error(`Balance fetch failed for ${provider.id}:`, err);
+        }
+      });
     }
   }
 
-  await Promise.allSettled(tasks);
+  // Bound concurrency to avoid bursting ~17 requests at once (rate limits, SW load)
+  await runWithConcurrency(tasks, FETCH_CONCURRENCY);
+  await setLastCycleAt(Date.now());
   console.log('Fetch cycle complete');
 
   // Update extension badge
