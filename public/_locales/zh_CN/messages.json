@@ -3,7 +3,7 @@
     "message": "AI Pulse"
   },
   "extDescription": {
-    "message": "一站式监控 AI 服务商的用量、余额和服务状态。"
+    "message": "一站式监控 AI 服务商的用量、余额与服务状态，支持花费告警与自定义服务商。"
   },
   "extActionTitle": {
     "message": "AI Pulse"

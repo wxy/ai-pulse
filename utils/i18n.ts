@@ -138,6 +138,7 @@ const ZH: Record<string, string> = {
   'about.title': '关于 AI Pulse',
   'about.desc': '监控您的 AI 服务商用量、余额和服务状态。',
   'about.version': '版本',
+  'about.desktop_link': '另有 AI Pulse 桌面版（macOS），支持本地代码级成本统计',
   'about.supported': '已支持 13 家主流 AI 服务商，并支持自定义添加。',
 
   // Errors
@@ -358,6 +359,7 @@ const EN: Record<string, string> = {
   'about.title': 'About AI Pulse',
   'about.desc': 'Monitor your AI service providers\' usage, balance, and service status.',
   'about.version': 'Version',
+  'about.desktop_link': 'Also available: AI Pulse Desktop (macOS) with local code-aware cost tracking',
   'about.supported': 'Supports 13 major AI providers, with custom provider support.',
 
   'error.page': 'Something went wrong',
