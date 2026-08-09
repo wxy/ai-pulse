@@ -69,4 +69,4 @@ utils/                # i18n, validators
 
 ## Related
 
-- [AI Pulse for macOS](https://github.com/wxy/ai-pulse-macos) — Desktop app with local code-aware cost tracking
+- [AI Pulse for macOS](https://apps.apple.com/us/app/ai-pulse/id6786290416?mt=12) — Desktop app with local code-aware cost tracking

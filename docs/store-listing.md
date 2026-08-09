@@ -3,6 +3,9 @@
 > 短描述会从 `public/_locales/*/messages.json` 的 `extDescription` 自动同步；
 > 长描述与发布说明需要手动粘贴到 Chrome Web Store 开发者后台。
 
+> 桌面版相关链接（Related Links 建议填写）：
+> https://apps.apple.com/us/app/ai-pulse/id6786290416?mt=12
+
 ## 短描述（Short description）
 
 **中文**

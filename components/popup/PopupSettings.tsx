@@ -106,7 +106,7 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onS
         <p>{t('about.supported')}</p>
         <p>
           <a
-            href="https://github.com/wxy/ai-pulse-macos"
+            href="https://apps.apple.com/us/app/ai-pulse/id6786290416?mt=12"
             target="_blank"
             rel="noopener noreferrer"
             className="about-link"
