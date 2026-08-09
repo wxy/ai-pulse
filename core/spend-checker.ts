@@ -1,4 +1,4 @@
-import { getProviderConfigs, getBalanceCache, getSettings, getBalanceDelta } from './storage';
+import { getProviderConfigs, getBalanceCache, getBalanceDelta } from './storage';
 import { getProvider } from './provider-registry';
 
 interface SpendResult {
@@ -9,16 +9,28 @@ interface SpendResult {
   details: { name: string; spend: number }[];
 }
 
+interface CurrencyAgg {
+  totalSpend: number;
+  totalDailyAvg: number;
+  details: { name: string; spend: number }[];
+}
+
+function levelForRatio(ratio: number): SpendResult['level'] {
+  if (ratio >= 3) return 'heavy';
+  if (ratio >= 1) return 'light';
+  return 'none';
+}
+
+function levelPriority(level: SpendResult['level']): number {
+  return level === 'heavy' ? 2 : level === 'light' ? 1 : 0;
+}
+
 /** Compare current balances with previous cache to detect spending */
 export async function checkSpending(): Promise<SpendResult> {
-  const settings = await getSettings();
   const configs = await getProviderConfigs();
   const cache = await getBalanceCache();
 
-  let totalSpend = 0;
-  let totalDailyAvg = 0;
-  let currency = 'CNY';
-  const details: { name: string; spend: number }[] = [];
+  const byCurrency = new Map<string, CurrencyAgg>();
 
   for (const [providerId, entry] of Object.entries(cache)) {
     if (!entry?.result?.success || !entry.result.balances.length) continue;
@@ -26,8 +38,6 @@ export async function checkSpending(): Promise<SpendResult> {
     if (!config?.enabled || !config.apiKey) continue;
 
     const bal = entry.result.balances[0];
-    currency = bal.currency;
-
     const delta = await getBalanceDelta(providerId, bal.currency);
     if (!delta) continue;
 
@@ -42,25 +52,38 @@ export async function checkSpending(): Promise<SpendResult> {
 
     const dailyAvg = providerSpend / delta.daysDiff;
 
-    const name = config.displayName || providerId;
+    // Only count spend above natural daily consumption
+    if (providerSpend <= dailyAvg) continue;
 
-    // Only count spend above daily average (natural consumption)
-    const excessSpend = providerSpend - dailyAvg;
-    if (excessSpend > 0) {
-      totalSpend += providerSpend;
-      totalDailyAvg += dailyAvg;
-      details.push({ name, spend: providerSpend });
+    let agg = byCurrency.get(bal.currency);
+    if (!agg) {
+      agg = { totalSpend: 0, totalDailyAvg: 0, details: [] };
+      byCurrency.set(bal.currency, agg);
+    }
+    agg.totalSpend += providerSpend;
+    agg.totalDailyAvg += dailyAvg;
+    agg.details.push({ name: config.displayName || providerId, spend: providerSpend });
+  }
+
+  // Aggregate per currency — never mix different currencies in one total.
+  // If multiple currencies trigger alerts, report the most severe one.
+  let best: SpendResult | null = null;
+  for (const [currency, agg] of byCurrency) {
+    if (agg.totalSpend <= 0.01 || agg.totalDailyAvg <= 0) continue;
+
+    const level = levelForRatio(agg.totalSpend / agg.totalDailyAvg);
+    if (level === 'none') continue;
+
+    if (!best || levelPriority(level) > levelPriority(best.level)) {
+      best = {
+        totalSpend: agg.totalSpend,
+        totalDailyAvg: agg.totalDailyAvg,
+        currency,
+        level,
+        details: agg.details,
+      };
     }
   }
 
-  if (totalSpend <= 0.01 || totalDailyAvg <= 0) {
-    return { totalSpend: 0, totalDailyAvg: 0, currency, level: 'none', details: [] };
-  }
-
-  const ratio = totalSpend / totalDailyAvg;
-  let level: SpendResult['level'] = 'none';
-  if (ratio >= 1 && ratio < 3) level = 'light';
-  else if (ratio >= 3) level = 'heavy';
-
-  return { totalSpend, totalDailyAvg, currency, level, details };
+  return best ?? { totalSpend: 0, totalDailyAvg: 0, currency: 'CNY', level: 'none', details: [] };
 }

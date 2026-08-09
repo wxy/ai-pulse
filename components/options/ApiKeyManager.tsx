@@ -35,7 +35,19 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ providerId, currentKey, p
         <button className="btn btn-primary" onClick={handleSave} disabled={saving || key === currentKey}>
           {saving ? t('apikey.saving') : t('apikey.save')}
         </button>
-        {currentKey && <button className="btn btn-danger" onClick={() => { setKey(''); setError(null); }}>{t('apikey.remove')}</button>}
+        {currentKey && (
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              setKey('');
+              setError(null);
+              onSave('');
+            }}
+            disabled={saving}
+          >
+            {t('apikey.remove')}
+          </button>
+        )}
       </div>
       {error && <p className="field-error">{error}</p>}
       <p className="field-hint">{t('apikey.format_hint')}：{provider.id === 'deepseek' ? 'sk-xxxxxxxxxxxxxxxx' : t('apikey.check_docs')}</p>

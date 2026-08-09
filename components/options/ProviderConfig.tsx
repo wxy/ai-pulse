@@ -22,8 +22,8 @@ const ProviderConfig: React.FC<ProviderConfigProps> = ({ provider, onBack }) => 
 
       <section className="config-section">
         <h3>{t('config.display_name')}</h3>
-        <input className="text-input" value={config?.displayName ?? ''} placeholder={provider.name}
-          onChange={e => saveConfig({ providerId: provider.id, enabled: config?.enabled !== false, apiKey: config?.apiKey ?? '', displayName: e.target.value, alertEnabled: config?.alertEnabled !== false })} />
+        <input className="text-input" defaultValue={config?.displayName ?? ''} placeholder={provider.name}
+          onBlur={e => saveConfig({ providerId: provider.id, enabled: config?.enabled !== false, apiKey: config?.apiKey ?? '', displayName: e.target.value.trim(), alertEnabled: config?.alertEnabled !== false })} />
       </section>
 
       {provider.capabilities.canFetchBalance && (
