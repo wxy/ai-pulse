@@ -1,5 +1,6 @@
 import { getAllProviders } from './provider-registry';
 import { getProviderConfigs, getBalanceCache, getStatusCache, getSettings, getBalanceDelta } from './storage';
+import { t } from '@/utils/i18n';
 
 /** Suppress spend alerts for the first 30 s after SW start to avoid flash on load. */
 let startupGraceUntil = Date.now() + 30_000;
@@ -120,8 +121,8 @@ export async function showSpendAlert(totalSpend: number, currency: string, level
     chrome.notifications.create('spend-alert', {
       type: 'basic',
       iconUrl: 'icons/icon-128.png',
-      title: level === 'heavy' ? '💸 Heavy spending' : '🌕 Spending alert',
-      message: `Total ${prefix}${totalSpend.toFixed(2)}\n${providerList}`,
+      title: level === 'heavy' ? t('alert.notification_title_heavy') : t('alert.notification_title_light'),
+      message: `${t('alert.total')} ${prefix}${totalSpend.toFixed(2)}\n${providerList}`,
       priority: 1,
     });
   }

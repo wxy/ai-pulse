@@ -27,7 +27,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ providerId, currentKey, p
       <div className="api-key-input-group">
         <input id={`apikey-${providerId}`} type={showKey ? 'text' : 'password'} value={key}
           onChange={e => setKey(e.target.value)} placeholder={currentKey ? '••••••••' : t('apikey.placeholder')} className="api-key-input" />
-        <button className="toggle-visibility" onClick={() => setShowKey(!showKey)} title={showKey ? 'Hide' : 'Show'}>
+        <button className="toggle-visibility" onClick={() => setShowKey(!showKey)} title={showKey ? t('apikey.hide') : t('apikey.show')}>
           {showKey ? '🙈' : '👁️'}
         </button>
       </div>

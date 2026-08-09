@@ -5,6 +5,7 @@ import SettingsPanel from './SettingsPanel';
 import { getProvider } from '@/core/provider-registry';
 import { t } from '@/utils/i18n';
 import type { Provider } from '@/types';
+import pkg from '../../package.json';
 
 type Route = 'providers' | 'settings' | 'about';
 
@@ -46,7 +47,7 @@ const AppLayout: React.FC = () => {
           <div className="about-page">
             <h2>{t('about.title')}</h2>
             <p>{t('about.desc')}</p>
-            <p className="version">{t('about.version')} 0.4.1</p>
+            <p className="version">{t('about.version')} {pkg.version}</p>
             <div className="about-links"><p>{t('about.supported')}</p></div>
           </div>
         )}

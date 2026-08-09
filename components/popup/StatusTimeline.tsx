@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { sendMessage } from '@/core/message-bus';
 import type { StatusHistoryEntry } from '@/core/storage';
+import { getLanguage } from '@/utils/i18n';
 
 interface StatusTimelineProps {
   providerId: string;
@@ -25,7 +26,7 @@ const StatusTimeline: React.FC<StatusTimelineProps> = ({ providerId }) => {
         <span
           key={i}
           className={`timeline-dot ${entry.statusKind === 'warning' ? 'dot-warning' : entry.isAvailable ? 'dot-ok' : 'dot-error'} ${entry.source === 'page' || entry.source === 'merged' ? 'source-page' : ''}`}
-          title={`${new Date(entry.timestamp).toLocaleString('zh-CN')}  ${entry.statusMessage}`}
+          title={`${new Date(entry.timestamp).toLocaleString(getLanguage() === 'zh' ? 'zh-CN' : 'en-US')}  ${entry.statusMessage}`}
         />
       ))}
     </div>

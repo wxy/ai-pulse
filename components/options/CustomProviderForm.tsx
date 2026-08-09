@@ -60,7 +60,7 @@ const CustomProviderForm: React.FC<CustomProviderFormProps> = ({ onDone }) => {
     <div className="custom-provider-form">
       <h3>{t('custom.title')}</h3>
       <p className="section-desc">{t('custom.desc')}</p>
-      <div className="form-group"><label className="field-label">{t('custom.name')}</label><input className="text-input" value={name} onChange={e => setName(e.target.value)} placeholder="My AI Service" /></div>
+      <div className="form-group"><label className="field-label">{t('custom.name')}</label><input className="text-input" value={name} onChange={e => setName(e.target.value)} placeholder={t('custom.name_placeholder')} /></div>
       <div className="form-group"><label className="field-label">{t('custom.company')}</label><input className="text-input" value={company} onChange={e => setCompany(e.target.value)} /></div>
       <div className="form-group"><label className="field-label">{t('custom.icon')}</label><input className="text-input" value={icon} onChange={e => setIcon(e.target.value)} maxLength={4} style={{ width: 80 }} /></div>
       <div className="form-group"><label className="field-label">{t('custom.balance_url')}</label><input className="text-input" value={balanceUrl} onChange={e => setBalanceUrl(e.target.value)} placeholder="https://api.example.com/v1/balance" style={{ maxWidth: '100%' }} /><p className="field-hint">{t('custom.balance_hint')}</p></div>

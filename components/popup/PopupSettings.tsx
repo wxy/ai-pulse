@@ -6,6 +6,7 @@ import { getLanguage, setLanguage } from '@/utils/i18n';
 import { t } from '@/utils/i18n';
 import { sendMessage } from '@/core/message-bus';
 import CustomProviderForm from '@/components/options/CustomProviderForm';
+import pkg from '../../package.json';
 
 interface PopupSettingsProps { providers: ProviderSummary[]; onRefresh: () => void; onSync: () => void; onReEnable: () => void; }
 
@@ -100,7 +101,7 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onS
       )}
 
       <div className="about-note">
-        <p>{t('about.title')} v0.4.1</p>
+        <p>{t('about.title')} v{pkg.version}</p>
         <p>{t('about.desc')}</p>
         <p>{t('about.supported')}</p>
       </div>

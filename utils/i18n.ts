@@ -82,6 +82,11 @@ const ZH: Record<string, string> = {
   'apikey.save': '保存',
   'apikey.saving': '保存中...',
   'apikey.remove': '移除 Key',
+  'apikey.show': '显示',
+  'apikey.hide': '隐藏',
+  'alert.notification_title_heavy': '💸 消费过高',
+  'alert.notification_title_light': '🌕 消费提醒',
+  'alert.total': '合计',
 
   // Settings
   'settings.title': '设置',
@@ -133,7 +138,7 @@ const ZH: Record<string, string> = {
   'about.title': '关于 AI Pulse',
   'about.desc': '监控您的 AI 服务商用量、余额和服务状态。',
   'about.version': '版本',
-  'about.supported': '已支持 16+ 国内外主流 AI 服务商，并支持自定义添加。',
+  'about.supported': '已支持 13 家主流 AI 服务商，并支持自定义添加。',
 
   // Errors
   'error.page': '页面出现错误',
@@ -143,6 +148,7 @@ const ZH: Record<string, string> = {
   'custom.title': '添加自定义服务商',
   'custom.desc': '输入服务商信息，可自定义余额和状态检查 API',
   'custom.name': '服务名称 *',
+  'custom.name_placeholder': '例如：My AI Service',
   'custom.company': '公司名称',
   'custom.icon': '图标 Emoji',
   'custom.balance_url': '余额 API URL',
@@ -299,6 +305,11 @@ const EN: Record<string, string> = {
   'apikey.save': 'Save',
   'apikey.saving': 'Saving...',
   'apikey.remove': 'Remove Key',
+  'apikey.show': 'Show',
+  'apikey.hide': 'Hide',
+  'alert.notification_title_heavy': '💸 Heavy spending',
+  'alert.notification_title_light': '🌕 Spending alert',
+  'alert.total': 'Total',
 
   'settings.title': 'Settings',
   'settings.desc': 'Configure monitoring behavior',
@@ -345,7 +356,7 @@ const EN: Record<string, string> = {
   'about.title': 'About AI Pulse',
   'about.desc': 'Monitor your AI service providers\' usage, balance, and service status.',
   'about.version': 'Version',
-  'about.supported': 'Supports 16+ major AI providers, with custom provider support.',
+  'about.supported': 'Supports 13 major AI providers, with custom provider support.',
 
   'error.page': 'Something went wrong',
   'error.load_providers': 'Failed to load providers',
@@ -353,6 +364,7 @@ const EN: Record<string, string> = {
   'custom.title': 'Add Custom Provider',
   'custom.desc': 'Configure a custom AI provider with balance and status API endpoints',
   'custom.name': 'Service Name *',
+  'custom.name_placeholder': 'e.g. My AI Service',
   'custom.company': 'Company Name',
   'custom.icon': 'Icon Emoji',
   'custom.balance_url': 'Balance API URL',

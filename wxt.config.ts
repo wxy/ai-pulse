@@ -1,4 +1,5 @@
 import { defineConfig } from 'wxt';
+import pkg from './package.json';
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
@@ -17,7 +18,7 @@ export default defineConfig({
   manifest: {
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
-    version: '0.4.1',
+    version: pkg.version,
     default_locale: 'en',
     permissions: [
       'storage',
