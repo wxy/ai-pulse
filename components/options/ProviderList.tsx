@@ -5,6 +5,7 @@ import { getCustomProviders, removeCustomProvider } from '@/core/provider-regist
 import ProviderIcon from '@/components/shared/ProviderIcon';
 import CustomProviderForm from './CustomProviderForm';
 import { t } from '@/utils/i18n';
+import { sendMessage } from '@/core/message-bus';
 
 interface ProviderListProps {
   onSelect: (provider: Provider) => void;
@@ -80,7 +81,13 @@ const ProviderList: React.FC<ProviderListProps> = ({ onSelect }) => {
               </div>
               <div className="provider-row-actions">
                 <button className="btn btn-small" onClick={() => onSelect(provider)}>{t('providers.configure')}</button>
-                <button className="btn btn-danger" onClick={() => { removeCustomProvider(provider.id); setCustomProviders(getCustomProviders()); reload(); }}>
+                <button className="btn btn-danger" onClick={async () => {
+                  await removeCustomProvider(provider.id);
+                  // Clean up any leftover provider config so nothing keeps referencing it
+                  await sendMessage('DELETE_PROVIDER_CONFIG', provider.id);
+                  setCustomProviders(getCustomProviders());
+                  reload();
+                }}>
                   {t('providers.delete')}
                 </button>
               </div>

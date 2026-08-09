@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateDeepSeekKey, validateBearerToken, isNonEmptyKey } from '@/utils/validators';
+import { validateDeepSeekKey, validateBearerToken, isNonEmptyKey, isHttpsUrl } from '@/utils/validators';
 
 describe('validators', () => {
   describe('validateDeepSeekKey', () => {
@@ -43,6 +43,21 @@ describe('validators', () => {
     it('returns false for empty or whitespace-only strings', () => {
       expect(isNonEmptyKey('')).toBe(false);
       expect(isNonEmptyKey('   ')).toBe(false);
+    });
+  });
+
+  describe('isHttpsUrl', () => {
+    it('accepts https URLs', () => {
+      expect(isHttpsUrl('https://api.example.com/v1/balance')).toBe(true);
+    });
+
+    it('rejects http URLs', () => {
+      expect(isHttpsUrl('http://api.example.com/v1/balance')).toBe(false);
+    });
+
+    it('rejects malformed URLs', () => {
+      expect(isHttpsUrl('not-a-url')).toBe(false);
+      expect(isHttpsUrl('')).toBe(false);
     });
   });
 });

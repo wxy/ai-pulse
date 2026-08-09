@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   getAllProviders, getProvider, getBuiltinProviders,
   registerCustomProvider, removeCustomProvider, getCustomProviders,
-  initCustomProviders,
+  initCustomProviders, generateCustomProviderId,
 } from '@/core/provider-registry';
 import type { Provider } from '@/types';
 
@@ -79,6 +79,12 @@ describe('provider-registry', () => {
       expect(getProvider('custom-test')).toBeDefined();
       expect(getCustomProviders()).toHaveLength(1);
       expect(getAllProviders()).toContainEqual(expect.objectContaining({ id: 'custom-test' }));
+    });
+
+    it('generates a unique id when the base id is already taken', () => {
+      registerCustomProvider(customP);
+      expect(generateCustomProviderId('Test')).toBe('custom-test-2');
+      expect(generateCustomProviderId('Another Service')).toBe('custom-another-service');
     });
 
     it('removes custom providers', () => {

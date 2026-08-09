@@ -119,17 +119,6 @@ export interface GlobalSettings {
   soundEnabled: boolean;          // Play sound + animate badge on spending (default true)
 }
 
-/** Custom provider definition stored by user */
-export interface CustomProviderDef {
-  id: string;
-  name: string;
-  company: string;
-  icon: string;
-  balanceUrl: string;   // Full URL for balance API
-  statusUrl: string;    // Full URL for status check
-  balanceKey: string;   // API key for balance endpoint
-}
-
 // ============================================================
 // Message Bus Protocol
 // ============================================================
