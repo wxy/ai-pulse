@@ -1,27 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ProviderList from './ProviderList';
 import ProviderConfig from './ProviderConfig';
 import SettingsPanel from './SettingsPanel';
-import { getProvider } from '@/core/provider-registry';
 import { t } from '@/utils/i18n';
 import type { Provider } from '@/types';
+import pkg from '../../package.json';
 
 type Route = 'providers' | 'settings' | 'about';
 
 const AppLayout: React.FC = () => {
   const [route, setRoute] = useState<Route>('providers');
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
-
-  useEffect(() => {
-    chrome.storage.local.get('navigate_to_provider').then(result => {
-      const id = result.navigate_to_provider as string | undefined;
-      if (id) {
-        const p = getProvider(id);
-        if (p) { setRoute('providers'); setSelectedProvider(p); }
-        chrome.storage.local.remove('navigate_to_provider');
-      }
-    });
-  }, []);
 
   return (
     <div className="options-app-layout">
@@ -46,7 +35,7 @@ const AppLayout: React.FC = () => {
           <div className="about-page">
             <h2>{t('about.title')}</h2>
             <p>{t('about.desc')}</p>
-            <p className="version">{t('about.version')} 0.4.1</p>
+            <p className="version">{t('about.version')} {pkg.version}</p>
             <div className="about-links"><p>{t('about.supported')}</p></div>
           </div>
         )}

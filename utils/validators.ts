@@ -19,3 +19,16 @@ export function validateBearerToken(key: string): boolean {
 export function isNonEmptyKey(key: string): boolean {
   return key.trim().length > 0;
 }
+
+/**
+ * Check that a URL is absolute and uses HTTPS.
+ * Custom provider endpoints must be https; the extension only holds
+ * https host permissions, so http:// URLs would always fail.
+ */
+export function isHttpsUrl(url: string): boolean {
+  try {
+    return new URL(url.trim()).protocol === 'https:';
+  } catch {
+    return false;
+  }
+}

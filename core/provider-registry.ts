@@ -53,14 +53,28 @@ export async function initCustomProviders(): Promise<void> {
   }
 }
 
-export function registerCustomProvider(provider: Provider): void {
+export async function registerCustomProvider(provider: Provider): Promise<void> {
   registry.set(provider.id, provider);
-  saveCustomProviders();
+  await saveCustomProviders();
 }
 
-export function removeCustomProvider(id: string): void {
+export async function removeCustomProvider(id: string): Promise<void> {
   registry.delete(id);
-  saveCustomProviders();
+  await saveCustomProviders();
+}
+
+/**
+ * Build a unique id from a display name, appending a numeric suffix when the
+ * base id already exists (duplicate names must not silently overwrite).
+ */
+export function generateCustomProviderId(name: string): string {
+  const base = 'custom-' + name.trim().toLowerCase().replace(/\s+/g, '-');
+  let id = base;
+  let suffix = 2;
+  while (registry.has(id)) {
+    id = `${base}-${suffix++}`;
+  }
+  return id;
 }
 
 function saveCustomProviders(): void {

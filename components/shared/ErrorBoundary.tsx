@@ -1,4 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { t } from '@/utils/i18n';
 
 interface Props {
   children: ReactNode;
@@ -31,7 +32,7 @@ class ErrorBoundary extends Component<Props, State> {
       }
       return (
         <div className="error-boundary">
-          <p>⚠️ 页面出现错误</p>
+          <p>⚠️ {t('error.page')}</p>
           <p className="error-detail">{this.state.error?.message}</p>
         </div>
       );

@@ -22,10 +22,17 @@ const ZH: Record<string, string> = {
 
   // Status
   'status.running': '运行中',
+  'status.warning': '需注意',
+  'status.needs_auth': '可达 · 需鉴权',
+  'status.endpoint_error': '可达 · 接口异常',
+  'status.reachable': '可达',
   'status.error': '服务异常',
   'status.unknown': '未知',
   'status.unreachable': '无法访问',
   'status.connection_failed': '连接失败',
+  'status.source_api': '来源：API 探测',
+  'status.source_page': '来源：官方状态页',
+  'status.source_merged': '来源：API + 状态页',
 
   // Options nav
   'nav.providers': '服务商',
@@ -75,6 +82,11 @@ const ZH: Record<string, string> = {
   'apikey.save': '保存',
   'apikey.saving': '保存中...',
   'apikey.remove': '移除 Key',
+  'apikey.show': '显示',
+  'apikey.hide': '隐藏',
+  'alert.notification_title_heavy': '💸 消费过高',
+  'alert.notification_title_light': '🌕 消费提醒',
+  'alert.total': '合计',
 
   // Settings
   'settings.title': '设置',
@@ -120,12 +132,13 @@ const ZH: Record<string, string> = {
   'chart.loading': '加载历史数据...',
   'chart.empty': '暂无余额历史数据。首次自动拉取完成后数据将出现在这里。',
   'chart.title': '余额历史',
+  'chart.title_usage': '消费历史',
 
   // About
   'about.title': '关于 AI Pulse',
   'about.desc': '监控您的 AI 服务商用量、余额和服务状态。',
   'about.version': '版本',
-  'about.supported': '已支持 16+ 国内外主流 AI 服务商，并支持自定义添加。',
+  'about.supported': '已支持 13 家主流 AI 服务商，并支持自定义添加。',
 
   // Errors
   'error.page': '页面出现错误',
@@ -135,6 +148,7 @@ const ZH: Record<string, string> = {
   'custom.title': '添加自定义服务商',
   'custom.desc': '输入服务商信息，可自定义余额和状态检查 API',
   'custom.name': '服务名称 *',
+  'custom.name_placeholder': '例如：My AI Service',
   'custom.company': '公司名称',
   'custom.icon': '图标 Emoji',
   'custom.balance_url': '余额 API URL',
@@ -145,6 +159,8 @@ const ZH: Record<string, string> = {
   'custom.cancel': '取消',
   'custom.error_name': '请输入服务名称',
   'custom.error_url': '请输入状态检查 URL',
+  'custom.error_https': '仅支持 https:// 地址',
+  'custom.error_balance_parse': '余额响应解析失败',
   'custom.error_save': '保存失败',
   'custom.custom_label': '自定义',
   'custom.balance_type': '计费模式',
@@ -154,6 +170,14 @@ const ZH: Record<string, string> = {
 
   'card.click_config': '点击配置',
   'card.daily_avg': '日',
+  'card.daily_spend': '日均消费',
+  'card.usage_hint': '近 3 日消费',
+  'trend.up': '余额增长',
+  'trend.down': '余额减少',
+  'trend.flat': '余额持平',
+  'trend.usage_up': '消费增长',
+  'trend.usage_down': '消费减少',
+  'trend.usage_flat': '消费持平',
 
   // Provider names & descriptions
   'provider.deepseek.name': 'DeepSeek',
@@ -225,10 +249,17 @@ const EN: Record<string, string> = {
   'popup.day_ago': 'd ago',
 
   'status.running': 'Operational',
+  'status.warning': 'Attention',
+  'status.needs_auth': 'Reachable · Auth required',
+  'status.endpoint_error': 'Reachable · Endpoint error',
+  'status.reachable': 'Reachable',
   'status.error': 'Service Error',
   'status.unknown': 'Unknown',
   'status.unreachable': 'Unreachable',
   'status.connection_failed': 'Connection failed',
+  'status.source_api': 'Source: API probe',
+  'status.source_page': 'Source: official status page',
+  'status.source_merged': 'Source: API + status page',
 
   'nav.providers': 'Providers',
   'nav.settings': 'Settings',
@@ -276,6 +307,11 @@ const EN: Record<string, string> = {
   'apikey.save': 'Save',
   'apikey.saving': 'Saving...',
   'apikey.remove': 'Remove Key',
+  'apikey.show': 'Show',
+  'apikey.hide': 'Hide',
+  'alert.notification_title_heavy': '💸 Heavy spending',
+  'alert.notification_title_light': '🌕 Spending alert',
+  'alert.total': 'Total',
 
   'settings.title': 'Settings',
   'settings.desc': 'Configure monitoring behavior',
@@ -317,11 +353,12 @@ const EN: Record<string, string> = {
   'chart.loading': 'Loading history...',
   'chart.empty': 'No balance history yet. Data will appear after the first automatic fetch cycle.',
   'chart.title': 'Balance History',
+  'chart.title_usage': 'Spend History',
 
   'about.title': 'About AI Pulse',
   'about.desc': 'Monitor your AI service providers\' usage, balance, and service status.',
   'about.version': 'Version',
-  'about.supported': 'Supports 16+ major AI providers, with custom provider support.',
+  'about.supported': 'Supports 13 major AI providers, with custom provider support.',
 
   'error.page': 'Something went wrong',
   'error.load_providers': 'Failed to load providers',
@@ -329,6 +366,7 @@ const EN: Record<string, string> = {
   'custom.title': 'Add Custom Provider',
   'custom.desc': 'Configure a custom AI provider with balance and status API endpoints',
   'custom.name': 'Service Name *',
+  'custom.name_placeholder': 'e.g. My AI Service',
   'custom.company': 'Company Name',
   'custom.icon': 'Icon Emoji',
   'custom.balance_url': 'Balance API URL',
@@ -339,6 +377,8 @@ const EN: Record<string, string> = {
   'custom.cancel': 'Cancel',
   'custom.error_name': 'Service name is required',
   'custom.error_url': 'Status check URL is required',
+  'custom.error_https': 'Only https:// URLs are supported',
+  'custom.error_balance_parse': 'Failed to parse balance response',
   'custom.error_save': 'Failed to save',
   'custom.custom_label': 'Custom',
   'custom.balance_type': 'Billing Model',
@@ -348,6 +388,14 @@ const EN: Record<string, string> = {
 
   'card.click_config': 'Click to configure',
   'card.daily_avg': 'day',
+  'card.daily_spend': 'daily avg spend',
+  'card.usage_hint': 'Last 3 days spend',
+  'trend.up': 'Balance Up',
+  'trend.down': 'Balance Down',
+  'trend.flat': 'Balance Flat',
+  'trend.usage_up': 'Spend Up',
+  'trend.usage_down': 'Spend Down',
+  'trend.usage_flat': 'Spend Flat',
 
   'provider.deepseek.name': 'DeepSeek',
   'provider.deepseek.company': 'DeepSeek',
@@ -448,4 +496,3 @@ export function tp(providerId: string, field: 'name' | 'company' | 'desc', fallb
   const key = `provider.${providerId}.${field}`;
   return t(key) !== key ? t(key) : fallback;
 }
-

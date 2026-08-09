@@ -5,6 +5,7 @@ import {
   getBalanceCache, setBalanceCacheEntry,
   getStatusCache, setStatusCacheEntry,
   getBalanceHistory, appendBalanceSnapshot, clearBalanceHistory,
+  getLastCycleAt, setLastCycleAt,
 } from '@/core/storage';
 
 describe('storage', () => {
@@ -27,6 +28,17 @@ describe('storage', () => {
       });
       const s = await getSettings();
       expect(s.refreshIntervalMinutes).toBe(30);
+    });
+  });
+
+  describe('last cycle timestamp', () => {
+    it('defaults to 0 when never set', async () => {
+      expect(await getLastCycleAt()).toBe(0);
+    });
+
+    it('stores and reads the timestamp', async () => {
+      await setLastCycleAt(123456);
+      expect(await getLastCycleAt()).toBe(123456);
     });
   });
 

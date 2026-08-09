@@ -1,6 +1,7 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useBalanceHistory, formatChartTime } from '@/hooks/useBalanceHistory';
+import { getProvider } from '@/core/provider-registry';
 import { getLanguage } from '@/utils/i18n';
 import { t } from '@/utils/i18n';
 
@@ -13,6 +14,7 @@ const CURRENCY_COLORS: Record<string, string> = {
 const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId }) => {
   const { chartData, currencies, loading } = useBalanceHistory(providerId);
   const lang = getLanguage();
+  const usage = getProvider(providerId)?.balanceType === 'usage';
 
   if (loading) {
     return <div className="chart-container"><p className="chart-loading">{t('chart.loading')}</p></div>;
@@ -35,7 +37,7 @@ const BalanceHistoryChart: React.FC<BalanceHistoryChartProps> = ({ providerId })
 
   return (
     <div className="chart-container">
-      <h4>{t('chart.title')}</h4>
+      <h4>{t(usage ? 'chart.title_usage' : 'chart.title')}</h4>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={chartData} margin={{ top: 5, right: 8, left: 0, bottom: 5 }}>
           <CartesianGrid stroke="#1e293b" strokeDasharray="none" />

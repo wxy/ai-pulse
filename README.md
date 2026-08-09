@@ -8,7 +8,7 @@ Monitor AI service providers' usage, balance, and service status — all in one 
 
 ## Features
 
-- **18+ Providers** — DeepSeek, Kimi, ChatGLM, OpenAI, Claude, Gemini, Grok, Perplexity, and more. Custom providers supported.
+- **13+ Providers** — DeepSeek, Kimi, ChatGLM, OpenAI, Claude, Gemini, Grok, Perplexity, and more. Custom providers supported.
 - **Dual Mode** — With API Key: real-time balance, history charts, daily consumption. Without: service uptime monitoring.
 - **Multi-Billing** — Prepaid balance, post-paid usage, token quota. Alerts adapt to billing model.
 - **Spend Alerts** — Badge animation + notification when spending exceeds daily average.
@@ -55,7 +55,7 @@ core/                 # Business logic
 providers/            # One file per provider (16 built-in + custom)
 components/           # React components (popup, options, shared)
 hooks/                # React hooks (useProviders, useBalanceHistory, etc.)
-utils/                # i18n, formatters, validators
+utils/                # i18n, validators
 ```
 
 ## Tech Stack

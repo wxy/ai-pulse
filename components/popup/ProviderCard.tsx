@@ -25,7 +25,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ summary, onSelect }) => {
         </div>
         <div className="provider-meta">
           <StatusIndicator status={statusCache?.result ?? null} providerName={provider.name} />
-          <TrendBadge trend={trend} />
+          <TrendBadge trend={trend} usage={provider.balanceType === 'usage'} />
         </div>
       </div>
       <div className="provider-card-body">

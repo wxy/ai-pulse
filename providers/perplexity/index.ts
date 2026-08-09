@@ -1,5 +1,5 @@
+import { statusFromResponse, statusFromError } from '@/core/status-classifier';
 import type { Provider, StatusResult } from '@/types';
-import { t } from '@/utils/i18n';
 
 async function fetchStatus(): Promise<StatusResult> {
   try {
@@ -8,14 +8,9 @@ async function fetchStatus(): Promise<StatusResult> {
       headers: { Authorization: 'Bearer noop', 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'sonar', messages: [{ role: 'user', content: 'ping' }], max_tokens: 1 }),
     });
-    const isAvailable = res.status < 500;
-    return {
-      success: true, isAvailable,
-      statusMessage: isAvailable ? t('status.running') : `${t('status.error')} (HTTP ${res.status})`,
-      rawTimestamp: Date.now(),
-    };
-  } catch {
-    return { success: false, isAvailable: false, statusMessage: t('status.unreachable'), rawTimestamp: Date.now() };
+    return statusFromResponse(res);
+  } catch (err) {
+    return statusFromError(err);
   }
 }
 
@@ -27,6 +22,8 @@ export const perplexityProvider: Provider = {
   icon: '🔎',
   faviconUrl: 'https://perplexity.ai/favicon.ico',
   baseUrl: 'https://www.perplexity.ai',
+  statusPageUrl: 'https://status.perplexity.com',
+  statusPageApiUrl: 'https://status.perplexity.com/api/v2/status.json',
   capabilities: { canFetchBalance: false, canFetchStatus: true },
   noBalanceNote: 'provider.perplexity.no_balance_note',
   fetchStatus,

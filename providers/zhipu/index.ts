@@ -1,4 +1,4 @@
-import { t } from '@/utils/i18n';
+import { statusFromResponse, statusFromError } from '@/core/status-classifier';
 import type { Provider, BalanceResult, StatusResult } from '@/types';
 
 const ZHIPU_BALANCE_URL = 'https://www.bigmodel.cn/api/biz/account/query-customer-account-report';
@@ -34,23 +34,14 @@ async function fetchBalance(apiKey: string): Promise<BalanceResult> {
   };
 }
 
-async function fetchStatus(): Promise<StatusResult> {
+async function fetchStatus(apiKey?: string): Promise<StatusResult> {
   try {
-    const res = await fetch('https://open.bigmodel.cn/api/paas/v4/models');
-    const isAvailable = res.status < 500;
-    return {
-      success: true,
-      isAvailable,
-      statusMessage: isAvailable ? t('status.running') : `${t('status.error')} (HTTP ${res.status})`,
-      rawTimestamp: Date.now(),
-    };
-  } catch {
-    return {
-      success: false,
-      isAvailable: false,
-      statusMessage: t('status.unreachable'),
-      rawTimestamp: Date.now(),
-    };
+    const res = await fetch('https://open.bigmodel.cn/api/paas/v4/models', {
+      headers: { Authorization: `Bearer ${apiKey ?? 'noop'}` },
+    });
+    return statusFromResponse(res);
+  } catch (err) {
+    return statusFromError(err);
   }
 }
 

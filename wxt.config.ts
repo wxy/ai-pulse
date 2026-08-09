@@ -1,4 +1,5 @@
 import { defineConfig } from 'wxt';
+import pkg from './package.json';
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
@@ -6,10 +7,18 @@ export default defineConfig({
   outDir: 'dist',
   publicDir: 'public',
 
+  vite: () => ({
+    build: {
+      // 关闭 modulepreload：扩展页面里 Chrome 会因跨 world 缓存检查跳过预加载并刷警告，
+      // 禁用后资源仍会按需加载，只是不再生成 <link rel="modulepreload">
+      modulePreload: false,
+    },
+  }),
+
   manifest: {
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
-    version: '0.4.1',
+    version: pkg.version,
     default_locale: 'en',
     permissions: [
       'storage',

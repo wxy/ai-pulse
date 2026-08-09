@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import type { Provider } from '@/types';
-import { registerCustomProvider } from '@/core/provider-registry';
+import { registerCustomProvider, generateCustomProviderId } from '@/core/provider-registry';
+import { statusFromResponse, statusFromError } from '@/core/status-classifier';
 import { t } from '@/utils/i18n';
+import { isHttpsUrl } from '@/utils/validators';
 
 interface CustomProviderFormProps { onDone: () => void; }
 
@@ -18,38 +20,49 @@ const CustomProviderForm: React.FC<CustomProviderFormProps> = ({ onDone }) => {
   const handleSave = async () => {
     setError(null);
     if (!name.trim()) { setError(t('custom.error_name')); return; }
-    if (!statusUrl.trim()) { setError(t('custom.error_url')); return; }
+    const trimmedBalance = balanceUrl.trim();
+    const trimmedStatus = statusUrl.trim();
+    if (!trimmedStatus) { setError(t('custom.error_url')); return; }
+    if (trimmedBalance && !isHttpsUrl(trimmedBalance)) { setError(t('custom.error_https')); return; }
+    if (!isHttpsUrl(trimmedStatus)) { setError(t('custom.error_https')); return; }
     setSaving(true);
     try {
-      const id = 'custom-' + name.trim().toLowerCase().replace(/\s+/g, '-');
+      const id = generateCustomProviderId(name);
       const provider: Provider = {
         id, name: name.trim(), company: company.trim() || name.trim(), description: t('custom.custom_label'), icon,
         baseUrl: '',
-        capabilities: { canFetchBalance: Boolean(balanceUrl.trim()), canFetchStatus: Boolean(statusUrl.trim()) },
+        capabilities: { canFetchBalance: Boolean(trimmedBalance), canFetchStatus: Boolean(trimmedStatus) },
         balanceType,
       };
-      if (balanceUrl.trim()) {
+      if (trimmedBalance) {
         provider.fetchBalance = async (apiKey: string) => {
-          const res = await fetch(balanceUrl.trim(), { headers: { Authorization: `Bearer ${apiKey}` } });
-          if (!res.ok) return { success: false, balances: [], rawTimestamp: Date.now(), error: `HTTP ${res.status}` };
-          const json = await res.json();
-          const amount = json?.balance ?? json?.total_balance ?? json?.data?.balance ?? 0;
-          return { success: true, balances: [{ currency: 'CNY', totalBalance: parseFloat(amount), grantedBalance: 0, toppedUpBalance: 0 }], rawTimestamp: Date.now() };
+          try {
+            const res = await fetch(trimmedBalance, { headers: { Authorization: `Bearer ${apiKey}` } });
+            if (!res.ok) return { success: false, balances: [], rawTimestamp: Date.now(), error: `HTTP ${res.status}` };
+            const json = await res.json();
+            const amount = Number(json?.balance ?? json?.total_balance ?? json?.data?.balance ?? 0);
+            if (!Number.isFinite(amount)) {
+              return { success: false, balances: [], rawTimestamp: Date.now(), error: t('custom.error_balance_parse') };
+            }
+            const currency = typeof json?.currency === 'string' && json.currency ? json.currency : 'CNY';
+            return { success: true, balances: [{ currency, totalBalance: amount, grantedBalance: 0, toppedUpBalance: 0 }], rawTimestamp: Date.now() };
+          } catch (err) {
+            return { success: false, balances: [], rawTimestamp: Date.now(), error: err instanceof Error ? err.message : t('custom.error_balance_parse') };
+          }
         };
       }
-      if (statusUrl.trim()) {
+      if (trimmedStatus) {
         provider.fetchStatus = async () => {
           try {
-            const res = await fetch(statusUrl.trim());
-            const isAvailable = res.status < 500;
-            return { success: true, isAvailable, statusMessage: isAvailable ? t('status.running') : `${t('status.error')} (HTTP ${res.status})`, rawTimestamp: Date.now() };
-          } catch {
-            return { success: false, isAvailable: false, statusMessage: t('status.unreachable'), rawTimestamp: Date.now() };
+            const res = await fetch(trimmedStatus);
+            return statusFromResponse(res);
+          } catch (err) {
+            return statusFromError(err);
           }
         };
         provider.validateApiKey = (key: string) => key.length >= 10;
       }
-      registerCustomProvider(provider);
+      await registerCustomProvider(provider);
       onDone();
     } catch (err) {
       setError(err instanceof Error ? err.message : t('custom.error_save'));
@@ -60,7 +73,7 @@ const CustomProviderForm: React.FC<CustomProviderFormProps> = ({ onDone }) => {
     <div className="custom-provider-form">
       <h3>{t('custom.title')}</h3>
       <p className="section-desc">{t('custom.desc')}</p>
-      <div className="form-group"><label className="field-label">{t('custom.name')}</label><input className="text-input" value={name} onChange={e => setName(e.target.value)} placeholder="My AI Service" /></div>
+      <div className="form-group"><label className="field-label">{t('custom.name')}</label><input className="text-input" value={name} onChange={e => setName(e.target.value)} placeholder={t('custom.name_placeholder')} /></div>
       <div className="form-group"><label className="field-label">{t('custom.company')}</label><input className="text-input" value={company} onChange={e => setCompany(e.target.value)} /></div>
       <div className="form-group"><label className="field-label">{t('custom.icon')}</label><input className="text-input" value={icon} onChange={e => setIcon(e.target.value)} maxLength={4} style={{ width: 80 }} /></div>
       <div className="form-group"><label className="field-label">{t('custom.balance_url')}</label><input className="text-input" value={balanceUrl} onChange={e => setBalanceUrl(e.target.value)} placeholder="https://api.example.com/v1/balance" style={{ maxWidth: '100%' }} /><p className="field-hint">{t('custom.balance_hint')}</p></div>

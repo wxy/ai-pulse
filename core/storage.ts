@@ -149,6 +149,21 @@ export async function clearBalanceHistory(providerId: string): Promise<void> {
 }
 
 // ============================================================
+// Last full fetch cycle (used to avoid fetching on every SW wake)
+// ============================================================
+
+const LAST_CYCLE_KEY = 'last_cycle_at';
+
+export async function getLastCycleAt(): Promise<number> {
+  const result = await chrome.storage.local.get(LAST_CYCLE_KEY);
+  return typeof result[LAST_CYCLE_KEY] === 'number' ? result[LAST_CYCLE_KEY] : 0;
+}
+
+export async function setLastCycleAt(timestamp: number): Promise<void> {
+  await chrome.storage.local.set({ [LAST_CYCLE_KEY]: timestamp });
+}
+
+// ============================================================
 // Balance Delta — shared by badge-service and spend-checker
 // ============================================================
 
@@ -191,6 +206,8 @@ const STATUS_HISTORY_KEY_PREFIX = 'status_history_';
 export interface StatusHistoryEntry {
   timestamp: number;
   isAvailable: boolean;
+  statusKind?: 'ok' | 'warning' | 'down';
+  source?: 'api' | 'page' | 'merged';
   statusMessage: string;
 }
 

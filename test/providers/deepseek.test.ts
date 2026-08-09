@@ -21,7 +21,8 @@ describe('DeepSeek provider', () => {
     const result = await deepseekProvider.fetchStatus!();
     expect(result.success).toBe(true);
     expect(result.isAvailable).toBe(true);
-    expect(result.statusMessage).toBe('运行中');
+    expect(result.statusKind).toBe('warning');
+    expect(result.statusMessage).toBe('可达 · 需鉴权');
   });
 
   it('fetchStatus returns unreachable on network error', async () => {

@@ -27,7 +27,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ providerId, currentKey, p
       <div className="api-key-input-group">
         <input id={`apikey-${providerId}`} type={showKey ? 'text' : 'password'} value={key}
           onChange={e => setKey(e.target.value)} placeholder={currentKey ? '••••••••' : t('apikey.placeholder')} className="api-key-input" />
-        <button className="toggle-visibility" onClick={() => setShowKey(!showKey)} title={showKey ? 'Hide' : 'Show'}>
+        <button className="toggle-visibility" onClick={() => setShowKey(!showKey)} title={showKey ? t('apikey.hide') : t('apikey.show')}>
           {showKey ? '🙈' : '👁️'}
         </button>
       </div>
@@ -35,7 +35,19 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ providerId, currentKey, p
         <button className="btn btn-primary" onClick={handleSave} disabled={saving || key === currentKey}>
           {saving ? t('apikey.saving') : t('apikey.save')}
         </button>
-        {currentKey && <button className="btn btn-danger" onClick={() => { setKey(''); setError(null); }}>{t('apikey.remove')}</button>}
+        {currentKey && (
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              setKey('');
+              setError(null);
+              onSave('');
+            }}
+            disabled={saving}
+          >
+            {t('apikey.remove')}
+          </button>
+        )}
       </div>
       {error && <p className="field-error">{error}</p>}
       <p className="field-hint">{t('apikey.format_hint')}：{provider.id === 'deepseek' ? 'sk-xxxxxxxxxxxxxxxx' : t('apikey.check_docs')}</p>
