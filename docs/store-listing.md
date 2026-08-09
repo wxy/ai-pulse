@@ -60,7 +60,6 @@ AI Pulse 在弹窗内一站式监控你的 AI 服务商——无需切换窗口�
 
 产品家族：
 AI Pulse 还提供 macOS 桌面版与 iOS/watchOS 版本。桌面版与移动版数据互通，支持本地代码级成本统计；浏览器扩展为独立工具，数据仅保存在本地，不与桌面版同步。
-https://apps.apple.com/us/app/ai-pulse/id6786290416?mt=12
 
 **English**
 
@@ -104,7 +103,6 @@ AI Pulse monitors your AI service providers in one popup — no separate windows
 
 Product family:
 AI Pulse also offers a macOS desktop app and iOS/watchOS apps. The desktop and mobile apps share the same data and provide local code-aware cost tracking; the browser extension is an independent tool whose data stays local and is not synced with the desktop app.
-https://apps.apple.com/us/app/ai-pulse/id6786290416?mt=12
 
 ## 发布说明（What's new — 0.4.3）
 
