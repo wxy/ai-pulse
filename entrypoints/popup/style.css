@@ -673,6 +673,15 @@ body {
   color: var(--text-dim);
 }
 
+.about-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.about-link:hover {
+  text-decoration: underline;
+}
+
 /* Skeleton Loading */
 @keyframes shimmer {
   0% { background-position: -200% 0; }

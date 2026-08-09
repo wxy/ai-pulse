@@ -104,6 +104,16 @@ const PopupSettings: React.FC<PopupSettingsProps> = ({ providers, onRefresh, onS
         <p>{t('about.title')} v{pkg.version}</p>
         <p>{t('about.desc')}</p>
         <p>{t('about.supported')}</p>
+        <p>
+          <a
+            href="https://github.com/wxy/ai-pulse-macos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="about-link"
+          >
+            {t('about.desktop_link')} →
+          </a>
+        </p>
       </div>
     </div>
   );
