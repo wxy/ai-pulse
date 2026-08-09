@@ -22,10 +22,17 @@ const ZH: Record<string, string> = {
 
   // Status
   'status.running': '运行中',
+  'status.warning': '需注意',
+  'status.needs_auth': '可达 · 需鉴权',
+  'status.endpoint_error': '可达 · 接口异常',
+  'status.reachable': '可达',
   'status.error': '服务异常',
   'status.unknown': '未知',
   'status.unreachable': '无法访问',
   'status.connection_failed': '连接失败',
+  'status.source_api': '来源：API 探测',
+  'status.source_page': '来源：官方状态页',
+  'status.source_merged': '来源：API + 状态页',
 
   // Options nav
   'nav.providers': '服务商',
@@ -120,6 +127,7 @@ const ZH: Record<string, string> = {
   'chart.loading': '加载历史数据...',
   'chart.empty': '暂无余额历史数据。首次自动拉取完成后数据将出现在这里。',
   'chart.title': '余额历史',
+  'chart.title_usage': '消费历史',
 
   // About
   'about.title': '关于 AI Pulse',
@@ -154,6 +162,14 @@ const ZH: Record<string, string> = {
 
   'card.click_config': '点击配置',
   'card.daily_avg': '日',
+  'card.daily_spend': '日均消费',
+  'card.usage_hint': '近 3 日消费',
+  'trend.up': '余额增长',
+  'trend.down': '余额减少',
+  'trend.flat': '余额持平',
+  'trend.usage_up': '消费增长',
+  'trend.usage_down': '消费减少',
+  'trend.usage_flat': '消费持平',
 
   // Provider names & descriptions
   'provider.deepseek.name': 'DeepSeek',
@@ -225,10 +241,17 @@ const EN: Record<string, string> = {
   'popup.day_ago': 'd ago',
 
   'status.running': 'Operational',
+  'status.warning': 'Attention',
+  'status.needs_auth': 'Reachable · Auth required',
+  'status.endpoint_error': 'Reachable · Endpoint error',
+  'status.reachable': 'Reachable',
   'status.error': 'Service Error',
   'status.unknown': 'Unknown',
   'status.unreachable': 'Unreachable',
   'status.connection_failed': 'Connection failed',
+  'status.source_api': 'Source: API probe',
+  'status.source_page': 'Source: official status page',
+  'status.source_merged': 'Source: API + status page',
 
   'nav.providers': 'Providers',
   'nav.settings': 'Settings',
@@ -317,6 +340,7 @@ const EN: Record<string, string> = {
   'chart.loading': 'Loading history...',
   'chart.empty': 'No balance history yet. Data will appear after the first automatic fetch cycle.',
   'chart.title': 'Balance History',
+  'chart.title_usage': 'Spend History',
 
   'about.title': 'About AI Pulse',
   'about.desc': 'Monitor your AI service providers\' usage, balance, and service status.',
@@ -348,6 +372,14 @@ const EN: Record<string, string> = {
 
   'card.click_config': 'Click to configure',
   'card.daily_avg': 'day',
+  'card.daily_spend': 'daily avg spend',
+  'card.usage_hint': 'Last 3 days spend',
+  'trend.up': 'Balance Up',
+  'trend.down': 'Balance Down',
+  'trend.flat': 'Balance Flat',
+  'trend.usage_up': 'Spend Up',
+  'trend.usage_down': 'Spend Down',
+  'trend.usage_flat': 'Spend Flat',
 
   'provider.deepseek.name': 'DeepSeek',
   'provider.deepseek.company': 'DeepSeek',
@@ -448,4 +480,3 @@ export function tp(providerId: string, field: 'name' | 'company' | 'desc', fallb
   const key = `provider.${providerId}.${field}`;
   return t(key) !== key ? t(key) : fallback;
 }
-

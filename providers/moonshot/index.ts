@@ -1,4 +1,4 @@
-import { t } from '@/utils/i18n';
+import { statusFromResponse, statusFromError } from '@/core/status-classifier';
 import type { Provider, BalanceResult, StatusResult } from '@/types';
 
 const MOONSHOT_BALANCE_URL = 'https://api.moonshot.cn/v1/users/me/balance';
@@ -35,25 +35,14 @@ async function fetchBalance(apiKey: string): Promise<BalanceResult> {
   };
 }
 
-async function fetchStatus(): Promise<StatusResult> {
+async function fetchStatus(apiKey?: string): Promise<StatusResult> {
   try {
     const res = await fetch('https://api.moonshot.cn/v1/models', {
-      headers: { Authorization: 'Bearer noop' },
+      headers: { Authorization: `Bearer ${apiKey ?? 'noop'}` },
     });
-    const isAvailable = res.status < 500;
-    return {
-      success: true,
-      isAvailable,
-      statusMessage: isAvailable ? t('status.running') : `${t('status.error')} (HTTP ${res.status})`,
-      rawTimestamp: Date.now(),
-    };
-  } catch {
-    return {
-      success: false,
-      isAvailable: false,
-      statusMessage: t('status.unreachable'),
-      rawTimestamp: Date.now(),
-    };
+    return statusFromResponse(res);
+  } catch (err) {
+    return statusFromError(err);
   }
 }
 

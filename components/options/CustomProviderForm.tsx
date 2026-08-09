@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Provider } from '@/types';
 import { registerCustomProvider } from '@/core/provider-registry';
+import { statusFromResponse, statusFromError } from '@/core/status-classifier';
 import { t } from '@/utils/i18n';
 
 interface CustomProviderFormProps { onDone: () => void; }
@@ -41,10 +42,9 @@ const CustomProviderForm: React.FC<CustomProviderFormProps> = ({ onDone }) => {
         provider.fetchStatus = async () => {
           try {
             const res = await fetch(statusUrl.trim());
-            const isAvailable = res.status < 500;
-            return { success: true, isAvailable, statusMessage: isAvailable ? t('status.running') : `${t('status.error')} (HTTP ${res.status})`, rawTimestamp: Date.now() };
-          } catch {
-            return { success: false, isAvailable: false, statusMessage: t('status.unreachable'), rawTimestamp: Date.now() };
+            return statusFromResponse(res);
+          } catch (err) {
+            return statusFromError(err);
           }
         };
         provider.validateApiKey = (key: string) => key.length >= 10;

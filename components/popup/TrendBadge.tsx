@@ -1,26 +1,28 @@
 import React from 'react';
 import type { ProviderSummary } from '@/types';
+import { t } from '@/utils/i18n';
 
 interface TrendBadgeProps {
   trend: ProviderSummary['trend'];
+  usage?: boolean;
 }
 
-const TREND_CONFIG: Record<ProviderSummary['trend'], { icon: string; label: string; className: string }> = {
-  up:   { icon: '▲', label: '余额增长', className: 'trend-up' },
-  down: { icon: '▼', label: '余额减少', className: 'trend-down' },
-  flat: { icon: '→', label: '余额持平', className: 'trend-flat' },
-  unknown: { icon: '', label: '', className: 'trend-unknown' },
+const TREND_ICON: Record<ProviderSummary['trend'], string> = {
+  up: '▲',
+  down: '▼',
+  flat: '→',
+  unknown: '',
 };
 
-const TrendBadge: React.FC<TrendBadgeProps> = ({ trend }) => {
-  const config = TREND_CONFIG[trend];
+const TrendBadge: React.FC<TrendBadgeProps> = ({ trend, usage = false }) => {
+  const trendKey = trend === 'unknown' ? '' : usage ? `trend.usage_${trend}` : `trend.${trend}`;
 
   // Don't show anything when trend is unknown
   if (trend === 'unknown') return null;
 
   return (
-    <span className={`trend-badge ${config.className}`} title={config.label}>
-      {config.icon}
+    <span className={`trend-badge trend-${trend}`} title={t(trendKey)}>
+      {TREND_ICON[trend]}
     </span>
   );
 };

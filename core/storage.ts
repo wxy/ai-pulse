@@ -191,6 +191,8 @@ const STATUS_HISTORY_KEY_PREFIX = 'status_history_';
 export interface StatusHistoryEntry {
   timestamp: number;
   isAvailable: boolean;
+  statusKind?: 'ok' | 'warning' | 'down';
+  source?: 'api' | 'page' | 'merged';
   statusMessage: string;
 }
 

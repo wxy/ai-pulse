@@ -22,6 +22,8 @@ export interface BalanceResult {
 export interface StatusResult {
   success: boolean;
   isAvailable: boolean;      // Is the service operational?
+  statusKind: 'ok' | 'warning' | 'down';  // 2xx=ok, 4xx=warning, 5xx/network=down
+  source?: 'api' | 'page' | 'merged';     // What produced this result
   statusMessage: string;     // Human-readable status line
   rawTimestamp: number;
   error?: string;
@@ -47,6 +49,7 @@ export interface Provider {
   faviconUrl?: string;           // Official favicon URL
   baseUrl: string;               // Homepage or console URL for the provider
   statusPageUrl?: string;        // Public status page URL
+  statusPageApiUrl?: string;     // Public status page JSON/RSS endpoint (optional, augments API checks)
   popular?: boolean;             // Show by default in popup (default true)
   balanceType?: 'prepaid' | 'usage' | 'quota';  // Billing model (default prepaid)
 
@@ -58,7 +61,7 @@ export interface Provider {
 
   // API Methods (optional — guarded by capabilities)
   fetchBalance?(apiKey: string): Promise<BalanceResult>;
-  fetchStatus?(): Promise<StatusResult>;
+  fetchStatus?(apiKey?: string): Promise<StatusResult>;
   validateApiKey?(apiKey: string): boolean;
 }
 

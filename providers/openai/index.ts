@@ -1,5 +1,5 @@
+import { statusFromResponse, statusFromError } from '@/core/status-classifier';
 import type { Provider, BalanceResult, StatusResult } from '@/types';
-import { t } from '@/utils/i18n';
 
 async function fetchBalance(apiKey: string): Promise<BalanceResult> {
   // OpenAI Usage API — get today's cost as an indicator
@@ -36,19 +36,14 @@ async function fetchBalance(apiKey: string): Promise<BalanceResult> {
   };
 }
 
-async function fetchStatus(): Promise<StatusResult> {
+async function fetchStatus(apiKey?: string): Promise<StatusResult> {
   try {
     const res = await fetch('https://api.openai.com/v1/models', {
-      headers: { Authorization: 'Bearer noop' },
+      headers: { Authorization: `Bearer ${apiKey ?? 'noop'}` },
     });
-    const isAvailable = res.status < 500;
-    return {
-      success: true, isAvailable,
-      statusMessage: isAvailable ? t('status.running') : `${t('status.error')} (HTTP ${res.status})`,
-      rawTimestamp: Date.now(),
-    };
-  } catch {
-    return { success: false, isAvailable: false, statusMessage: t('status.unreachable'), rawTimestamp: Date.now() };
+    return statusFromResponse(res);
+  } catch (err) {
+    return statusFromError(err);
   }
 }
 
@@ -61,6 +56,7 @@ export const openaiProvider: Provider = {
   faviconUrl: 'https://openai.com/favicon.ico',
   baseUrl: 'https://platform.openai.com',
   statusPageUrl: 'https://status.openai.com',
+  statusPageApiUrl: 'https://status.openai.com/api/v2/status.json',
   balanceType: 'usage',
   capabilities: {
     canFetchBalance: true,

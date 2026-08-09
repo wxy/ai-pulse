@@ -24,7 +24,7 @@ const StatusTimeline: React.FC<StatusTimelineProps> = ({ providerId }) => {
       {entries.map((entry, i) => (
         <span
           key={i}
-          className={`timeline-dot ${entry.isAvailable ? 'dot-ok' : 'dot-error'}`}
+          className={`timeline-dot ${entry.statusKind === 'warning' ? 'dot-warning' : entry.isAvailable ? 'dot-ok' : 'dot-error'} ${entry.source === 'page' || entry.source === 'merged' ? 'source-page' : ''}`}
           title={`${new Date(entry.timestamp).toLocaleString('zh-CN')}  ${entry.statusMessage}`}
         />
       ))}

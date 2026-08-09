@@ -69,7 +69,7 @@ export async function runFetchCycle(): Promise<void> {
     // Fetch status
     if (provider.capabilities.canFetchStatus) {
       tasks.push(
-        fetchAndCacheStatus(provider).then(() =>
+        fetchAndCacheStatus(provider, config?.apiKey || undefined).then(() =>
           console.log(`Status fetched for ${provider.id}`)
         ).catch(err =>
           console.error(`Status fetch failed for ${provider.id}:`, err)

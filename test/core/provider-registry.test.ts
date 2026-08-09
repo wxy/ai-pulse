@@ -71,7 +71,7 @@ describe('provider-registry', () => {
       baseUrl: 'https://example.com',
       capabilities: { canFetchBalance: true, canFetchStatus: true },
       fetchBalance: async () => ({ success: true, balances: [], rawTimestamp: Date.now() }),
-      fetchStatus: async () => ({ success: true, isAvailable: true, statusMessage: 'OK', rawTimestamp: Date.now() }),
+      fetchStatus: async () => ({ success: true, isAvailable: true, statusKind: 'ok', statusMessage: 'OK', rawTimestamp: Date.now() }),
     };
 
     it('registers and retrieves custom providers', () => {

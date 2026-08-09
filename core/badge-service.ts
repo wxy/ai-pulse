@@ -27,7 +27,8 @@ export async function updateBadge(): Promise<void> {
     const bCache = balanceCache[provider.id];
     const sCache = statusCache[provider.id];
 
-    const status = sCache?.result?.isAvailable ? '✓' : sCache?.result ? '✗' : '?';
+    const statusKind = sCache?.result?.statusKind ?? (sCache?.result?.isAvailable ? 'ok' : sCache?.result ? 'down' : undefined);
+    const status = statusKind === 'warning' ? '~' : statusKind === 'ok' ? '✓' : statusKind === 'down' ? '✗' : '?';
     let line = `${name} ${status}`;
 
     if (bCache?.result?.success && bCache.result.balances.length > 0) {

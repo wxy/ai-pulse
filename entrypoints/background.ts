@@ -117,11 +117,13 @@ async function handleMessage(action: string, payload: unknown): Promise<unknown>
 
     case 'FETCH_STATUS': {
       const providers = getAllProviders();
+      const configs = await getProviderConfigs();
       const results: Record<string, unknown> = {};
 
       for (const provider of providers) {
         if (!provider.capabilities.canFetchStatus) continue;
-        const entry = await fetchAndCacheStatus(provider);
+        const config = configs.find(c => c.providerId === provider.id);
+        const entry = await fetchAndCacheStatus(provider, config?.apiKey || undefined);
         results[provider.id] = entry;
       }
       await updateBadge();

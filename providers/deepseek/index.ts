@@ -1,4 +1,4 @@
-import { t } from '@/utils/i18n';
+import { statusFromResponse, statusFromError } from '@/core/status-classifier';
 import type { Provider, BalanceResult, StatusResult } from '@/types';
 
 const DEEPSEEK_BALANCE_URL = 'https://api.deepseek.com/user/balance';
@@ -38,24 +38,14 @@ async function fetchBalance(apiKey: string): Promise<BalanceResult> {
   };
 }
 
-async function fetchStatus(): Promise<StatusResult> {
+async function fetchStatus(apiKey?: string): Promise<StatusResult> {
   try {
-    const res = await fetch('https://api.deepseek.com/models');
-    const isAvailable = res.status < 500;
-    return {
-      success: true,
-      isAvailable,
-      statusMessage: isAvailable ? t('status.running') : `${t('status.error')} (HTTP ${res.status})`,
-      rawTimestamp: Date.now(),
-    };
+    const res = await fetch('https://api.deepseek.com/models', {
+      headers: { Authorization: `Bearer ${apiKey ?? 'noop'}` },
+    });
+    return statusFromResponse(res);
   } catch (err) {
-    return {
-      success: false,
-      isAvailable: false,
-      statusMessage: t('status.unreachable'),
-      rawTimestamp: Date.now(),
-      error: err instanceof Error ? err.message : '连接失败',
-    };
+    return statusFromError(err);
   }
 }
 
@@ -72,6 +62,7 @@ export const deepseekProvider: Provider = {
   faviconUrl: 'https://www.deepseek.com/favicon.ico',
   baseUrl: 'https://platform.deepseek.com',
   statusPageUrl: 'https://status.deepseek.com',
+  statusPageApiUrl: 'https://status.deepseek.com/api/v2/status.json',
   capabilities: {
     canFetchBalance: true,
     canFetchStatus: true,
