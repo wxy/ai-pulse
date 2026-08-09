@@ -2,7 +2,6 @@ import { defineBackground } from 'wxt/utils/define-background';
 import { loadLanguage } from '@/utils/i18n';
 import { getAllProviders, initCustomProviders } from '@/core/provider-registry';
 import {
-  getSettings,
   setSettings,
   getProviderConfigs,
   setProviderConfig,
@@ -24,7 +23,6 @@ import type {
   GlobalSettings,
   ProviderConfig,
   ProviderSummary,
-  BalanceHistory,
 } from '@/types';
 
 // ============================================================
@@ -55,9 +53,8 @@ async function buildProviderSummaries(): Promise<ProviderSummary[]> {
   const balanceCache = await getBalanceCache();
   const statusCache = await getStatusCache();
 
-  const summaries: ProviderSummary[] = [];
-
-  for (const provider of providers) {
+  // Resolve all providers in parallel — history reads are independent per provider
+  return Promise.all(providers.map(async (provider) => {
     let config = configs.find(c => c.providerId === provider.id) ?? null;
 
     // Non-popular providers default to disabled on first install
@@ -80,10 +77,8 @@ async function buildProviderSummaries(): Promise<ProviderSummary[]> {
       }
     }
 
-    summaries.push({ provider, config, balanceCache: bCache, statusCache: sCache, trend });
-  }
-
-  return summaries;
+    return { provider, config, balanceCache: bCache, statusCache: sCache, trend };
+  }));
 }
 
 // ============================================================

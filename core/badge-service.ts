@@ -7,66 +7,66 @@ let startupGraceUntil = Date.now() + 30_000;
 
 export async function updateBadge(): Promise<void> {
   try {
-  const providers = getAllProviders();
-  const storedConfigs = await getProviderConfigs();
-  const balanceCache = await getBalanceCache();
-  const statusCache = await getStatusCache();
+    const providers = getAllProviders();
+    const storedConfigs = await getProviderConfigs();
+    const balanceCache = await getBalanceCache();
+    const statusCache = await getStatusCache();
 
-  const infoParts: string[] = [];
-  let hasAlert = false;
+    const infoParts: string[] = [];
+    let hasAlert = false;
 
-  for (const provider of providers) {
-    // Resolve effective config — match UI logic (ProviderList/AppLayout):
-    //   enabled := config?.enabled !== false  (no config → enabled for popular providers)
-    let config = storedConfigs.find(c => c.providerId === provider.id) ?? null;
-    if (!config && provider.popular === false) {
-      config = { providerId: provider.id, enabled: false, apiKey: '', displayName: '', alertEnabled: false };
-    }
-    if (config?.enabled === false) continue; // explicitly disabled → skip
-
-    const name = config?.displayName || provider.name;
-    const bCache = balanceCache[provider.id];
-    const sCache = statusCache[provider.id];
-
-    const statusKind = sCache?.result?.statusKind ?? (sCache?.result?.isAvailable ? 'ok' : sCache?.result ? 'down' : undefined);
-    const status = statusKind === 'warning' ? '~' : statusKind === 'ok' ? '✓' : statusKind === 'down' ? '✗' : '?';
-    let line = `${name} ${status}`;
-
-    if (bCache?.result?.success && bCache.result.balances.length > 0) {
-      const bal = bCache.result.balances[0];
-      const amount = bal.totalBalance;
-      line += ` ${formatShortBalance(bal.currency, amount)}`;
-
-      // Per-provider alert: adapt to billing model
-      if (config?.alertEnabled && amount > 0) {
-        try {
-          const { rate: dailyRate } = await getDailyAvg(provider.id, bal.currency);
-          const bType = provider.balanceType ?? 'prepaid';
-          if (dailyRate > 0) {
-            const shouldAlert = bType === 'usage'
-              ? amount > dailyRate * 7   // usage: cumulative spend > 7 days of avg? overspending!
-              : amount < dailyRate;       // prepaid/quota: remaining < 1 day? running low!
-            if (shouldAlert) { hasAlert = true; line += ' ⚠'; }
-          }
-        } catch { /* ignore — alert check is best-effort */ }
+    for (const provider of providers) {
+      // Resolve effective config — match UI logic (ProviderList/AppLayout):
+      //   enabled := config?.enabled !== false  (no config → enabled for popular providers)
+      let config = storedConfigs.find(c => c.providerId === provider.id) ?? null;
+      if (!config && provider.popular === false) {
+        config = { providerId: provider.id, enabled: false, apiKey: '', displayName: '', alertEnabled: false };
       }
+      if (config?.enabled === false) continue; // explicitly disabled → skip
+
+      const name = config?.displayName || provider.name;
+      const bCache = balanceCache[provider.id];
+      const sCache = statusCache[provider.id];
+
+      const statusKind = sCache?.result?.statusKind ?? (sCache?.result?.isAvailable ? 'ok' : sCache?.result ? 'down' : undefined);
+      const status = statusKind === 'warning' ? '~' : statusKind === 'ok' ? '✓' : statusKind === 'down' ? '✗' : '?';
+      let line = `${name} ${status}`;
+
+      if (bCache?.result?.success && bCache.result.balances.length > 0) {
+        const bal = bCache.result.balances[0];
+        const amount = bal.totalBalance;
+        line += ` ${formatShortBalance(bal.currency, amount)}`;
+
+        // Per-provider alert: adapt to billing model
+        if (config?.alertEnabled && amount > 0) {
+          try {
+            const { rate: dailyRate } = await getDailyAvg(provider.id, bal.currency);
+            const bType = provider.balanceType ?? 'prepaid';
+            if (dailyRate > 0) {
+              const shouldAlert = bType === 'usage'
+                ? amount > dailyRate * 7   // usage: cumulative spend > 7 days of avg? overspending!
+                : amount < dailyRate;       // prepaid/quota: remaining < 1 day? running low!
+              if (shouldAlert) { hasAlert = true; line += ' ⚠'; }
+            }
+          } catch { /* ignore — alert check is best-effort */ }
+        }
+      }
+
+      infoParts.push(line);
     }
 
-    infoParts.push(line);
-  }
+    // Badge: Chrome badges always have an opaque background that covers the icon.
+    // RGBA alpha is not supported, so we skip the normal balance badge entirely.
+    // Balance info is in the tooltip. Spend alerts (💰/🌕) still use the badge.
+    chrome.action.setBadgeText({ text: '' });
 
-  // Badge: Chrome badges always have an opaque background that covers the icon.
-  // RGBA alpha is not supported, so we skip the normal balance badge entirely.
-  // Balance info is in the tooltip. Spend alerts (💰/🌕) still use the badge.
-  chrome.action.setBadgeText({ text: '' });
+    // Tooltip
+    const title = infoParts.length > 0
+      ? infoParts.join('\n')
+      : 'AI Pulse';
+    chrome.action.setTitle({ title });
 
-  // Tooltip
-  const title = infoParts.length > 0
-    ? infoParts.join('\n')
-    : 'AI Pulse';
-  chrome.action.setTitle({ title });
-
-  console.log('Badge updated:', { title, providers: infoParts.length });
+    console.log('Badge updated:', { title, providers: infoParts.length });
   } catch (err) {
     console.error('updateBadge failed:', err);
   }

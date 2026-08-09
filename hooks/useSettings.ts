@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { GlobalSettings } from '@/types';
 import { sendMessage } from '@/core/message-bus';
 
@@ -12,6 +12,8 @@ export function useSettings() {
   const [settings, setSettingsState] = useState<GlobalSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
 
   // Load settings on mount — read from storage directly
   useEffect(() => {
@@ -37,10 +39,12 @@ export function useSettings() {
 
   const updateSetting = useCallback(
     <K extends keyof GlobalSettings>(key: K, value: GlobalSettings[K]) => {
-      const updated = { ...settings, [key]: value };
+      const updated = { ...settingsRef.current, [key]: value };
+      settingsRef.current = updated;
+      setSettingsState(updated);
       saveSettings(updated);
     },
-    [settings, saveSettings],
+    [saveSettings],
   );
 
   return { settings, loading, saving, saveSettings, updateSetting };
